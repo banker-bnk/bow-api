@@ -11,7 +11,7 @@ export class FriendsService {
   ) {}
 
   findAll() {
-    return this.friendsRepository.find();
+    return this.friendsRepository.find({ relations: ['friend', 'user'] });
   }
 
   create(data: Partial<Friend>) {

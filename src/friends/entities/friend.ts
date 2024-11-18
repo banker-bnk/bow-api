@@ -1,20 +1,21 @@
 import {
   Entity,
   PrimaryGeneratedColumn,
-  Column,
   CreateDateColumn,
+  ManyToOne,
 } from 'typeorm';
+import { User } from '../../users/entities/user';
 
 @Entity('friends')
 export class Friend {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  user_id: string;
+  @ManyToOne(() => User, (user) => user.friends, { onDelete: 'RESTRICT' })
+  user: User;
 
-  @Column()
-  friend_id: string;
+  @ManyToOne(() => User, { onDelete: 'RESTRICT' })
+  friend: User;
 
   @CreateDateColumn()
   createdAt: Date;

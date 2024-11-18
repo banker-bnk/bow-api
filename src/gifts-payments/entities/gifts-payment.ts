@@ -3,24 +3,30 @@ import {
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
+  ManyToOne,
 } from 'typeorm';
+import { User } from '../../users/entities/user';
+import { Gift } from '../../gifts/entities/gift';
 
 @Entity('gifts_payments')
 export class GiftsPayment {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  gift_id: number;
+  @ManyToOne(() => Gift, { onDelete: 'RESTRICT' })
+  gift: Gift;
 
-  @Column()
-  user_id: string;
+  @ManyToOne(() => User, (user) => user.giftPayments, { onDelete: 'RESTRICT' })
+  user: User;
 
   @Column('decimal')
   amount: number;
 
   @Column()
   currency: string;
+
+  @Column()
+  source: string;
 
   @CreateDateColumn()
   createdAt: Date;

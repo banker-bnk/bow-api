@@ -3,7 +3,9 @@ import {
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
+  ManyToOne,
 } from 'typeorm';
+import { User } from '../../users/entities/user';
 
 @Entity('gifts')
 export class Gift {
@@ -26,13 +28,13 @@ export class Gift {
   currency: string;
 
   @Column({ nullable: true })
-  end_date: Date;
-
-  @Column()
-  user_id: string;
+  endDate: Date;
 
   @Column({ nullable: true })
   image: string;
+
+  @ManyToOne(() => User, (user) => user.gifts, { onDelete: 'RESTRICT' })
+  user: User;
 
   @CreateDateColumn()
   createdAt: Date;
