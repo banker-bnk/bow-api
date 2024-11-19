@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { FriendInvitation } from './entities/friend-invitation';
+import { User } from 'src/users/entities/user';
 
 @Injectable()
 export class FriendInvitationsService {
@@ -17,5 +18,18 @@ export class FriendInvitationsService {
   create(data: Partial<FriendInvitation>) {
     const invitation = this.friendInvitationRepository.create(data);
     return this.friendInvitationRepository.save(invitation);
+  }
+
+  approve(sender: User, receiver: User) {
+    const invitation = this.friendInvitationRepository.update(
+      {
+        sender: sender,
+        receiver: receiver,
+      },
+      {
+        status: 'APPROVED',
+      },
+    );
+    return invitation;
   }
 }

@@ -16,7 +16,7 @@ export class User {
   id: number;
 
   @Column()
-  userId: string;
+  userId: string; // Storing user.sub attribute from Auth0
 
   @Column()
   userName: string;

@@ -19,7 +19,7 @@ export class UsersService {
     return this.usersRepository.save(user);
   }
 
-  findById(userId: string) {
+  findById(userId: string): Promise<User> {
     return this.usersRepository.findOne({ where: { userId } });
   }
 }
