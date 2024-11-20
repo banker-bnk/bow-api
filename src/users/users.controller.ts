@@ -11,6 +11,7 @@ import {
 import { UsersService } from './users.service';
 import { User } from './entities/user';
 import { AuthGuard } from '@nestjs/passport';
+import { ApiBody, ApiResponse } from '@nestjs/swagger';
 
 @Controller('users')
 export class UsersController {
@@ -19,11 +20,20 @@ export class UsersController {
   @Get()
   @UseGuards(AuthGuard('jwt'))
   findAll(@Req() req) {
-    Logger.log('Req ', req.user);
+    Logger.log('Req user ', req.user);
     return this.usersService.findAll();
   }
 
   @Post()
+  @ApiBody({
+    description: 'Dont include id, or createdAt',
+    type: [User],
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'User created.',
+    type: [User],
+  })
   create(@Body() data: Partial<User>) {
     return this.usersService.create(data);
   }

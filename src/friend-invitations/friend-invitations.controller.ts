@@ -4,6 +4,7 @@ import { UsersService } from '../users/users.service';
 import { FriendInvitation } from './entities/friend-invitation';
 import { AuthGuard } from '@nestjs/passport';
 import { User } from 'src/users/entities/user';
+import { ApiBody } from '@nestjs/swagger';
 
 @Controller('friend-invitations')
 export class FriendInvitationsController {
@@ -28,6 +29,16 @@ export class FriendInvitationsController {
 
   @Post('approve')
   @UseGuards(AuthGuard('jwt'))
+  @ApiBody({
+    description:
+      'Information of the invitation receiver. Sender info will be taken from access token.',
+    schema: {
+      type: 'object',
+      properties: {
+        receiver: { type: 'integer' },
+      },
+    },
+  })
   async approve(@Req() req, @Body() body: Partial<FriendInvitation>) {
     const userReq = req.user;
     const receiverUser: User = await this.usersService.findById(userReq.sub);
