@@ -4,10 +4,12 @@ import {
   Column,
   CreateDateColumn,
   ManyToOne,
+  Unique,
 } from 'typeorm';
 import { User } from '../../users/entities/user';
 
 @Entity('friend_invitations')
+@Unique(['sender', 'receiver'])
 export class FriendInvitation {
   @PrimaryGeneratedColumn()
   id: number;

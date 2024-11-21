@@ -20,6 +20,9 @@ export class UsersService {
   }
 
   findById(userId: string): Promise<User> {
-    return this.usersRepository.findOne({ where: { userId } });
+    return this.usersRepository.findOne({
+      relations: ['friends'],
+      where: { userId },
+    });
   }
 }
