@@ -7,6 +7,7 @@ import {
   UseGuards,
   Req,
   Logger,
+  Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { User } from './entities/user';
@@ -41,5 +42,10 @@ export class UsersController {
   @Get(':userId')
   findById(@Param('userId') userId: string) {
     return this.usersService.findById(userId);
+  }
+
+  @Get('/friends/:userId')
+  getFriendsBirthdays(@Param('userId') userId: string, @Query('date') date: string) {
+    return this.usersService.getFriendsBirthdays(userId, date);
   }
 }
