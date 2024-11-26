@@ -6,13 +6,12 @@ import {
   Body,
   UseGuards,
   Req,
-  Logger,
   Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { User } from './entities/user';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiBody, ApiResponse } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiParam, ApiQuery, ApiResponse } from '@nestjs/swagger';
 
 @Controller('users')
 export class UsersController {
@@ -20,8 +19,7 @@ export class UsersController {
 
   @Get()
   @UseGuards(AuthGuard('jwt'))
-  findAll(@Req() req) {
-    Logger.log('Req user ', req.user);
+  findAll() {
     return this.usersService.findAll();
   }
 
@@ -39,13 +37,44 @@ export class UsersController {
     return this.usersService.create(data);
   }
 
+  @Get('/friends')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiOperation({
+    summary: 'Get friends birthdays. UserId is retrieved from the JWT.',
+    description: 'This endpoint retrieves friends birthdays for a given user.',
+  })
+  @ApiQuery({
+    name: 'date',
+    type: 'string',
+    description: 'The date to get friends birthdays for.',
+  })
+
+  getFriendsBirthdays2(@Req() req, @Query('date') date: string) {
+    return this.usersService.getFriendsBirthdays(req.user.sub, date);
+  }
+
+  @Get('/friends/:userId')
+  @ApiOperation({
+    summary: 'Get friends birthdays. UserId is required to be passed as a param.',
+    description: 'This endpoint retrieves friends birthdays for a given user.',
+  })
+  @ApiParam({
+    name: 'userId',
+    type: 'string',
+    description: 'The user id of the user to get friends birthdays for.',
+  })
+  @ApiQuery({
+    name: 'date',
+    type: 'string',
+    description: 'The date to get friends birthdays for.',
+  })
+  getFriendsBirthdays(@Param('userId') userId: string, @Query('date') date: string) {
+    return this.usersService.getFriendsBirthdays(userId, date);
+  }
+
   @Get(':userId')
   findById(@Param('userId') userId: string) {
     return this.usersService.findById(userId);
   }
 
-  @Get('/friends/:userId')
-  getFriendsBirthdays(@Param('userId') userId: string, @Query('date') date: string) {
-    return this.usersService.getFriendsBirthdays(userId, date);
-  }
 }
