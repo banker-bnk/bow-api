@@ -26,7 +26,7 @@ export class UsersService {
     });
   }
 
-  async getFriendsBirthdays(userId: string, date: string): Promise<any> {
+  async getFriendsBirthdays(userId: string): Promise<any> {
     const data = this.usersRepository.query(`
       WITH target_user AS (
           SELECT id FROM public.users WHERE "userId" = $1
@@ -48,10 +48,11 @@ export class UsersService {
           EXTRACT(DAY FROM u.birthday);
     `, [userId]);
 
-    return await this.groupByUpcomingBirthdays(await data, date);
+    return data;
   }
-
-  private async groupByUpcomingBirthdays(data: any[], givenDate: string) {
+  
+  async groupByUpcomingBirthdays(userId: string, givenDate: string) {
+    const data = await this.getFriendsBirthdays(userId);
     const now = new Date(givenDate);
     const currentMonthDay = new Date(0, now.getMonth(), now.getDate()); // Ignore year in the given date
 

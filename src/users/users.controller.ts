@@ -11,7 +11,7 @@ import {
 import { UsersService } from './users.service';
 import { User } from './entities/user';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiBody, ApiOperation, ApiParam, ApiQuery, ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiQuery, ApiResponse } from '@nestjs/swagger';
 
 @Controller('users')
 export class UsersController {
@@ -38,9 +38,21 @@ export class UsersController {
   }
 
   @Get('/friends')
+  @ApiBearerAuth('JWT')
   @UseGuards(AuthGuard('jwt'))
   @ApiOperation({
-    summary: 'Get friends birthdays. UserId is retrieved from the JWT.',
+    summary: 'Get friends. UserId is retrieved from the JWT.',
+    description: 'This endpoint retrieves friends birthdays for a given user.',
+  })
+  getFriendsBirthdays(@Req() req) {
+    return this.usersService.getFriendsBirthdays(req.user.sub);
+  }
+
+  @Get('/friends-calendar')
+  @ApiBearerAuth('JWT')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiOperation({
+    summary: 'Get friends birthdays grouped by upcoming birthdays. UserId is retrieved from the JWT.',
     description: 'This endpoint retrieves friends birthdays for a given user.',
   })
   @ApiQuery({
@@ -48,14 +60,13 @@ export class UsersController {
     type: 'string',
     description: 'The date to get friends birthdays for.',
   })
-
-  getFriendsBirthdays2(@Req() req, @Query('date') date: string) {
-    return this.usersService.getFriendsBirthdays(req.user.sub, date);
+  groupByUpcomingBirthdaysSecured(@Req() req, @Query('date') date: string) {
+    return this.usersService.groupByUpcomingBirthdays(req.user.sub, date);
   }
 
-  @Get('/friends/:userId')
+  @Get('/friends-calendar/:userId')
   @ApiOperation({
-    summary: 'Get friends birthdays. UserId is required to be passed as a param.',
+    summary: 'Get friends birthdays grouped by upcoming birthdays. UserId is required to be passed as a param.',
     description: 'This endpoint retrieves friends birthdays for a given user.',
   })
   @ApiParam({
@@ -68,8 +79,8 @@ export class UsersController {
     type: 'string',
     description: 'The date to get friends birthdays for.',
   })
-  getFriendsBirthdays(@Param('userId') userId: string, @Query('date') date: string) {
-    return this.usersService.getFriendsBirthdays(userId, date);
+  groupByUpcomingBirthdays(@Param('userId') userId: string, @Query('date') date: string) {
+    return this.usersService.groupByUpcomingBirthdays(userId, date);
   }
 
   @Get(':userId')

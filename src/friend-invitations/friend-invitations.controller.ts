@@ -4,7 +4,7 @@ import { UsersService } from '../users/users.service';
 import { FriendInvitation } from './entities/friend-invitation';
 import { AuthGuard } from '@nestjs/passport';
 import { User } from 'src/users/entities/user';
-import { ApiBody } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody } from '@nestjs/swagger';
 
 @Controller('friend-invitations')
 export class FriendInvitationsController {
@@ -20,6 +20,7 @@ export class FriendInvitationsController {
 
   @Post()
   @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('JWT')
   async create(@Req() req, @Body() body: Partial<FriendInvitation>) {
     const userReq = req.user;
     const senderUser: User = await this.usersService.findById(userReq.sub);
@@ -29,6 +30,7 @@ export class FriendInvitationsController {
 
   @Post('approve')
   @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('JWT')
   @ApiBody({
     description:
       'Information of the invitation receiver. Sender info will be taken from access token.',
