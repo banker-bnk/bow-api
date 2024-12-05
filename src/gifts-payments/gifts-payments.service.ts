@@ -2,8 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { GiftsPayment } from './entities/gifts-payment';
-import { UsersService } from 'src/users/users.service';
-import { User } from 'src/users/entities/user';
+import { User } from '../users/entities/user';
 
 @Injectable()
 export class GiftsPaymentsService {

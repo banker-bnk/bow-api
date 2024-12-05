@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { FriendInvitation } from './entities/friend-invitation';
-import { User } from 'src/users/entities/user';
+import { User } from '../users/entities/user';
 
 @Injectable()
 export class FriendInvitationsService {
