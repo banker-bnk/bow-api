@@ -3,8 +3,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { FriendInvitation } from './entities/friend-invitation';
 import { FriendInvitationsService } from './friend-invitations.service';
 import { FriendInvitationsController } from './friend-invitations.controller';
-import { UsersService } from 'src/users/users.service';
-import { User } from 'src/users/entities/user';
+import { UsersService } from '../users/users.service';
+import { User } from '../users/entities/user';
 
 @Module({
   imports: [
