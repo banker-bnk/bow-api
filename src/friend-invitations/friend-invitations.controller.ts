@@ -3,7 +3,7 @@ import { FriendInvitationsService } from './friend-invitations.service';
 import { UsersService } from '../users/users.service';
 import { FriendInvitation } from './entities/friend-invitation';
 import { AuthGuard } from '@nestjs/passport';
-import { User } from 'src/users/entities/user';
+import { User } from '../users/entities/user';
 import { ApiBearerAuth, ApiBody } from '@nestjs/swagger';
 
 @Controller('friend-invitations')
