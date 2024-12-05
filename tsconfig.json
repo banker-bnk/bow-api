@@ -8,14 +8,23 @@
     "allowSyntheticDefaultImports": true,
     "target": "ES2021",
     "sourceMap": true,
-    "outDir": "./dist",
-    "baseUrl": "./",
+    "baseUrl": ".",   // Base URL is the root of your project (where tsconfig.json is located)
+    "paths": {
+      "src/*": ["src/*"]   // Correct path resolution for `src` directory and its subdirectories
+    },
+    "moduleResolution": "node",  // Ensures Node.js-style resolution for modules
+    "outDir": "./dist",  // Specifies where to place the compiled files
+    "esModuleInterop": true,  // Allows default imports for non-ES module packages
+    "skipLibCheck": true,  // Skips type checking of declaration files
+    "forceConsistentCasingInFileNames": true,
     "incremental": true,
-    "skipLibCheck": true,
     "strictNullChecks": false,
     "noImplicitAny": false,
     "strictBindCallApply": false,
-    "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false
-  }
+  },
+  "include": [
+    "src/**/*.ts",   // Include all `.ts` files in the `src` folder
+    "test/**/*.ts"   // Include all `.ts` files in the `test` folder
+  ]
 }

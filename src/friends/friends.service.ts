@@ -2,7 +2,7 @@ import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindOptionsWhere, Repository } from 'typeorm';
 import { Friend } from './entities/friend';
-import { User } from 'src/users/entities/user';
+import { User } from '../users/entities/user';
 
 @Injectable()
 export class FriendsService {

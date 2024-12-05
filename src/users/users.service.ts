@@ -27,7 +27,8 @@ export class UsersService {
   }
 
   async getFriendsBirthdays(userId: string): Promise<any> {
-    const data = this.usersRepository.query(`
+    const data = this.usersRepository.query(
+      `
       WITH target_user AS (
           SELECT id FROM public.users WHERE "userId" = $1
       )
@@ -46,11 +47,13 @@ export class UsersService {
       ORDER BY 
           EXTRACT(MONTH FROM u.birthday),
           EXTRACT(DAY FROM u.birthday);
-    `, [userId]);
+    `,
+      [userId],
+    );
 
     return data;
   }
-  
+
   async groupByUpcomingBirthdays(userId: string, givenDate: string) {
     const data = await this.getFriendsBirthdays(userId);
     const now = new Date(givenDate);
@@ -61,33 +64,37 @@ export class UsersService {
     const soon = [];
 
     data.forEach((person) => {
-        const birthday = new Date(person.birthday); // Convert birthday to a Date object
-        const birthdayMonthDay = new Date(0, birthday.getMonth(), birthday.getDate()); // Ignore year in the birthday
-        // Calculate the difference in days
-        let diffInDays = Math.ceil(
-            (birthdayMonthDay.getTime() - currentMonthDay.getTime()) / (1000 * 60 * 60 * 24)
-        );
+      const birthday = new Date(person.birthday); // Convert birthday to a Date object
+      const birthdayMonthDay = new Date(
+        0,
+        birthday.getMonth(),
+        birthday.getDate(),
+      ); // Ignore year in the birthday
+      // Calculate the difference in days
+      let diffInDays = Math.ceil(
+        (birthdayMonthDay.getTime() - currentMonthDay.getTime()) /
+          (1000 * 60 * 60 * 24),
+      );
 
-        // Adjust for dates in the next calendar year
-        if (diffInDays < 0) {
-            diffInDays += 365; // Account for wrap-around in the calendar
-        }
+      // Adjust for dates in the next calendar year
+      if (diffInDays < 0) {
+        diffInDays += 365; // Account for wrap-around in the calendar
+      }
 
-        // Categorize based on the difference in days
-        if (diffInDays <= 30) {
-            in30.push(person);
-        } else if (diffInDays <= 60) {
-            in60.push(person);
-        } else {
-            soon.push(person);
-        }
+      // Categorize based on the difference in days
+      if (diffInDays <= 30) {
+        in30.push(person);
+      } else if (diffInDays <= 60) {
+        in60.push(person);
+      } else {
+        soon.push(person);
+      }
     });
 
     return {
-        in30,
-        in60,
-        soon
+      in30,
+      in60,
+      soon,
     };
   }
-
 }
