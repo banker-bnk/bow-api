@@ -13,6 +13,7 @@ import { Friend } from './friends/entities/friend';
 import { Gift } from './gifts/entities/gift';
 import { GiftsPayment } from './gifts-payments/entities/gifts-payment';
 import { User } from './users/entities/user';
+import { PaymentsModule } from './payments/payments.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { User } from './users/entities/user';
       GiftsPayment,
       User,
     ]),
+    PaymentsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
