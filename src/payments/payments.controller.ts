@@ -18,15 +18,18 @@ export class PaymentsController {
       const paymentId = body?.data?.id;
 
       if (!paymentId) {
-        return res.status(400).json({ success: false });
+        return res.status(HttpStatus.NOT_FOUND).json({ success: false });
       }
+
+      // TODO: handle the scenario when the payment status is not approved
 
       const paymentInfo = await this.paymentsService.savePaymentData(
         body?.data?.id,
       );
+
       console.log('paymentInfo', paymentInfo);
 
-      return res.status(200).json({ success: true });
+      return res.status(HttpStatus.OK).json({ success: true });
     } catch (error) {
       console.log('error', error);
       return res
