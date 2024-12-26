@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import * as dotenv from 'dotenv';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { formatValidationErrors } from './helpers/validation-errors.helper';
 
 dotenv.config();
 
@@ -12,6 +13,7 @@ async function bootstrap() {
   app.enableCors();
   app.useGlobalPipes(
     new ValidationPipe({
+      exceptionFactory: formatValidationErrors,
       disableErrorMessages: true,
     }),
   );
