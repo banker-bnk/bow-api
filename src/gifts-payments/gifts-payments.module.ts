@@ -9,7 +9,7 @@ import { User } from 'src/users/entities/user';
   imports: [
     TypeOrmModule.forFeature([GiftsPayment]),
     TypeOrmModule.forFeature([User]),
-  ], // Register the entity here
+  ],
   providers: [GiftsPaymentsService],
   controllers: [GiftsPaymentsController],
 })

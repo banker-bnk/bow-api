@@ -17,7 +17,7 @@ export class GiftsPayment {
   gift: Gift;
 
   @ManyToOne(() => User, (user) => user.giftPayments, { onDelete: 'RESTRICT' })
-  user: User;
+  user: Partial<User>;
 
   @Column('decimal')
   amount: number;
