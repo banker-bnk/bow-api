@@ -50,7 +50,7 @@ describe('Payments Helper', () => {
             },
           ],
           metadata: { message: 'message', user_id: 'userId' },
-          notification_url: 'appHostUrl/gifts-payments/payment-data',
+          notification_url: 'appHostUrl/gifts-payments/save',
           operation_type: 'regular_payment',
         },
       });
