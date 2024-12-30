@@ -51,7 +51,7 @@ export class GiftsPaymentsService {
 
       this.logger.log('Saving payment info in database');
       await this.create(paymentInfo);
-
+      console.log('paymentInfo', paymentInfo);
       return undefined;
     }
 
