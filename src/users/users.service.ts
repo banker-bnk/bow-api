@@ -22,7 +22,7 @@ export class UsersService {
   findById(userId: string): Promise<User> {
     return this.usersRepository.findOne({
       relations: ['friends'],
-      where: { userId },
+      where: { id: parseInt(userId) },
     });
   }
 
@@ -69,6 +69,11 @@ export class UsersService {
       const birthday = new Date(person.birthday);
       const monthName = monthNames[birthday.getMonth()];
       
+      // Format birthday to mm-dd
+      const month = String(birthday.getMonth() + 1).padStart(2, '0');
+      const day = String(birthday.getDate()).padStart(2, '0');
+      const birthdayFormatted = `${month}-${day}`;
+      
       // Initialize array for month if it doesn't exist
       if (!result[monthName]) {
         result[monthName] = [];
@@ -84,8 +89,8 @@ export class UsersService {
         age--;
       }
       
-      // Add age to person object
-      result[monthName].push({ ...person, age });
+      // Add age and formatted birthday to person object
+      result[monthName].push({ ...person, age, birthdayFormatted });
     });
 
     return result;
