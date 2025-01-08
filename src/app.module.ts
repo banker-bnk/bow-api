@@ -13,6 +13,8 @@ import { Friend } from './friends/entities/friend';
 import { Gift } from './gifts/entities/gift';
 import { GiftsPayment } from './gifts-payments/entities/gifts-payment';
 import { User } from './users/entities/user';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -39,6 +41,9 @@ import { User } from './users/entities/user';
       GiftsPayment,
       User,
     ]),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'public'), // Path to your static files
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],
