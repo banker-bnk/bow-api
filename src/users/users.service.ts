@@ -57,21 +57,7 @@ export class UsersService {
 
   async friendsBirthdayByMonth(userId: string) {
     const data = await this.getFriendsBirthdays(userId);
-    // Initialize result object with all months
-    const result = {
-      January: [],
-      February: [],
-      March: [],
-      April: [],
-      May: [],
-      June: [],
-      July: [],
-      August: [],
-      September: [],
-      October: [],
-      November: [],
-      December: []
-    };
+    const result = {};
 
     // Map month number to month name
     const monthNames = [
@@ -82,6 +68,11 @@ export class UsersService {
     data.forEach(person => {
       const birthday = new Date(person.birthday);
       const monthName = monthNames[birthday.getMonth()];
+      
+      // Initialize array for month if it doesn't exist
+      if (!result[monthName]) {
+        result[monthName] = [];
+      }
       
       // Calculate age
       const today = new Date();
