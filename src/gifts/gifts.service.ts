@@ -18,4 +18,21 @@ export class GiftsService {
     const gift = this.giftsRepository.create(data);
     return this.giftsRepository.save(gift);
   }
+
+  async delete(data: { id:number; user: number }) {
+    const gift = await this.giftsRepository.findOne({
+      where: { id: data.id },
+      relations: ['user']
+    });
+
+    if (!gift) {
+      throw new Error('Gift not found');
+    }
+
+    if (gift.user.id !== data.user) {
+      throw new Error('This gift does not belong to the specified user');
+    }
+
+    await this.giftsRepository.remove(gift);
+  }
 }
