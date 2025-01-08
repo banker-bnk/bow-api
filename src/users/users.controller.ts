@@ -44,35 +44,7 @@ export class UsersController {
     return this.usersService.create(data);
   }
 
-  @Get('/friends')
-  @ApiBearerAuth('JWT')
-  @UseGuards(AuthGuard('jwt'))
-  @ApiOperation({
-    summary: 'Get friends. UserId is retrieved from the JWT.',
-    description: 'This endpoint retrieves friends birthdays for a given user.',
-  })
-  getFriendsBirthdays(@Req() req) {
-    return this.usersService.getFriendsBirthdays(req.user.sub);
-  }
-
-  @Get('/friends-calendar')
-  @ApiBearerAuth('JWT')
-  @UseGuards(AuthGuard('jwt'))
-  @ApiOperation({
-    summary:
-      'Get friends birthdays grouped by upcoming birthdays. UserId is retrieved from the JWT.',
-    description: 'This endpoint retrieves friends birthdays for a given user.',
-  })
-  @ApiQuery({
-    name: 'date',
-    type: 'string',
-    description: 'The date to get friends birthdays for.',
-  })
-  groupByUpcomingBirthdaysSecured(@Req() req, @Query('date') date: string) {
-    return this.usersService.groupByUpcomingBirthdays(req.user.sub, date);
-  }
-
-  @Get('/friends-calendar/:userId')
+  @Get('/friends-home/:userId')
   @ApiOperation({
     summary:
       'Get friends birthdays grouped by upcoming birthdays. UserId is required to be passed as a param.',
@@ -88,11 +60,39 @@ export class UsersController {
     type: 'string',
     description: 'The date to get friends birthdays for.',
   })
-  groupByUpcomingBirthdays(
+  friendsHome(
     @Param('userId') userId: string,
     @Query('date') date: string,
   ) {
-    return this.usersService.groupByUpcomingBirthdays(userId, date);
+    return this.usersService.friendsBirthdayUpcoming(userId, date);
+  }
+
+  @Get('/friends-calendar')
+  @ApiBearerAuth('JWT')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiOperation({
+    summary:
+      'Get friends birthdays grouped by upcoming birthdays. UserId is retrieved from the JWT.',
+    description: 'This endpoint retrieves friends birthdays for a given user.',
+  })
+  fiendsCalendarSecured(@Req() req) {
+    return this.usersService.friendsBirthdayByMonth(req.user.sub);
+  }
+
+
+  @Get('/friends-calendar/:userId')
+  @ApiOperation({
+    summary:
+      'Get friends birthdays grouped by upcoming birthdays. UserId is required to be passed as a param.',
+    description: 'This endpoint retrieves friends birthdays for a given user.',
+  })
+  @ApiParam({
+    name: 'userId',
+    type: 'string',
+    description: 'The user id of the user to get friends birthdays for.',
+  })
+  fiendsCalendar(@Param('userId') userId: string) {
+    return this.usersService.friendsBirthdayByMonth(userId);
   }
 
   @Get(':userId')

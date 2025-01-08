@@ -37,6 +37,7 @@ export class UsersService {
           u."userName",
           u."firstName",
           u."lastName",
+          u.image,
           u.birthday
       FROM 
           public.friends f
@@ -54,7 +55,52 @@ export class UsersService {
     return data;
   }
 
-  async groupByUpcomingBirthdays(userId: string, givenDate: string) {
+  async friendsBirthdayByMonth(userId: string) {
+    const data = await this.getFriendsBirthdays(userId);
+    // Initialize result object with all months
+    const result = {
+      January: [],
+      February: [],
+      March: [],
+      April: [],
+      May: [],
+      June: [],
+      July: [],
+      August: [],
+      September: [],
+      October: [],
+      November: [],
+      December: []
+    };
+
+    // Map month number to month name
+    const monthNames = [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+
+    data.forEach(person => {
+      const birthday = new Date(person.birthday);
+      const monthName = monthNames[birthday.getMonth()];
+      
+      // Calculate age
+      const today = new Date();
+      let age = today.getFullYear() - birthday.getFullYear();
+      const monthDiff = today.getMonth() - birthday.getMonth();
+      
+      // Adjust age if birthday hasn't occurred this year yet
+      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthday.getDate())) {
+        age--;
+      }
+      
+      // Add age to person object
+      result[monthName].push({ ...person, age });
+    });
+
+    return result;
+  }
+
+  async friendsBirthdayUpcoming(userId: string, givenDate: string) {
     const data = await this.getFriendsBirthdays(userId);
     const now = new Date(givenDate);
     const currentMonthDay = new Date(0, now.getMonth(), now.getDate()); // Ignore year in the given date
