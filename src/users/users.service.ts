@@ -21,7 +21,7 @@ export class UsersService {
 
   findById(userId: string): Promise<User> {
     return this.usersRepository.findOne({
-      relations: ['friends'],
+      relations: ['friends', 'gifts'],
       where: { id: parseInt(userId) },
     });
   }
