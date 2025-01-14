@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user';
+import { age, mmdd, mmddStr } from 'src/helpers/date-format.helper';
 
 @Injectable()
 export class UsersService {
@@ -19,11 +20,17 @@ export class UsersService {
     return this.usersRepository.save(user);
   }
 
-  findById(userId: string): Promise<User> {
-    return this.usersRepository.findOne({
+  async findById(userId: string): Promise<User> {
+    const user = await this.usersRepository.findOne({
       relations: ['friends', 'gifts'],
       where: { id: parseInt(userId) },
     });
+    
+    if (user) {
+      user['age'] = age(new Date(user.birthday));
+    }
+
+    return user;
   }
 
   async getFriendsBirthdays(userId: string): Promise<any> {
@@ -66,31 +73,20 @@ export class UsersService {
     ];
 
     data.forEach(person => {
+      
       const birthday = new Date(person.birthday);
       const monthName = monthNames[birthday.getMonth()];
       
-      // Format birthday to mm-dd
-      const month = String(birthday.getMonth() + 1).padStart(2, '0');
-      const day = String(birthday.getDate()).padStart(2, '0');
-      const birthdayFormatted = `${month}-${day}`;
+      const birthdayFormatted = mmdd(birthday);
       
       // Initialize array for month if it doesn't exist
       if (!result[monthName]) {
         result[monthName] = [];
       }
       
-      // Calculate age
-      const today = new Date();
-      let age = today.getFullYear() - birthday.getFullYear();
-      const monthDiff = today.getMonth() - birthday.getMonth();
+      const personAge = age(birthday);
       
-      // Adjust age if birthday hasn't occurred this year yet
-      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthday.getDate())) {
-        age--;
-      }
-      
-      // Add age and formatted birthday to person object
-      result[monthName].push({ ...person, age, birthdayFormatted });
+      result[monthName].push({ ...person, age: personAge, birthdayFormatted });
     });
 
     return result;
