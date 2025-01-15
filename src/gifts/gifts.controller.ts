@@ -2,7 +2,7 @@ import { Controller, Get, Post, Delete, Param, Req, Body, UseGuards } from '@nes
 import { GiftsService } from './gifts.service';
 import { Gift } from './entities/gift';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiBearerAuth, ApiBody } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { User } from '../users/entities/user';
 import { UsersService } from '../users/users.service';
 
@@ -14,20 +14,45 @@ export class GiftsController {
   
 
   @Get()
-  findAll() {
+  @ApiOperation({
+    description: 'Get all gifts.',
+  })
+  findAll(): Promise<Gift[]> {
     return this.giftsService.findAll();
   }
 
-  @Post()
-  @UseGuards(AuthGuard('jwt'))
+  @Get(':id')
   @ApiBearerAuth('JWT')
-  async create(@Req() req, @Body() data: Partial<Gift>) {
-    const userReq = req.user;
-    const authUser: User = await this.usersService.findById(userReq.sub);
-    data.user = authUser;
-    return this.giftsService.create(data);
+  @UseGuards(AuthGuard('jwt'))
+  @ApiOperation({
+    description: 'Find gift by id.',
+  })
+  @ApiResponse({
+    status: 200,
+    type: Gift,
+  })
+  findById(@Param('id') id: string) {
+    return this.giftsService.findById(Number(id));
   }
 
+  @Post()
+  @ApiBearerAuth('JWT')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiOperation({
+    description:
+      'Create or update gift. If body contains an existing id, the gift should be updated. If body does not contain the id, the gift should be created',
+  })
+  @ApiResponse({
+    status: 200,
+    type: Gift,
+  })
+  async create(@Req() req, @Body() data: Partial<Gift>) {
+    if (data.id) {
+      return this.giftsService.update(data.id, data);
+    }
+    
+    return this.giftsService.create(data);
+  }
 
   @Delete()
   @UseGuards(AuthGuard('jwt'))
