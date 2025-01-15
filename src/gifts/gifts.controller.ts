@@ -54,7 +54,6 @@ export class GiftsController {
     return this.giftsService.create(data);
   }
 
-
   @Delete()
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('JWT')

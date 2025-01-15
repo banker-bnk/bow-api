@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Gift } from './entities/gift';
@@ -56,6 +56,10 @@ export class GiftsService {
       ])
       .where('gift.id = :id', { id })
       .getOne();
+
+    if (!gift) {
+      throw new NotFoundException(`Gift with ID ${id} not found`);
+    }
 
     const totalAmount = gift.giftsPayments
       .reduce((sum, payment) => {
