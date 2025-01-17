@@ -14,6 +14,6 @@ SELECT cron.schedule(
     'set_boolean_daily',
     '0 0 * * *', -- Run at midnight every day
     $$UPDATE gifts
-      SET active = TRUE
+      SET active = FALSE
       WHERE endDate = CURRENT_DATE;$$
 );
