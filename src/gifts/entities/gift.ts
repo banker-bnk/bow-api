@@ -36,6 +36,14 @@ export class Gift {
   @ApiProperty({ example: 'ARS' })
   currency: string;
 
+  @Column('decimal')
+  @Column({ default: 0 })
+  progress: number;
+
+  @Column()
+  @Column({ default: false })
+  active: boolean;
+
   @Column({ nullable: true })
   @ApiProperty({ example: '2025-01-07T21:42:46.121Z' })
   endDate: Date;
