@@ -71,7 +71,7 @@ export class GiftsController {
   })
   async delete(@Req() req, @Body() data) {
       const userReq = req.user;
-      const authUser: User = await this.usersService.findById(userReq.sub);
+      const authUser: User = await this.usersService.findBySub(userReq.sub);
       data.user = authUser.id;
       await this.giftsService.delete(data);
   }
