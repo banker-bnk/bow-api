@@ -47,6 +47,10 @@ export class GiftsController {
     type: Gift,
   })
   async create(@Req() req, @Body() data: Partial<Gift>) {
+    const userReq = req.user;
+    const authUser: User = await this.usersService.findBySub(userReq.sub);
+    data.user = authUser;
+
     if (data.id) {
       return this.giftsService.update(data.id, data);
     }

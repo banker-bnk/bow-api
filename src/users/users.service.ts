@@ -33,6 +33,15 @@ export class UsersService {
     return user;
   }
 
+  async findBySub(userId: string): Promise<User> {
+    const user = await this.usersRepository.findOne({
+      relations: ['friends', 'gifts'],
+      where: { userId },
+    });
+
+    return user;
+  }
+
   async getFriendsBirthdays(userId: string): Promise<any> {
     const data = this.usersRepository.query(
       `
