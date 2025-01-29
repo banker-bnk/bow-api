@@ -44,6 +44,10 @@ export class Gift {
   @Column({ default: false })
   active: boolean;
 
+  @Column()
+  @Column({ default: false })
+  successful: boolean;
+
   @Column({ nullable: true })
   @ApiProperty({ example: '2025-01-07T21:42:46.121Z' })
   endDate: Date;

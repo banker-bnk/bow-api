@@ -21,7 +21,6 @@ export class UsersService {
   }
 
   async findById(userId: string): Promise<User> {
-    console.log("find by id log");
     const user = await this.usersRepository.findOne({
       relations: ['friends', 'gifts'],
       where: { id: parseInt(userId) },
