@@ -97,49 +97,31 @@ export class UsersController {
   }
 
   @Get('search')
-  @ApiOperation({
-    summary: 'Search users by email or name',
-    description: 'Search users by either email or name, but not both.',
-  })
-  @ApiQuery({
-    name: 'email',
-    type: 'string',
-    required: false,
-    description: 'The email address to search for.',
-  })
-  @ApiQuery({
-    name: 'name',
-    type: 'string',
-    required: false,
-    description: 'The name to search for.',
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'Users found by email or name.',
-  })
-  @ApiResponse({
-    status: 400,
-    description: 'Bad request if neither or both parameters are provided.',
-  })
-  async searchUsers(
-    @Query('email') email?: string,
-    @Query('name') name?: string,
-  ) {
-    // Validate that only one of email or name is provided
-    if (email && name) {
-      throw new Error('Provide either email or name, but not both.');
-    }
-    if (!email && !name) {
-      throw new Error('Provide either email or name.');
-    }
-
-    // Call the service method
-    if (email) {
-      return this.usersService.searchUsers({ email });
-    } else {
-      return this.usersService.searchUsers({ name });
-    }
+@ApiOperation({
+  summary: 'Search users by search term (userName, firstName, lastName, or email)',
+  description: 'Search users by search term, matching userName, firstName, lastName, or email.',
+})
+@ApiQuery({
+  name: 'searchTerm',
+  type: 'string',
+  required: true,
+  description: 'The search term to search for across userName, firstName, lastName, or email.',
+})
+@ApiResponse({
+  status: 200,
+  description: 'Users found by search term.',
+})
+@ApiResponse({
+  status: 400,
+  description: 'Bad request if no search term is provided.',
+})
+async searchUsers(@Query('searchTerm') searchTerm: string) {
+  if (!searchTerm) {
+    throw new Error('Search term is required.');
   }
+
+  return this.usersService.searchUsers(searchTerm);
+}
 
   @Get('/me')
   @ApiBearerAuth('JWT')

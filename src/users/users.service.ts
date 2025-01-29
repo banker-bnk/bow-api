@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, ILike } from 'typeorm';
 import { User } from './entities/user';
 import { age, mmdd, mmddStr } from 'src/helpers/date-format.helper';
 
@@ -145,21 +145,16 @@ export class UsersService {
     };
   }
 
-  async searchUsers(criteria: { email?: string; name?: string }): Promise<User[]> {
-    const { email, name } = criteria;
-
-    if (email) {
-      return this.usersRepository.find({ where: { email } });
-    } else if (name) {
-      return this.usersRepository.find({
-        where: [
-          { userName: name },
-          { firstName: name },
-          { lastName: name },
-        ],
-      });
-    } else {
-      throw new Error('No search criteria provided.');
-    }
+  async searchUsers(searchTerm: string): Promise<User[]> {
+    const users = await this.usersRepository.find({
+      where: [
+        { userName: ILike(`%${searchTerm}%`) },
+        { firstName: ILike(`%${searchTerm}%`) },
+        { lastName: ILike(`%${searchTerm}%`) },
+        { email: ILike(`%${searchTerm}%`) },
+      ],
+    });
+    
+    return users;
   }
 }
