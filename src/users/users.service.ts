@@ -144,4 +144,22 @@ export class UsersService {
       soon,
     };
   }
+
+  async searchUsers(criteria: { email?: string; name?: string }): Promise<User[]> {
+    const { email, name } = criteria;
+
+    if (email) {
+      return this.usersRepository.find({ where: { email } });
+    } else if (name) {
+      return this.usersRepository.find({
+        where: [
+          { userName: name },
+          { firstName: name },
+          { lastName: name },
+        ],
+      });
+    } else {
+      throw new Error('No search criteria provided.');
+    }
+  }
 }
