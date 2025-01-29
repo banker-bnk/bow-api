@@ -21,6 +21,7 @@ export class UsersService {
   }
 
   async findById(userId: string): Promise<User> {
+    console.log("find by id log");
     const user = await this.usersRepository.findOne({
       relations: ['friends', 'gifts'],
       where: { id: parseInt(userId) },
@@ -143,5 +144,23 @@ export class UsersService {
       in60,
       soon,
     };
+  }
+
+  async searchUsers(criteria: { email?: string; name?: string }): Promise<User[]> {
+    const { email, name } = criteria;
+
+    if (email) {
+      return this.usersRepository.find({ where: { email } });
+    } else if (name) {
+      return this.usersRepository.find({
+        where: [
+          { userName: name },
+          { firstName: name },
+          { lastName: name },
+        ],
+      });
+    } else {
+      throw new Error('No search criteria provided.');
+    }
   }
 }
