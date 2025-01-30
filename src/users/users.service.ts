@@ -11,8 +11,19 @@ export class UsersService {
     private usersRepository: Repository<User>,
   ) {}
 
-  findAll() {
-    return this.usersRepository.find();
+  async findAll({ page, limit }: { page: number; limit: number }) {
+    const [users, total] = await this.usersRepository.findAndCount({
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+
+    return {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+      data: users,
+    };
   }
 
   create(data: Partial<User>) {
@@ -145,16 +156,24 @@ export class UsersService {
     };
   }
 
-  async searchUsers(searchTerm: string): Promise<User[]> {
-    const users = await this.usersRepository.find({
+  async searchUsers(searchTerm: string, { page, limit }: { page: number; limit: number }) {
+    const [users, total] = await this.usersRepository.findAndCount({
       where: [
         { userName: ILike(`%${searchTerm}%`) },
         { firstName: ILike(`%${searchTerm}%`) },
         { lastName: ILike(`%${searchTerm}%`) },
         { email: ILike(`%${searchTerm}%`) },
       ],
+      skip: (page - 1) * limit,
+      take: limit,
     });
-    
-    return users;
+  
+    return {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+      data: users,
+    };
   }
 }

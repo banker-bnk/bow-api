@@ -25,10 +25,36 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
+  @Get()
   @UseGuards(AuthGuard('jwt'))
-  findAll() {
-    return this.usersService.findAll();
+  @ApiOperation({
+    summary: 'Get all users (paginated)',
+    description: 'This endpoint returns a paginated list of users.',
+  })
+  @ApiQuery({
+    name: 'page',
+    type: 'number',
+    required: false,
+    description: 'Page number (default is 1)',
+  })
+  @ApiQuery({
+    name: 'limit',
+    type: 'number',
+    required: false,
+    description: 'Number of users per page (default is 10)',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Users list (paginated).',
+    type: [User],
+  })
+  async findAll(
+    @Query('page') page = 1,
+    @Query('limit') limit = 10,
+  ) {
+    return this.usersService.findAll({ page, limit });
   }
+
   @Post()
   @ApiBody({
     description: 'Dont include id, or createdAt',
@@ -59,7 +85,6 @@ export class UsersController {
     type: 'string',
     description: 'The date to get friends birthdays for.',
   })
-
   friendsHome(
     @Param('userId') userId: string,
     @Query('date') date: string,
@@ -75,11 +100,9 @@ export class UsersController {
       'Get friends birthdays grouped by upcoming birthdays. UserId is retrieved from the JWT.',
     description: 'This endpoint retrieves friends birthdays for a given user.',
   })
-
   fiendsCalendarSecured(@Req() req) {
     return this.usersService.friendsBirthdayByMonth(req.user.sub);
   }
-
 
   @Get('/friends-calendar/:userId')
   @ApiOperation({
@@ -107,20 +130,35 @@ export class UsersController {
   required: true,
   description: 'The search term to search for across userName, firstName, lastName, or email.',
 })
+@ApiQuery({
+  name: 'page',
+  type: 'number',
+  required: false,
+  description: 'Page number (default is 1)',
+})
+@ApiQuery({
+  name: 'limit',
+  type: 'number',
+  required: false,
+  description: 'Number of users per page (default is 10)',
+})
 @ApiResponse({
   status: 200,
-  description: 'Users found by search term.',
+  description: 'Users found by search term (paginated).',
 })
 @ApiResponse({
   status: 400,
   description: 'Bad request if no search term is provided.',
 })
-async searchUsers(@Query('searchTerm') searchTerm: string) {
+async searchUsers(
+  @Query('searchTerm') searchTerm: string,
+  @Query('page') page = 1,
+  @Query('limit') limit = 10,
+) {
   if (!searchTerm) {
     throw new Error('Search term is required.');
   }
-
-  return this.usersService.searchUsers(searchTerm);
+  return this.usersService.searchUsers(searchTerm, { page, limit });
 }
 
   @Get('/me')
