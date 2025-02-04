@@ -13,8 +13,14 @@ export class FriendsService {
     private usersRepository: Repository<User>,
   ) {}
 
-  findAll() {
-    return this.friendsRepository.find({ relations: ['friend', 'user'] });
+  findByUserId(userId: number) {
+    return this.friendsRepository.find({
+      where: [
+        { user: { id: userId } },  // Where the current user is the 'user'
+        { friend: { id: userId } }, // Where the current user is the 'friend'
+      ] as FindOptionsWhere<Friend>[], // Cast as an array of FindOptionsWhere<Friend>
+      relations: ['friend', 'user'], // Include both 'friend' and 'user' relations
+    });
   }
 
   create(data: Partial<Friend>) {
