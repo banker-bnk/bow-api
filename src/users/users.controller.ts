@@ -25,7 +25,6 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
-  @Get()
   @UseGuards(AuthGuard('jwt'))
   @ApiOperation({
     summary: 'Get all users (paginated)',
@@ -120,46 +119,46 @@ export class UsersController {
   }
 
   @Get('search')
-@ApiOperation({
-  summary: 'Search users by search term (userName, firstName, lastName, or email)',
-  description: 'Search users by search term, matching userName, firstName, lastName, or email.',
-})
-@ApiQuery({
-  name: 'searchTerm',
-  type: 'string',
-  required: true,
-  description: 'The search term to search for across userName, firstName, lastName, or email.',
-})
-@ApiQuery({
-  name: 'page',
-  type: 'number',
-  required: false,
-  description: 'Page number (default is 1)',
-})
-@ApiQuery({
-  name: 'limit',
-  type: 'number',
-  required: false,
-  description: 'Number of users per page (default is 10)',
-})
-@ApiResponse({
-  status: 200,
-  description: 'Users found by search term (paginated).',
-})
-@ApiResponse({
-  status: 400,
-  description: 'Bad request if no search term is provided.',
-})
-async searchUsers(
-  @Query('searchTerm') searchTerm: string,
-  @Query('page') page = 1,
-  @Query('limit') limit = 10,
-) {
-  if (!searchTerm) {
-    throw new Error('Search term is required.');
+  @ApiOperation({
+    summary: 'Search users by search term (userName, firstName, lastName, or email)',
+    description: 'Search users by search term, matching userName, firstName, lastName, or email.',
+  })
+  @ApiQuery({
+    name: 'searchTerm',
+    type: 'string',
+    required: true,
+    description: 'The search term to search for across userName, firstName, lastName, or email.',
+  })
+  @ApiQuery({
+    name: 'page',
+    type: 'number',
+    required: false,
+    description: 'Page number (default is 1)',
+  })
+  @ApiQuery({
+    name: 'limit',
+    type: 'number',
+    required: false,
+    description: 'Number of users per page (default is 10)',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Users found by search term (paginated).',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request if no search term is provided.',
+  })
+  async searchUsers(
+    @Query('searchTerm') searchTerm: string,
+    @Query('page') page = 1,
+    @Query('limit') limit = 10,
+  ) {
+    if (!searchTerm) {
+      throw new Error('Search term is required.');
+    }
+    return this.usersService.searchUsers(searchTerm, { page, limit });
   }
-  return this.usersService.searchUsers(searchTerm, { page, limit });
-}
 
   @Get('/me')
   @ApiBearerAuth('JWT')
