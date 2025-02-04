@@ -11,14 +11,24 @@ import { FriendsService } from './friends.service';
 import { Friend } from './entities/friend';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiBody } from '@nestjs/swagger';
+import { User } from '../users/entities/user';
+import { UsersService } from '../users/users.service';
 
 @Controller('friends')
 export class FriendsController {
-  constructor(private readonly friendsService: FriendsService) {}
+  constructor(
+    private readonly friendsService: FriendsService,
+    private readonly usersService: UsersService
+  ) {}
 
   @Get()
-  findAll() {
-    return this.friendsService.findAll();
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('JWT')
+  async findAll(@Req() req) {
+    const userReq = req.user;
+    const authUser: User = await this.usersService.findBySub(userReq.sub);
+    const userId = authUser.id;
+    return this.friendsService.findByUserId(userId);  // Pass it to the service to fetch the friends
   }
 
   @Post()
