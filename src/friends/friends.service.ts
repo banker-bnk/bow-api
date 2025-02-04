@@ -16,10 +16,10 @@ export class FriendsService {
   findByUserId(userId: number) {
     return this.friendsRepository.find({
       where: [
-        { user: { id: userId } },  // Where the current user is the 'user'
-        { friend: { id: userId } }, // Where the current user is the 'friend'
-      ] as FindOptionsWhere<Friend>[], // Cast as an array of FindOptionsWhere<Friend>
-      relations: ['friend', 'user'], // Include both 'friend' and 'user' relations
+        { user: { id: userId } },
+        { friend: { id: userId } },
+      ] as FindOptionsWhere<Friend>[],
+      relations: ['friend', 'user'],
     });
   }
 
