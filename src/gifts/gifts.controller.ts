@@ -47,8 +47,7 @@ export class GiftsController {
     type: Gift,
   })
   async create(@Req() req, @Body() data: Partial<Gift>) {
-    const userReq = req.user;
-    const authUser: User = await this.usersService.findBySub(userReq.sub);
+    const authUser: User = await this.usersService.findBySub(req.user.sub);
     data.user = authUser;
 
     if (data.id) {
@@ -70,8 +69,7 @@ export class GiftsController {
     },
   })
   async delete(@Req() req, @Body() data) {
-      const userReq = req.user;
-      const authUser: User = await this.usersService.findBySub(userReq.sub);
+      const authUser: User = await this.usersService.findBySub(req.user.sub);
       data.user = authUser.id;
       await this.giftsService.delete(data);
   }

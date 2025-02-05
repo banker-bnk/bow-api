@@ -21,7 +21,6 @@ export class UsersService {
       total,
       page,
       limit,
-      totalPages: Math.ceil(total / limit),
       data: users,
     };
   }
@@ -172,7 +171,6 @@ export class UsersService {
       total,
       page,
       limit,
-      totalPages: Math.ceil(total / limit),
       data: users,
     };
   }

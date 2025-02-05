@@ -162,7 +162,7 @@ export class UsersController {
 
   @Get('/me')
   @ApiBearerAuth('JWT')
-  @UseGuards(AuthGuard('jwt')) // Ensure the user is authenticated
+  @UseGuards(AuthGuard('jwt'))
   @ApiOperation({
     summary: 'Get the currently authenticated user',
     description: 'This endpoint returns the information of the logged-in user.',
@@ -177,8 +177,7 @@ export class UsersController {
     description: 'Unauthorized if the user is not authenticated.',
   })
   async me(@Req() req) {
-    const userId = req.user.sub;
-    return this.usersService.findBySub(userId);
+    return this.usersService.findBySub(req.user.sub);
   }
 
   @Get(':userId')

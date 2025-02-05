@@ -6,12 +6,18 @@ import {
   Delete,
   Req,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { FriendsService } from './friends.service';
 import { Friend } from './entities/friend';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiBearerAuth, ApiBody } from '@nestjs/swagger';
-import { User } from '../users/entities/user';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiQuery,
+  ApiResponse,
+} from '@nestjs/swagger';
 import { UsersService } from '../users/users.service';
 
 @Controller('friends')
@@ -23,12 +29,34 @@ export class FriendsController {
 
   @Get()
   @UseGuards(AuthGuard('jwt'))
-  @ApiBearerAuth('JWT')
-  async findAll(@Req() req) {
-    const userReq = req.user;
-    const authUser: User = await this.usersService.findBySub(userReq.sub);
-    const userId = authUser.id;
-    return this.friendsService.findByUserId(userId);  // Pass it to the service to fetch the friends
+  @ApiOperation({
+    summary: 'Get all friends (paginated)',
+    description: 'This endpoint returns a paginated list of the logged-in user\'s friends.',
+  })
+  @ApiQuery({
+    name: 'page',
+    type: 'number',
+    required: false,
+    description: 'Page number (default is 1)',
+  })
+  @ApiQuery({
+    name: 'limit',
+    type: 'number',
+    required: false,
+    description: 'Number of friends per page (default is 10)',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Paginated friends list.',
+    type: [Friend],
+  })
+  async findAll(
+    @Query('page') page = 1,
+    @Query('limit') limit = 10,
+    @Req() req,
+  ) {
+    const { id } = await this.usersService.findBySub(req.user.sub);
+    return this.friendsService.findByUserId(id, { page, limit });
   }
 
   @Post()

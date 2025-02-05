@@ -13,15 +13,25 @@ export class FriendsService {
     private usersRepository: Repository<User>,
   ) {}
 
-  findByUserId(userId: number) {
-    return this.friendsRepository.find({
+  async findByUserId(userId: number, { page, limit }: { page: number; limit: number }) {
+    const [friends, total] = await this.friendsRepository.findAndCount({
       where: [
         { user: { id: userId } },
         { friend: { id: userId } },
-      ] as FindOptionsWhere<Friend>[],
+      ],
       relations: ['friend', 'user'],
+      skip: (page - 1) * limit,
+      take: limit,
     });
+
+    return {
+      total,
+      page,
+      limit,
+      data: friends,
+    };
   }
+
 
   create(data: Partial<Friend>) {
     const friend = this.friendsRepository.create(data);
