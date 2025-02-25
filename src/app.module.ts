@@ -11,7 +11,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { FriendInvitation } from './friend-invitations/entities/friend-invitation';
 import { Friend } from './friends/entities/friend';
 import { Gift } from './gifts/entities/gift';
+import { NotificationsModule } from './notifications/notifications.module';
+import { Notification } from './notifications/entities/notification';
 import { GiftsPayment } from './gifts-payments/entities/gifts-payment';
+import { NotificationsGatewayModule } from './gateway/notifications.gateway.module';
 import { User } from './users/entities/user';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
@@ -24,6 +27,8 @@ import { join } from 'path';
     GiftsModule,
     GiftsPaymentsModule,
     UsersModule,
+    NotificationsModule,
+    NotificationsGatewayModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DB_HOST,
@@ -31,7 +36,7 @@ import { join } from 'path';
       username: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
-      entities: [FriendInvitation, Friend, Gift, GiftsPayment, User],
+      entities: [FriendInvitation, Friend, Gift, GiftsPayment, User, Notification],
       synchronize: true,
     }),
     TypeOrmModule.forFeature([
@@ -40,6 +45,7 @@ import { join } from 'path';
       Gift,
       GiftsPayment,
       User,
+      Notification
     ]),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public'), // Path to your static files
