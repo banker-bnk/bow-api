@@ -5,6 +5,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { User } from '../users/entities/user';
 import { UsersService } from '../users/users.service';
+import getMeliId from '../helpers/meli-getId';
 
 @Controller('gifts')
 export class GiftsController {
@@ -53,7 +54,9 @@ export class GiftsController {
     if (data.id) {
       return this.giftsService.update(data.id, data);
     }
-    
+
+    data.link = getMeliId('https://articulo.mercadolibre.com.ar/MLA-1434479527-alfombra-de-lamer-para-perro-y-gato-silicona-c-sopapa-abajo-_JM');
+
     return this.giftsService.create(data);
   }
 
