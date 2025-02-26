@@ -26,7 +26,6 @@ export class GiftsService {
   }
 
   async previewProductDetails(mercadolibreUrl: string): Promise<{ price: number; imageUrl: string }> {
-    console.log(typeof mercadolibreUrl);
     const { price, imageUrl } = await this.fetchProductDetails(mercadolibreUrl);
     return { price, imageUrl };
   }

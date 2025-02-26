@@ -40,7 +40,6 @@ export class GiftsController {
     },
   })
   async previewProductDetails(@Query('mercadolibreUrl') mercadolibreUrl: string) {
-    console.log(typeof mercadolibreUrl);
     return this.giftsService.previewProductDetails(mercadolibreUrl);
   }
 
