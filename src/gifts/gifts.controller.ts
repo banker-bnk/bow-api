@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Delete, Param, Req, Body, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Param, Req, Body, UseGuards, Query } from '@nestjs/common';
 import { GiftsService } from './gifts.service';
 import { Gift } from './entities/gift';
 import { AuthGuard } from '@nestjs/passport';
@@ -10,15 +10,38 @@ import { UsersService } from '../users/users.service';
 export class GiftsController {
   constructor(
     private readonly giftsService: GiftsService,
-    private readonly usersService: UsersService) {}
-  
+    private readonly usersService: UsersService,
+  ) {}
 
   @Get()
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('JWT')
   @ApiOperation({
-    description: 'Get all gifts.',
+    description: 'Get all gifts for the authenticated user.',
   })
-  findAll(): Promise<Gift[]> {
-    return this.giftsService.findAll();
+  async findAll(@Req() req): Promise<Gift> {
+    const { id } = await this.usersService.findBySub(req.user.sub);
+    return this.giftsService.findByUserId(id);
+  }
+
+  @Get('preview')
+  @ApiOperation({
+    description: 'Preview the product details (price and image) from a Mercado Libre URL without creating a gift.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns the product price and image URL.',
+    schema: {
+      type: 'object',
+      properties: {
+        price: { type: 'number' },
+        imageUrl: { type: 'string' },
+      },
+    },
+  })
+  async previewProductDetails(@Query('mercadolibreUrl') mercadolibreUrl: string) {
+    console.log(typeof mercadolibreUrl);
+    return this.giftsService.previewProductDetails(mercadolibreUrl);
   }
 
   @Get(':id')
@@ -32,6 +55,7 @@ export class GiftsController {
     type: Gift,
   })
   findById(@Param('id') id: string) {
+    console.log("FIND");
     return this.giftsService.findById(Number(id));
   }
 
@@ -53,7 +77,7 @@ export class GiftsController {
     if (data.id) {
       return this.giftsService.update(data.id, data);
     }
-    
+
     return this.giftsService.create(data);
   }
 
@@ -64,13 +88,13 @@ export class GiftsController {
     schema: {
       type: 'object',
       properties: {
-        id: { type: 'integer' }
+        id: { type: 'integer' },
       },
     },
   })
   async delete(@Req() req, @Body() data) {
-      const authUser: User = await this.usersService.findBySub(req.user.sub);
-      data.user = authUser.id;
-      await this.giftsService.delete(data);
+    const authUser: User = await this.usersService.findBySub(req.user.sub);
+    data.user = authUser.id;
+    await this.giftsService.delete(data);
   }
 }
