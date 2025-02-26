@@ -5,9 +5,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Gift } from './entities/gift';
 import { UsersService } from '../users/users.service';
 import { User } from '../users/entities/user';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Gift]), TypeOrmModule.forFeature([User]),], // Register the entity here
+  imports: [TypeOrmModule.forFeature([Gift]), TypeOrmModule.forFeature([User]), HttpModule,], // Register the entity here
   providers: [GiftsService, UsersService],
   controllers: [GiftsController],
 })
