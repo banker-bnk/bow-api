@@ -34,6 +34,7 @@ export class GiftsController {
     schema: {
       type: 'object',
       properties: {
+        title: { type: 'string' },
         price: { type: 'number' },
         imageUrl: { type: 'string' },
       },
@@ -54,7 +55,6 @@ export class GiftsController {
     type: Gift,
   })
   findById(@Param('id') id: string) {
-    console.log("FIND");
     return this.giftsService.findById(Number(id));
   }
 

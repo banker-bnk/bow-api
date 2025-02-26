@@ -21,19 +21,20 @@ export class GiftsService {
         active: true 
       },
       relations: ['user'],
-      order: { id: 'DESC' } // Order by ID descending to get the highest ID
+      order: { id: 'DESC' }
     });
   }
 
-  async previewProductDetails(mercadolibreUrl: string): Promise<{ price: number; imageUrl: string }> {
-    const { price, imageUrl } = await this.fetchProductDetails(mercadolibreUrl);
-    return { price, imageUrl };
+  async previewProductDetails(mercadolibreUrl: string): Promise<{ title: string, price: number; imageUrl: string }> {
+    const { title, price, imageUrl } = await this.fetchProductDetails(mercadolibreUrl);
+    return { title, price, imageUrl };
   }
 
   async create(data: Partial<Gift>): Promise<Gift> {
-    const { price, imageUrl } = await this.fetchProductDetails(data.link);
+    const { title, price, imageUrl } = await this.fetchProductDetails(data.link);
+    data.title = title;
     data.price = price;
-    data.image = imageUrl; // Set image URL
+    data.image = imageUrl;
     const gift = this.giftsRepository.create(data);
     return this.giftsRepository.save(gift);
   }
@@ -92,7 +93,7 @@ export class GiftsService {
     };
   }
 
-  private async fetchProductDetails(link: string): Promise<{ price: number, imageUrl: string }> {
+  private async fetchProductDetails(link: string): Promise<{ title: string, price: number, imageUrl: string }> {
     const productId = getMeliId(link);
 
     try {
@@ -101,9 +102,10 @@ export class GiftsService {
       );
 
       if (response.status === 200) {
+        const title = response.data.title;
         const price = response.data.price;
         const imageUrl = response.data.pictures?.[0]?.url || ''; // Default to empty string if no image
-        return { price, imageUrl };
+        return { title, price, imageUrl };
       }
 
       throw new HttpException(
