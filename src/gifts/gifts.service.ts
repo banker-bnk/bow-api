@@ -1,17 +1,15 @@
 import { Injectable, NotFoundException, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { MeliService } from "../meli/meli.service"
 import { Gift } from './entities/gift';
-import { HttpService } from '@nestjs/axios';
-import { firstValueFrom } from 'rxjs';
-import getMeliId from '../helpers/meli-getId';
 
 @Injectable()
 export class GiftsService {
   constructor(
     @InjectRepository(Gift)
     private giftsRepository: Repository<Gift>,
-    private readonly httpService: HttpService,
+    private readonly meliService: MeliService,
   ) {}
 
   async findByUserId(userId: number): Promise<Gift> {
@@ -25,13 +23,8 @@ export class GiftsService {
     });
   }
 
-  async previewProductDetails(mercadolibreUrl: string): Promise<{ title: string, price: number; imageUrl: string }> {
-    const { title, price, imageUrl } = await this.fetchProductDetails(mercadolibreUrl);
-    return { title, price, imageUrl };
-  }
-
   async create(data: Partial<Gift>): Promise<Gift> {
-    const { title, price, imageUrl } = await this.fetchProductDetails(data.link);
+    const { title, price, imageUrl } = await this.meliService.getProductDetailsFromUrl(data.link);
     data.title = title;
     data.price = price;
     data.image = imageUrl;
@@ -91,32 +84,5 @@ export class GiftsService {
       ...gift,
       totalAmount,
     };
-  }
-
-  private async fetchProductDetails(link: string): Promise<{ title: string, price: number, imageUrl: string }> {
-    const productId = getMeliId(link);
-
-    try {
-      const response = await firstValueFrom(
-        this.httpService.get(`https://api.mercadolibre.com/items/${productId}`)
-      );
-
-      if (response.status === 200) {
-        const title = response.data.title;
-        const price = response.data.price;
-        const imageUrl = response.data.pictures?.[0]?.url || ''; // Default to empty string if no image
-        return { title, price, imageUrl };
-      }
-
-      throw new HttpException(
-        'Failed to fetch product details from Mercado Libre',
-        HttpStatus.BAD_REQUEST
-      );
-    } catch (error) {
-      throw new HttpException(
-        `Error while fetching product details: ${error.message}`,
-        HttpStatus.INTERNAL_SERVER_ERROR
-      );
-    }
   }
 }

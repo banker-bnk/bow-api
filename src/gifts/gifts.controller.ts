@@ -1,10 +1,10 @@
 import { Controller, Get, Post, Delete, Param, Req, Body, UseGuards, Query } from '@nestjs/common';
-import { GiftsService } from './gifts.service';
-import { Gift } from './entities/gift';
-import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { User } from '../users/entities/user';
+import { AuthGuard } from '@nestjs/passport';
+import { GiftsService } from './gifts.service';
 import { UsersService } from '../users/users.service';
+import { Gift } from './entities/gift';
+import { User } from '../users/entities/user';
 
 @Controller('gifts')
 export class GiftsController {
@@ -22,26 +22,6 @@ export class GiftsController {
   async findAll(@Req() req): Promise<Gift> {
     const { id } = await this.usersService.findBySub(req.user.sub);
     return this.giftsService.findByUserId(id);
-  }
-
-  @Get('preview')
-  @ApiOperation({
-    description: 'Preview the product details (price and image) from a Mercado Libre URL without creating a gift.',
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'Returns the product price and image URL.',
-    schema: {
-      type: 'object',
-      properties: {
-        title: { type: 'string' },
-        price: { type: 'number' },
-        imageUrl: { type: 'string' },
-      },
-    },
-  })
-  async previewProductDetails(@Query('mercadolibreUrl') mercadolibreUrl: string) {
-    return this.giftsService.previewProductDetails(mercadolibreUrl);
   }
 
   @Get(':id')
