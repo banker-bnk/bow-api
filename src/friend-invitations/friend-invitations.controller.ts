@@ -26,7 +26,7 @@ export class FriendInvitationsController {
     schema: {
       type: 'object',
       properties: {
-        sender: { type: 'integer' },
+        receiver: { type: 'integer' },
       },
     },
   })
