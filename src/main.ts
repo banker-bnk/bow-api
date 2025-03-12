@@ -4,11 +4,17 @@ import * as dotenv from 'dotenv';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { formatValidationErrors } from './helpers/validation-errors.helper';
+import * as fs from 'fs';
 
 dotenv.config();
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const httpsOptions = {
+    //key: fs.readFileSync('/etc/letsencrypt/live/mpm.ddns.net/privkey.pem'),
+    //cert: fs.readFileSync('/etc/letsencrypt/live/mpm.ddns.net/fullchain.pem'),
+  };
+
+  const app = await NestFactory.create(AppModule, { httpsOptions });
 
   app.enableCors();
   app.useGlobalPipes(
