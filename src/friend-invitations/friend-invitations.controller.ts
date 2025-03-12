@@ -42,7 +42,7 @@ export class FriendInvitationsController {
   @ApiBearerAuth('JWT')
   @ApiBody({
     description:
-      'Information of the invitation receiver. Sender info will be taken from access token.',
+      'Approve an invitation of a given sender. Receiver info will be taken from access token.',
     schema: {
       type: 'object',
       properties: {
@@ -62,6 +62,16 @@ export class FriendInvitationsController {
   @Post('reject')
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('JWT')
+  @ApiBody({
+    description:
+      'Reject an invitation of a given sender. Receiver info will be taken from access token.',
+    schema: {
+      type: 'object',
+      properties: {
+        sender: { type: 'integer' },
+      },
+    },
+  })
   async reject(@Req() req, @Body() body: Partial<FriendInvitation>) {
     const userReq = req.user;
     const receiverUser: User = await this.usersService.findBySub(userReq.sub);
