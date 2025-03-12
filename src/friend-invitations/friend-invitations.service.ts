@@ -22,13 +22,16 @@ export class FriendInvitationsService {
 
   approve(sender: User, receiver: User) {
     const invitation = this.friendInvitationRepository.update(
-      {
-        sender: sender,
-        receiver: receiver,
-      },
-      {
-        status: 'APPROVED',
-      },
+      { sender: sender, receiver: receiver },
+      { status: 'APPROVED' },
+    );
+    return invitation;
+  }
+
+  reject(sender: User, receiver: User) {
+    const invitation = this.friendInvitationRepository.update(
+      { sender: sender, receiver: receiver },
+      { status: 'REJECTED' },
     );
     return invitation;
   }

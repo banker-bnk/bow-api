@@ -46,14 +46,26 @@ export class FriendInvitationsController {
     schema: {
       type: 'object',
       properties: {
-        receiver: { type: 'integer' },
+        sender: { type: 'integer' },
       },
     },
   })
   async approve(@Req() req, @Body() body: Partial<FriendInvitation>) {
     const userReq = req.user;
-    const receiverUser: User = await this.usersService.findById(userReq.sub);
+    const receiverUser: User = await this.usersService.findBySub(userReq.sub);
     return await this.friendInvitationsService.approve(
+      body.sender,
+      receiverUser,
+    );
+  }
+
+  @Post('reject')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('JWT')
+  async reject(@Req() req, @Body() body: Partial<FriendInvitation>) {
+    const userReq = req.user;
+    const receiverUser: User = await this.usersService.findBySub(userReq.sub);
+    return await this.friendInvitationsService.reject(
       body.sender,
       receiverUser,
     );
