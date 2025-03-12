@@ -79,16 +79,10 @@ export class UsersController {
     type: 'string',
     description: 'The user id of the user to get friends birthdays for.',
   })
-  @ApiQuery({
-    name: 'date',
-    type: 'string',
-    description: 'The date to get friends birthdays for.',
-  })
   friendsHome(
     @Param('userId') userId: string,
-    @Query('date') date: string,
   ) {
-    return this.usersService.friendsBirthdayUpcoming(userId, date);
+    return this.usersService.friendsBirthdayUpcoming(userId);
   }
 
   @Get('/friends-calendar')

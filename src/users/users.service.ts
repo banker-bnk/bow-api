@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, ILike } from 'typeorm';
 import { User } from './entities/user';
@@ -111,9 +111,9 @@ export class UsersService {
     return result;
   }
 
-  async friendsBirthdayUpcoming(userId: string, givenDate: string) {
+  async friendsBirthdayUpcoming(userId: string) {
     const data = await this.getFriendsBirthdays(userId);
-    const now = new Date(givenDate);
+    const now = new Date();
     const currentMonthDay = new Date(0, now.getMonth(), now.getDate()); // Ignore year in the given date
 
     const in30 = [];
