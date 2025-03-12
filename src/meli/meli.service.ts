@@ -4,9 +4,38 @@ import { firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class MeliService {
+  private accessToken: string | null = null;
+  private tokenExpiration: Date | null = null;
+
   constructor(
     private readonly httpService: HttpService,
   ) {}
+
+  private async getAccessToken(): Promise<string> {
+    if (this.accessToken && this.tokenExpiration && this.tokenExpiration > new Date()) {
+      return this.accessToken;
+    }
+
+    try {
+      const response = await firstValueFrom(
+        this.httpService.post(`${process.env.MELI_API_HOST}${process.env.MELI_AUTH_PATH}`, {
+          grant_type: 'client_credentials',
+          client_id: process.env.MELI_CLIENT_ID,
+          client_secret: process.env.MELI_CLIENT_SECRET
+        })
+      );
+
+      this.accessToken = response.data.access_token;
+      this.tokenExpiration = new Date(Date.now() + (response.data.expires_in * 1000) - 300000);
+      
+      return this.accessToken;
+    } catch (error) {
+      throw new HttpException(
+        `Failed to obtain access token: ${error.message}`,
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
 
   async getProductDetailsFromUrl(url: string): Promise<{ title: string; price: number; imageUrl: string }> {
     let productId = this.extractIdFromURL(url);
@@ -39,8 +68,13 @@ export class MeliService {
         throw new HttpException('Could not extract product slug from URL', HttpStatus.BAD_REQUEST);
     }
 
+    const token = await this.getAccessToken();
     const searchResponse = await firstValueFrom(
-        this.httpService.get(`https://api.mercadolibre.com/sites/MLA/search?q=${slug}`)
+        this.httpService.get(`${process.env.MELI_API_HOST}${process.env.MELI_SEARCH_PATH}?q=${slug}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        })
     );
 
     const results = searchResponse.data.results;
@@ -53,8 +87,13 @@ export class MeliService {
   }
 
   private async fetchItemById(productId: string): Promise<{ title: string; price: number; imageUrl: string }> {
+    const token = await this.getAccessToken();
     const response = await firstValueFrom(
-      this.httpService.get(`https://api.mercadolibre.com/items/${productId}`)
+      this.httpService.get(`${process.env.MELI_API_HOST}${process.env.MELI_ITEMS_PATH}/${productId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
     );
     const { title, price, pictures } = response.data;
     const imageUrl = pictures?.[0]?.url || '';
