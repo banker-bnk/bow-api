@@ -14,8 +14,15 @@ export class FriendInvitationsController {
   ) {}
 
   @Get()
-  findAll() {
-    return this.friendInvitationsService.findAll();
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('JWT')
+  @ApiBody({
+    description: 'Get all friend invitations of the current user. That is, all the invitations received by the user.',
+  })
+  async findAll(@Req() req) {
+    const userReq = req.user;  
+    const user: User = await this.usersService.findBySub(userReq.sub);
+    return this.friendInvitationsService.findAll(user);
   }
 
   @Post()

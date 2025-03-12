@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { FriendInvitation } from './entities/friend-invitation';
@@ -11,8 +11,12 @@ export class FriendInvitationsService {
     private friendInvitationRepository: Repository<FriendInvitation>,
   ) {}
 
-  findAll() {
-    return this.friendInvitationRepository.find();
+  findAll(user: User) {
+    return this.friendInvitationRepository.find({
+      where: {
+        receiver: { id: user.id },
+      },
+    });
   }
 
   create(data: Partial<FriendInvitation>) {
