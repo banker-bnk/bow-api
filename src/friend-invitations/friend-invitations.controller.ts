@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, UseGuards, Req, Logger } from '@nestjs/common';
 import { FriendInvitationsService } from './friend-invitations.service';
 import { UsersService } from '../users/users.service';
 import { FriendInvitation } from './entities/friend-invitation';
@@ -21,9 +21,18 @@ export class FriendInvitationsController {
   @Post()
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('JWT')
+  @ApiBody({
+    description: 'Information of the invitation receiver. Sender info will be taken from access token.',
+    schema: {
+      type: 'object',
+      properties: {
+        sender: { type: 'integer' },
+      },
+    },
+  })
   async create(@Req() req, @Body() body: Partial<FriendInvitation>) {
     const userReq = req.user;
-    const senderUser: User = await this.usersService.findById(userReq.sub);
+    const senderUser: User = await this.usersService.findBySub(userReq.sub);
     body.sender = senderUser;
     return this.friendInvitationsService.create(body);
   }
