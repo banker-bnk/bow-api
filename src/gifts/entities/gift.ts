@@ -36,15 +36,12 @@ export class Gift {
   @ApiProperty({ example: 'ARS' })
   currency: string;
 
-  @Column('decimal')
-  @Column({ default: 0 })
+  @Column('decimal', { default: 0 })
   progress: number;
 
-  @Column()
   @Column({ default: false })
   active: boolean;
 
-  @Column()
   @Column({ default: false })
   successful: boolean;
 
