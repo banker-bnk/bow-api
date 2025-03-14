@@ -9,12 +9,14 @@ import * as fs from 'fs';
 dotenv.config();
 
 async function bootstrap() {
-  const httpsOptions = {
-    //key: fs.readFileSync('/etc/letsencrypt/live/mpm.ddns.net/privkey.pem'),
-    //cert: fs.readFileSync('/etc/letsencrypt/live/mpm.ddns.net/fullchain.pem'),
-  };
+  const isProduction = process.env.NODE_ENV === 'production'
+  
+  const httpsOptions = isProduction ? {
+    key: fs.readFileSync('/etc/letsencrypt/live/mpm.ddns.net/privkey.pem'),
+    cert: fs.readFileSync('/etc/letsencrypt/live/mpm.ddns.net/fullchain.pem'),
+  } : null;
 
-  const app = await NestFactory.create(AppModule, { httpsOptions });
+  const app = await NestFactory.create(AppModule, { httpsOptions, logger: ['error', 'warn', 'log', 'debug', 'verbose'] });
 
   app.enableCors();
   app.useGlobalPipes(
@@ -32,6 +34,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-  await app.listen(process.env.PORT);
+  const port = process.env.PORT || 3000;
+  await app.listen(port);
 }
 bootstrap();
