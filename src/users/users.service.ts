@@ -185,4 +185,33 @@ export class UsersService {
       data: users,
     };
   }
+
+  async searchNonFriends(userId: string, searchTerm: string, { page, limit }: { page: number; limit: number }) {
+
+    const [users, total] = await this.usersRepository
+    .createQueryBuilder('u')
+    .where('u.id NOT IN ' +
+      '(SELECT f."friendId" FROM friends f WHERE f."userId" = (SELECT id FROM users WHERE "userId" = :userId) ' +
+      'UNION ' +
+      'SELECT f."userId" FROM friends f WHERE f."friendId" = (SELECT id FROM users WHERE "userId" = :userId))',
+    { userId: userId })
+    .andWhere('u.id != (SELECT id FROM users WHERE "userId" = :userId)')
+    .andWhere([
+      { userName: ILike(`%${searchTerm}%`) },
+      { firstName: ILike(`%${searchTerm}%`) },
+      { lastName: ILike(`%${searchTerm}%`) },
+      { email: ILike(`%${searchTerm}%`) },
+    ])
+    .skip((page - 1) * limit)
+    .take(limit)
+    .getManyAndCount();
+
+    return {
+      total,
+      page,
+      limit,
+      data: users,
+    };
+  }
+  
 }
