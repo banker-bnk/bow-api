@@ -100,21 +100,18 @@ export class UsersController {
     return this.usersService.create(data);
   }
 
-  @Get('/friends-home/:userId')
+  @Get('/friends-home')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('JWT')
   @ApiOperation({
     summary:
-      'Get friends birthdays grouped by upcoming birthdays. UserId is required to be passed as a param.',
-    description: 'This endpoint retrieves friends birthdays for a given user.',
-  })
-  @ApiParam({
-    name: 'userId',
-    type: 'string',
-    description: 'The user id of the user to get friends birthdays for.',
+      'Get friends birthdays grouped by upcoming birthdays. UserId is retrieved from the JWT.',
+    description: 'This endpoint retrieves friends birthdays for a given user retrieved from the JWT.',
   })
   friendsHome(
-    @Param('userId') userId: string,
+    @Req() req,
   ) {
-    return this.usersService.friendsBirthdayUpcoming(userId);
+    return this.usersService.friendsBirthdayUpcoming(req.user.sub);
   }
 
   @Get('/friends-calendar')

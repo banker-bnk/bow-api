@@ -75,36 +75,22 @@ export class UsersService {
   }
 
   async getFriendsBirthdays(userId: string): Promise<any> {
-    const data = this.usersRepository.query(
-      `
-      WITH target_user AS (
-          SELECT id FROM public.users WHERE "userId" = $1
-      )
-      SELECT 
-          u.id AS friend_id,
-          u."userName",
-          u."firstName",
-          u."lastName",
-          u.image,
-          u.birthday
-      FROM 
-          public.friends f
-      JOIN 
-          public.users u
-          ON (f."userId" = u.id AND f."friendId" = (SELECT id FROM target_user))
-          OR (f."friendId" = u.id AND f."userId" = (SELECT id FROM target_user))
-      ORDER BY 
-          EXTRACT(MONTH FROM u.birthday),
-          EXTRACT(DAY FROM u.birthday);
-    `,
-      [userId],
-    );
+    
+    const [friends] = await this.usersRepository
+    .createQueryBuilder('u')
+    .innerJoin('friends', 'f',          
+      '(f.friendId = u.id AND f.userId = (SELECT id FROM users WHERE "userId" = :userId)) OR (f.userId = u.id AND f.friendId = (SELECT id FROM users WHERE "userId" = :userId))',
+      { userId: userId }
+    ).orderBy('EXTRACT(MONTH FROM u.birthday)')
+    .addOrderBy('EXTRACT(DAY FROM u.birthday)')
+    .getManyAndCount();
 
-    return data;
+    return friends;
   }
 
   async friendsBirthdayByMonth(userId: string) {
     const data = await this.getFriendsBirthdays(userId);
+
     const result = {};
 
     // Map month number to month name
@@ -160,13 +146,16 @@ export class UsersService {
         diffInDays += 365; // Account for wrap-around in the calendar
       }
 
+      const birthdayFormatted = mmdd(birthday);
+      const personAge = age(birthday);
+      
       // Categorize based on the difference in days
       if (diffInDays <= 30) {
-        in30.push(person);
+        in30.push({ ...person, age: personAge, birthdayFormatted });
       } else if (diffInDays <= 60) {
-        in60.push(person);
+        in60.push({ ...person, age: personAge, birthdayFormatted });
       } else {
-        soon.push(person);
+        soon.push({ ...person, age: personAge, birthdayFormatted });
       }
     });
 
