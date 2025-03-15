@@ -54,6 +54,38 @@ export class UsersController {
     return this.usersService.findAll({ page, limit });
   }
 
+  @Get('non-friends')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiOperation({
+    summary: 'Get all users (paginated) not including current friends',
+    description: 'This endpoint returns a paginated list of users not including current friends.',
+  })
+  @ApiQuery({
+    name: 'page',
+    type: 'number',
+    required: false,
+    description: 'Page number (default is 1)',
+  })
+  @ApiQuery({
+    name: 'limit',
+    type: 'number',
+    required: false,
+    description: 'Number of users per page (default is 10)',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Users list (paginated).',
+    type: [User],
+  })
+  async findNonFriends(
+    @Req() req,
+    @Query('page') page = 1,
+    @Query('limit') limit = 10,
+  ) {
+    return this.usersService.findNonFriends(req.user.sub, page, limit );
+  }
+
+  
   @Post()
   @ApiBody({
     description: 'Dont include id, or createdAt',

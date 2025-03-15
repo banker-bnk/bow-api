@@ -25,6 +25,28 @@ export class UsersService {
     };
   }
 
+  async findNonFriends(userId: string, page: number = 1, limit: number = 10) {
+    const [nonFriends, total] = await this.usersRepository
+      .createQueryBuilder('u')
+      .where('u.id NOT IN ' +
+        '(SELECT f."friendId" FROM friends f WHERE f."userId" = (SELECT id FROM users WHERE "userId" = :userId) ' +
+        'UNION ' +
+        'SELECT f."userId" FROM friends f WHERE f."friendId" = (SELECT id FROM users WHERE "userId" = :userId))',
+      { userId: userId })
+      .andWhere('u.id != (SELECT id FROM users WHERE "userId" = :userId)') // Exclude the user themselves
+      .skip((page - 1) * limit)
+      .take(limit)
+      .getManyAndCount();
+  
+    return {
+      data: nonFriends,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit)
+    };
+  }
+
   create(data: Partial<User>) {
     const user = this.usersRepository.create(data);
     return this.usersRepository.save(user);
