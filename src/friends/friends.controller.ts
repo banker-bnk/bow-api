@@ -55,8 +55,7 @@ export class FriendsController {
     @Query('limit') limit = 10,
     @Req() req,
   ) {
-    const { id } = await this.usersService.findBySub(req.user.sub);
-    return this.friendsService.findByUserId(id, { page, limit });
+    return this.friendsService.findByUserId(req.user.sub, { page, limit });
   }
 
   @Post()

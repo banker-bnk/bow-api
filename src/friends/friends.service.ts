@@ -13,16 +13,17 @@ export class FriendsService {
     private usersRepository: Repository<User>,
   ) {}
 
-  async findByUserId(userId: number, { page, limit }: { page: number; limit: number }) {
-    const [friends, total] = await this.friendsRepository.findAndCount({
-      where: [
-        { user: { id: userId } },
-        { friend: { id: userId } },
-      ],
-      relations: ['friend', 'user'],
-      skip: (page - 1) * limit,
-      take: limit,
-    });
+  async findByUserId(userId: string, { page, limit }: { page: number; limit: number }) {
+
+    const [friends, total] = await this.usersRepository
+      .createQueryBuilder('u')
+      .innerJoin('friends', 'f',          
+        '(f.friendId = u.id AND f.userId = (SELECT id FROM users WHERE "userId" = :userId)) OR (f.userId = u.id AND f.friendId = (SELECT id FROM users WHERE "userId" = :userId))',
+        { userId: userId }
+      )
+      .skip((page - 1) * limit)
+      .take(limit)
+      .getManyAndCount();
 
     return {
       total,
