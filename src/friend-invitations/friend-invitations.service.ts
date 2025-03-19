@@ -12,33 +12,21 @@ export class FriendInvitationsService {
   ) {}
 
   async findAll(user: User) {
-    const invitations = await this.friendInvitationRepository.find({
+    return await this.friendInvitationRepository.find({
       where: {
         receiver: { id: user.id },
       },
-      relations: ['sender', 'receiver']
+      relations: ['sender']
     });
-
-    return invitations.map(invitation => ({
-      ...invitation,
-      senderId: invitation.sender.id,
-      receiverId: invitation.receiver.id,
-    }));
   }
 
   async findAllSent(user: User) {
-    const invitations = await this.friendInvitationRepository.find({
+    return await this.friendInvitationRepository.find({
       where: {
         sender: { id: user.id },
       },
-      relations: ['sender', 'receiver']
+      relations: ['receiver']
     });
-
-    return invitations.map(invitation => ({
-      ...invitation,
-      senderId: invitation.sender.id,
-      receiverId: invitation.receiver.id,
-    }));
   }
   
   create(data: Partial<FriendInvitation>) {
