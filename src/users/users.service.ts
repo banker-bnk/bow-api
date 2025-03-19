@@ -196,6 +196,10 @@ export class UsersService {
       'SELECT f."userId" FROM friends f WHERE f."friendId" = (SELECT id FROM users WHERE "userId" = :userId))',
     { userId: userId })
     .andWhere('u.id != (SELECT id FROM users WHERE "userId" = :userId)')
+    .andWhere('u.id NOT IN ' +
+      '(SELECT fi."senderId" FROM friend_invitations fi WHERE fi.status = \'PENDING\' AND fi."receiverId" = (SELECT id FROM users WHERE "userId" = :userId) ' +
+      'UNION ' +
+      'SELECT fi."receiverId" FROM friend_invitations fi WHERE fi.status = \'PENDING\' AND fi."senderId" = (SELECT id FROM users WHERE "userId" = :userId))')
     .andWhere([
       { userName: ILike(`%${searchTerm}%`) },
       { firstName: ILike(`%${searchTerm}%`) },

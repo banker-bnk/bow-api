@@ -187,8 +187,8 @@ export class UsersController {
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('JWT')
   @ApiOperation({
-    summary: 'Search users by search term (userName, firstName, lastName, or email) not including current friends',
-    description: 'Search users by search term, matching userName, firstName, lastName, or email, not including current friends.',
+    summary: 'Search users by search term (userName, firstName, lastName, or email) not including current friends, and users with pending friend_invitation',
+    description: 'Search users by search term, matching userName, firstName, lastName, or email, not including current friends, and users with pending friend_invitation.',
   })
   @ApiQuery({
     name: 'searchTerm',
