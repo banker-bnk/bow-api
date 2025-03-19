@@ -19,6 +19,14 @@ export class FriendInvitationsService {
     });
   }
 
+  findAllSent(user: User) {
+    return this.friendInvitationRepository.find({
+      where: {
+        sender: { id: user.id },
+      },
+    });
+  }
+  
   create(data: Partial<FriendInvitation>) {
     const invitation = this.friendInvitationRepository.create(data);
     return this.friendInvitationRepository.save(invitation);

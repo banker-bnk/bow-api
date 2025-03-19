@@ -4,7 +4,7 @@ import { UsersService } from '../users/users.service';
 import { FriendInvitation } from './entities/friend-invitation';
 import { AuthGuard } from '@nestjs/passport';
 import { User } from '../users/entities/user';
-import { ApiBearerAuth, ApiBody } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation } from '@nestjs/swagger';
 
 @Controller('friend-invitations')
 export class FriendInvitationsController {
@@ -13,17 +13,33 @@ export class FriendInvitationsController {
     private readonly usersService: UsersService,
   ) {}
 
-  @Get()
+  @Get('received')
   @UseGuards(AuthGuard('jwt'))
-  @ApiBearerAuth('JWT')
-  @ApiBody({
-    description: 'Get all friend invitations of the current user. That is, all the invitations received by the user.',
+  @ApiOperation({
+    summary: 'Get all friend invitations received by the current user.',
+    description: 'Get all friend invitations received by the current user.',
   })
+  @ApiBearerAuth('JWT')
   async findAll(@Req() req) {
     const userReq = req.user;  
     const user: User = await this.usersService.findBySub(userReq.sub);
     return this.friendInvitationsService.findAll(user);
   }
+
+  @Get('sent')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiOperation({
+    summary: 'Get all friend invitations sent by the current user.',
+    description: 'Get all friend invitations sent by the current user.',
+  })
+  @ApiBearerAuth('JWT')
+  async findAllSent(@Req() req) {
+    const userReq = req.user;
+    const user: User = await this.usersService.findBySub(userReq.sub);
+    return this.friendInvitationsService.findAllSent(user);
+  }
+  
+  
 
   @Post()
   @UseGuards(AuthGuard('jwt'))
