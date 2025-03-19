@@ -44,6 +44,10 @@ export class FriendInvitationsController {
   @Post()
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('JWT')
+  @ApiOperation({
+    summary: 'Create a friend invitation.',
+    description: 'Create a friend invitation. Sender info will be taken from access token.',
+  })
   @ApiBody({
     description: 'Information of the invitation receiver. Sender info will be taken from access token.',
     schema: {
@@ -63,6 +67,10 @@ export class FriendInvitationsController {
   @Post('approve')
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('JWT')
+  @ApiOperation({
+    summary: 'Approve an invitation of a given sender. Receiver info will be taken from access token.',
+    description: 'Approve an invitation of a given sender. Receiver info will be taken from access token.',
+  })
   @ApiBody({
     description:
       'Approve an invitation of a given sender. Receiver info will be taken from access token.',
@@ -85,6 +93,10 @@ export class FriendInvitationsController {
   @Post('reject')
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('JWT')
+  @ApiOperation({
+    summary: 'Reject an invitation of a given sender. Receiver info will be taken from access token.',
+    description: 'Reject an invitation of a given sender. Receiver info will be taken from access token.',
+  })
   @ApiBody({
     description:
       'Reject an invitation of a given sender. Receiver info will be taken from access token.',
@@ -106,16 +118,11 @@ export class FriendInvitationsController {
 
   @Delete(':id')
   @UseGuards(AuthGuard('jwt'))
-  @ApiBearerAuth('JWT')
-  @ApiBody({
-    description: 'Delete an invitation from the friend invitations id.',
-    schema: {
-      type: 'object',
-      properties: {
-        sender: { type: 'integer' },
-      },
-    },
+  @ApiOperation({
+    summary: 'Delete a friend-invitation by id.',
+    description: 'Delete a friend invitation by id.',
   })
+  @ApiBearerAuth('JWT')
   async delete(@Param('id') id: string, @Req() req) {
     return await this.friendInvitationsService.delete(id);
   }

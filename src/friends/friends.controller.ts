@@ -29,8 +29,9 @@ export class FriendsController {
 
   @Get()
   @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('JWT')
   @ApiOperation({
-    summary: 'Get all friends (paginated)',
+    summary: 'Get all friends (paginated). User info will be taken from access token.',
     description: 'This endpoint returns a paginated list of the logged-in user\'s friends.',
   })
   @ApiQuery({
@@ -58,16 +59,14 @@ export class FriendsController {
     return this.friendsService.findByUserId(req.user.sub, { page, limit });
   }
 
-  @Post()
-  create(@Body() data: Partial<Friend>) {
-    return this.friendsService.create(data);
-  }
-
   @Delete()
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('JWT')
+  @ApiOperation({
+    summary: 'Delete a friend from the logged-in user. User info will be taken from access token.',
+  })
   @ApiBody({
-    description: 'XX.',
+    description: 'Friend id to delete.',
     schema: {
       type: 'object',
       properties: {

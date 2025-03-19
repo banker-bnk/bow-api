@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Delete, Param, Req, Body, UseGuards, Query } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { GiftsService } from './gifts.service';
 import { UsersService } from '../users/users.service';
@@ -17,6 +17,7 @@ export class GiftsController {
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('JWT')
   @ApiOperation({
+    summary: 'Get all gifts for the authenticated user.',
     description: 'Get all gifts for the authenticated user.',
   })
   async findAll(@Req() req): Promise<Gift> {
@@ -28,6 +29,7 @@ export class GiftsController {
   @ApiBearerAuth('JWT')
   @UseGuards(AuthGuard('jwt'))
   @ApiOperation({
+    summary: 'Find gift by id.',
     description: 'Find gift by id.',
   })
   @ApiResponse({
@@ -42,6 +44,7 @@ export class GiftsController {
   @ApiBearerAuth('JWT')
   @UseGuards(AuthGuard('jwt'))
   @ApiOperation({
+    summary: 'Create or update gift. If body contains an existing id, the gift should be updated. If body does not contain the id, the gift should be created',
     description:
       'Create or update gift. If body contains an existing id, the gift should be updated. If body does not contain the id, the gift should be created',
   })
@@ -60,20 +63,20 @@ export class GiftsController {
     return this.giftsService.create(data);
   }
 
-  @Delete()
+  @Delete(':id')
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('JWT')
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        id: { type: 'integer' },
-      },
-    },
+  @ApiOperation({
+    summary: 'Delete a gift from the logged-in user. User info will be taken from access token.',
+    description: 'Delete a gift from the logged-in user. User info will be taken from access token.',
   })
-  async delete(@Req() req, @Body() data) {
+  @ApiParam({
+    name: 'id',
+    description: 'Gift id to delete.',
+  })
+  async delete(@Req() req, @Param('id') id: string) {
     const authUser: User = await this.usersService.findBySub(req.user.sub);
-    data.user = authUser.id;
-    await this.giftsService.delete(data);
+    console.log(authUser.id);
+    return await this.giftsService.delete(Number(id), authUser.id);
   }
 }
