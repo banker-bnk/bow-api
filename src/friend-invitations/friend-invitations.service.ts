@@ -16,7 +16,16 @@ export class FriendInvitationsService {
       where: {
         receiver: { id: user.id },
       },
-      relations: ['sender']
+      relations: ['sender'],
+      select: {
+        sender: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          image: true,
+          userName: true,
+        }
+      }
     });
   }
 
@@ -25,7 +34,17 @@ export class FriendInvitationsService {
       where: {
         sender: { id: user.id },
       },
-      relations: ['receiver']
+      relations: ['receiver'],
+      select: {
+        receiver: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          image: true,
+          userName: true,
+        }
+      }
+
     });
   }
   
