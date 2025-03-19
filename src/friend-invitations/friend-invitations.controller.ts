@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, UseGuards, Req, Logger } from '@nestjs/common';
+import { Controller, Get, Post, Body, UseGuards, Req, Logger, Delete, Param } from '@nestjs/common';
 import { FriendInvitationsService } from './friend-invitations.service';
 import { UsersService } from '../users/users.service';
 import { FriendInvitation } from './entities/friend-invitation';
@@ -102,5 +102,21 @@ export class FriendInvitationsController {
       body.sender,
       receiverUser,
     );
+  }
+
+  @Delete(':id')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('JWT')
+  @ApiBody({
+    description: 'Delete an invitation from the friend invitations id.',
+    schema: {
+      type: 'object',
+      properties: {
+        sender: { type: 'integer' },
+      },
+    },
+  })
+  async delete(@Param('id') id: string, @Req() req) {
+    return await this.friendInvitationsService.delete(id);
   }
 }

@@ -68,4 +68,8 @@ export class FriendInvitationsService {
     );
     return invitation;
   }
+
+  delete(id: string) {
+    return this.friendInvitationRepository.delete(id);
+  }
 }
