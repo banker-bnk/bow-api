@@ -78,10 +78,13 @@ export class UsersService {
     
     const [friends] = await this.usersRepository
     .createQueryBuilder('u')
+    .leftJoinAndSelect('u.gifts', 'g')
     .innerJoin('friends', 'f',          
       '(f.friendId = u.id AND f.userId = (SELECT id FROM users WHERE "userId" = :userId)) OR (f.userId = u.id AND f.friendId = (SELECT id FROM users WHERE "userId" = :userId))',
       { userId: userId }
-    ).orderBy('EXTRACT(MONTH FROM u.birthday)')
+    )
+    .where('g.active = true')
+    .orderBy('EXTRACT(MONTH FROM u.birthday)')
     .addOrderBy('EXTRACT(DAY FROM u.birthday)')
     .getManyAndCount();
 
