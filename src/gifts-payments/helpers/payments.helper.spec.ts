@@ -25,11 +25,12 @@ describe('Payments Helper', () => {
         productName: 'productName',
         userId: 'userId',
         message: 'message',
+        id: 8
       };
     });
 
     beforeEach(() => {
-      result = paymentsHelper.preferenceBuilder(preferenceDraft, appHostUrl);
+      result = paymentsHelper.preferenceBuilder(preferenceDraft, appHostUrl, );
     });
 
     test('should return a preference object', () => {
@@ -37,9 +38,9 @@ describe('Payments Helper', () => {
         body: {
           auto_return: 'approved',
           back_urls: {
-            failure: 'APP_SCHEMA://FAILURE',
-            pending: 'APP_SCHEMA://PENDING',
-            success: 'APP_SCHEMA://SUCCESS',
+            failure: 'APP_SCHEMA://FAILURE/8',
+            pending: 'APP_SCHEMA://PENDING/8',
+            success: 'APP_SCHEMA://SUCCESS/8',
           },
           items: [
             {
