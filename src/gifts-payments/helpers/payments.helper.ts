@@ -21,9 +21,9 @@ export const preferenceBuilder = (
       },
       operation_type: 'regular_payment',
       back_urls: {
-        success: `${APP_SCHEMA}://${backUrlEnum.SUCCESS}`,
-        failure: `${APP_SCHEMA}://${backUrlEnum.FAILURE}`,
-        pending: `${APP_SCHEMA}://${backUrlEnum.PENDING}`,
+        success: `${APP_SCHEMA}://${backUrlEnum.SUCCESS}/${preferenceDraft?.id}`,
+        failure: `${APP_SCHEMA}://${backUrlEnum.FAILURE}/${preferenceDraft?.id}`,
+        pending: `${APP_SCHEMA}://${backUrlEnum.PENDING}/${preferenceDraft?.id}`,
       },
       auto_return: 'approved',
       notification_url: `${appHostUrl}/gifts-payments/save`,

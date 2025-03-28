@@ -1,7 +1,7 @@
 export enum backUrlEnum {
-  SUCCESS = 'home',
-  FAILURE = 'profile',
-  PENDING = 'friends',
+  SUCCESS = 'user',
+  FAILURE = 'user',
+  PENDING = 'user',
 }
 
 export const APP_SCHEMA = 'acme';

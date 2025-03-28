@@ -4,4 +4,5 @@ export interface IPreferenceBody {
   productName: string;
   userId: string;
   message?: string;
+  id?: number;
 }
