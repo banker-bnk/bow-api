@@ -5,8 +5,10 @@ import { GiftsPayment } from './entities/gifts-payment';
 // import { User } from 'src/users/entities/user';
 import { User } from '../users/entities/user';
 import { MercadoPagoConfig, Payment, Preference } from 'mercadopago';
-import { getPaymentInfo, preferenceBuilder } from './helpers/payments.helper';
+import { getPaymentInfo, preferenceBuilder, giftPaymentNotificationBuilder } from './helpers/payments.helper';
 import { PreferenceDto } from './dto/preference.dto';
+import { NotificationsGateway } from '../gateway/notifications.gateway';
+
 
 @Injectable()
 export class GiftsPaymentsService {
@@ -18,6 +20,7 @@ export class GiftsPaymentsService {
     private giftsPaymentsRepository: Repository<GiftsPayment>,
     @InjectRepository(User)
     private usersRepository: Repository<User>,
+    private readonly notificationsGateway: NotificationsGateway
   ) {
     this.mercadoPago = new MercadoPagoConfig({
       accessToken: process.env.MP_ACCESS_TOKEN,
@@ -46,13 +49,17 @@ export class GiftsPaymentsService {
       id: paymentId,
     });
 
-    if (payment?.status === 'approved') {
-      const paymentInfo = getPaymentInfo(payment);
+    const paymentInfo = getPaymentInfo(payment);
+    const paymentStatus = payment.status;
 
+    if (paymentStatus === 'approved') {
       this.logger.log('Saving payment info in database');
       await this.create(paymentInfo);
-      return undefined;
     }
+
+    this.logger.log(`Sending notification for payment ${paymentId}: ${paymentStatus}`);
+    const notification = giftPaymentNotificationBuilder(paymentInfo, paymentStatus);
+    await this.notificationsGateway.sendNotification(notification);
 
     return undefined;
   }

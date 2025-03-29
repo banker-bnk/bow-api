@@ -1,5 +1,6 @@
+import { NotificationType } from '../../notifications/enums/notification-type.enum';
 import { APP_SCHEMA, backUrlEnum } from '../../constants';
-import { IPreferenceBody } from '../interfaces/preference.interface';
+import { IGiftInfo, IPaymentInfo, IPreferenceBody } from '../interfaces/preference.interface';
 
 export const preferenceBuilder = (
   preferenceDraft: IPreferenceBody,
@@ -31,7 +32,7 @@ export const preferenceBuilder = (
   };
 };
 
-export const getGiftInfo = (payment: any) => {
+export const getGiftInfo = (payment: any): IGiftInfo => {
   const { id, title, unit_price } = payment.additional_info.items[0];
   return {
     id,
@@ -42,7 +43,7 @@ export const getGiftInfo = (payment: any) => {
   };
 };
 
-export const getPaymentInfo = (payment: any) => ({
+export const getPaymentInfo = (payment: any): IPaymentInfo => ({
   gift: getGiftInfo(payment),
   user: { userId: payment.metadata.user_id },
   amount: payment.transaction_amount,
@@ -50,3 +51,12 @@ export const getPaymentInfo = (payment: any) => ({
   source: 'Mercado Pago',
   createdAt: new Date(payment.date_created),
 });
+
+export const giftPaymentNotificationBuilder = (paymentInfo: IPaymentInfo, paymentStatus: string) => {
+  const { user, amount } = paymentInfo;
+  return {
+    userId: user.userId,
+    message: `Your gift of ${amount} is ${paymentStatus}`,
+    type: NotificationType.GIFT_PAYMENT
+  }
+};
