@@ -18,8 +18,8 @@ export interface IGiftInfo {
 export interface IPaymentInfo {
   gift: IGiftInfo,
   user: any;
-  amount: number | string;
-  currency: number | string;
+  amount: number;
+  currency: string;
   source: string;
   createdAt: Date | string;
 }

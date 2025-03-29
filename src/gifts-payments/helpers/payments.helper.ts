@@ -54,9 +54,14 @@ export const getPaymentInfo = (payment: any): IPaymentInfo => ({
 
 export const giftPaymentNotificationBuilder = (paymentInfo: IPaymentInfo, paymentStatus: string) => {
   const { user, amount } = paymentInfo;
+
+  const message = paymentStatus === 'approved' ?
+    `You have given $${amount}` :
+    'Something went wrong. Please try later.'
+
   return {
     userId: user.userId,
-    message: `Your gift of ${amount} is ${paymentStatus}`,
+    message,
     type: NotificationType.GIFT_PAYMENT
   }
 };
