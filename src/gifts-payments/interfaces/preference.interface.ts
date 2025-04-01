@@ -4,7 +4,9 @@ export interface IPreferenceBody {
   productName: string;
   userId: string;
   message?: string;
-  id?: number;
+  successBackURL?: string;
+  failureBackURL?: string;
+  pendingBackURL?: string;
 }
 
 export interface IGiftInfo {

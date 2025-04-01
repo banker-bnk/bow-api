@@ -53,14 +53,34 @@ export class PreferenceDto {
   message?: string;
 
   @ApiProperty({
-    description: 'id from database',
-    type: 'number',
+    description: 'BACK_URL success',
+    type: 'string',
     minLength: 1,
     required: false,
   })
-  @IsNumber()
+  @IsString()
   @IsOptional()
-  id?: number;
+  successBackURL?: string;
+
+  @ApiProperty({
+    description: 'BACK_URL failure',
+    type: 'string',
+    minLength: 1,
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  failureBackURL?: string;
+
+  @ApiProperty({
+    description: 'BACK_URL pending',
+    type: 'string',
+    minLength: 1,
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  pendingBackURL?: string;
 
   constructor(partial: Partial<PreferenceDto> = {}) {
     Object.assign(this, partial);
