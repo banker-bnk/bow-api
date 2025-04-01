@@ -1,12 +1,6 @@
 const APP_SCHEMA = 'APP_SCHEMA';
-const backUrlEnum = {
-  SUCCESS: 'SUCCESS',
-  FAILURE: 'FAILURE',
-  PENDING: 'PENDING',
-};
 jest.mock('../../constants', () => ({
   APP_SCHEMA,
-  backUrlEnum,
 }));
 
 import * as paymentsHelper from './payments.helper';
@@ -25,7 +19,9 @@ describe('Payments Helper', () => {
         productName: 'productName',
         userId: 'userId',
         message: 'message',
-        id: 8
+        successBackURL: 'successBackURL',
+        failureBackURL: 'failureBackURL',
+        pendingBackURL: 'pendingBackURL',
       };
     });
 
@@ -38,9 +34,9 @@ describe('Payments Helper', () => {
         body: {
           auto_return: 'approved',
           back_urls: {
-            failure: 'APP_SCHEMA://FAILURE/8',
-            pending: 'APP_SCHEMA://PENDING/8',
-            success: 'APP_SCHEMA://SUCCESS/8',
+            failure: 'APP_SCHEMA://failureBackURL',
+            pending: 'APP_SCHEMA://pendingBackURL',
+            success: 'APP_SCHEMA://successBackURL',
           },
           items: [
             {

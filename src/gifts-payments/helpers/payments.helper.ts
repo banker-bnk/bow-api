@@ -1,5 +1,6 @@
-import { APP_SCHEMA, backUrlEnum } from '../../constants';
-import { IPreferenceBody } from '../interfaces/preference.interface';
+import { NotificationType } from '../../notifications/enums/notification-type.enum';
+import { APP_SCHEMA } from '../../constants';
+import { IGiftInfo, IPaymentInfo, IPreferenceBody } from '../interfaces/preference.interface';
 
 export const preferenceBuilder = (
   preferenceDraft: IPreferenceBody,
@@ -21,9 +22,9 @@ export const preferenceBuilder = (
       },
       operation_type: 'regular_payment',
       back_urls: {
-        success: `${APP_SCHEMA}://${backUrlEnum.SUCCESS}/${preferenceDraft?.id}`,
-        failure: `${APP_SCHEMA}://${backUrlEnum.FAILURE}/${preferenceDraft?.id}`,
-        pending: `${APP_SCHEMA}://${backUrlEnum.PENDING}/${preferenceDraft?.id}`,
+        success: `${APP_SCHEMA}://${preferenceDraft.successBackURL}`,
+        failure: `${APP_SCHEMA}://${preferenceDraft.failureBackURL}`,
+        pending: `${APP_SCHEMA}://${preferenceDraft.pendingBackURL}`,
       },
       auto_return: 'approved',
       notification_url: `${appHostUrl}/gifts-payments/save`,
@@ -31,7 +32,7 @@ export const preferenceBuilder = (
   };
 };
 
-export const getGiftInfo = (payment: any) => {
+export const getGiftInfo = (payment: any): IGiftInfo => {
   const { id, title, unit_price } = payment.additional_info.items[0];
   return {
     id,
@@ -42,7 +43,7 @@ export const getGiftInfo = (payment: any) => {
   };
 };
 
-export const getPaymentInfo = (payment: any) => ({
+export const getPaymentInfo = (payment: any): IPaymentInfo => ({
   gift: getGiftInfo(payment),
   user: { userId: payment.metadata.user_id },
   amount: payment.transaction_amount,
@@ -50,3 +51,22 @@ export const getPaymentInfo = (payment: any) => ({
   source: 'Mercado Pago',
   createdAt: new Date(payment.date_created),
 });
+
+export const giftPaymentNotificationBuilder = (paymentInfo: IPaymentInfo, paymentStatus: string) => {
+  const { user, amount } = paymentInfo;
+
+  const message = paymentStatus === 'approved' ?
+    `You have given $${amount}` :
+    'Something went wrong. Please try later.'
+
+  const title = paymentStatus === 'approved' ?
+    'Successfull operation' :
+    'Failed operation'
+
+  return {
+    userId: user.userId,
+    message,
+    type: NotificationType.GIFT_PAYMENT,
+    title
+  }
+};

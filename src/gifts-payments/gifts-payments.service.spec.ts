@@ -1,8 +1,10 @@
 const mockPreferenceBuilder = jest.fn();
 const mockGetPaymentInfo = jest.fn();
+const mockGiftPaymentNotificationBuilder = jest.fn();
 jest.mock('./helpers/payments.helper', () => ({
   preferenceBuilder: mockPreferenceBuilder,
   getPaymentInfo: mockGetPaymentInfo,
+  giftPaymentNotificationBuilder: mockGiftPaymentNotificationBuilder
 }));
 
 const mockGiftsPaymentsRepository = {
@@ -28,11 +30,19 @@ jest.mock('mercadopago', () => ({
   Payment: jest.fn().mockImplementation(() => mockPayment),
 }));
 
+const mockNotificationsGateway = {
+  sendNotification: jest.fn()
+}
+jest.mock('../gateway/notifications.gateway', () => ({
+  NotificationsGateway: jest.fn().mockImplementation(() => mockNotificationsGateway)
+}))
+
 import { Test, TestingModule } from '@nestjs/testing';
 import { GiftsPaymentsService } from './gifts-payments.service';
 import { GiftsPayment } from './entities/gifts-payment';
 import { User } from '../users/entities/user';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { NotificationsGateway } from '../gateway/notifications.gateway';
 
 describe('GiftsPaymentsService', () => {
   let service: GiftsPaymentsService;
@@ -48,6 +58,10 @@ describe('GiftsPaymentsService', () => {
         {
           provide: getRepositoryToken(User),
           useValue: mockUsersRepository,
+        },
+        {
+          provide: NotificationsGateway,
+          useValue: mockNotificationsGateway,
         },
       ],
     }).compile();
@@ -315,6 +329,11 @@ describe('GiftsPaymentsService', () => {
             amount: 100,
             user: { userId: 'test-user-id' },
           });
+          mockGiftPaymentNotificationBuilder.mockReturnValueOnce({
+            userId: 'test-user-id',
+            message: 'message',
+            type: 'GIFT_PAYMENT'
+          })
           response = await service.savePaymentData(mockPaymentId);
         });
 
@@ -329,6 +348,22 @@ describe('GiftsPaymentsService', () => {
         test('should call GiftsPaymentsService.create with payment info', () => {
           expect(mockCreate).toHaveBeenCalledWith(mockPaymentInfo);
         });
+
+        test('should call giftPaymentNotificationBuilder with paymentInfo and paymentStatus', () => {
+          expect(mockGiftPaymentNotificationBuilder).toHaveBeenCalledWith({
+            amount: 100,
+            user: {userId: 'test-user-id'}
+          }, 
+          'approved')
+        });
+
+        test('should call notificationsGateway.sendNotification with notification', () => {
+          expect(mockNotificationsGateway.sendNotification).toHaveBeenCalledWith({
+            userId: 'test-user-id',
+            message: 'message',
+            type: 'GIFT_PAYMENT'
+          })
+        })
 
         test('should return undefined', () => {
           expect(response).toBeUndefined();
@@ -351,6 +386,11 @@ describe('GiftsPaymentsService', () => {
             amount: 100,
             user: { userId: 'test-user-id' },
           });
+          mockGiftPaymentNotificationBuilder.mockReturnValueOnce({
+            userId: 'test-user-id',
+            message: 'message',
+            type: 'GIFT_PAYMENT'
+          })
           response = await service.savePaymentData(mockPaymentId);
         });
 
@@ -358,13 +398,29 @@ describe('GiftsPaymentsService', () => {
           expect(mockPayment.get).toHaveBeenCalledWith({ id: mockPaymentId });
         });
 
-        test('should not call getPaymentInfo', () => {
-          expect(mockGetPaymentInfo).not.toHaveBeenCalled();
+        test('should call getPaymentInfo', () => {
+          expect(mockGetPaymentInfo).toHaveBeenCalled();
         });
 
         test('should not call GiftsPaymentsService.create', () => {
           expect(mockCreate).not.toHaveBeenCalled();
         });
+
+        test('should call giftPaymentNotificationBuilder with paymentInfo and paymentStatus', () => {
+          expect(mockGiftPaymentNotificationBuilder).toHaveBeenCalledWith({
+            amount: 100,
+            user: {userId: 'test-user-id'}
+          }, 
+          'rejected')
+        });
+
+        test('should call notificationsGateway.sendNotification with notification', () => {
+          expect(mockNotificationsGateway.sendNotification).toHaveBeenCalledWith({
+            userId: 'test-user-id',
+            message: 'message',
+            type: 'GIFT_PAYMENT'
+          })
+        })
 
         test('should return undefined', () => {
           expect(response).toBeUndefined();
@@ -399,6 +455,14 @@ describe('GiftsPaymentsService', () => {
       test('should not call GiftsPaymentsService.create', () => {
         expect(mockCreate).not.toHaveBeenCalled();
       });
+
+      test('should not call giftPaymentNotificationBuilder', () => {
+        expect(mockGiftPaymentNotificationBuilder).not.toHaveBeenCalledWith()
+      });
+
+      test('should not call notificationsGateway.sendNotification', () => {
+        expect(mockNotificationsGateway.sendNotification).not.toHaveBeenCalledWith()
+      })
 
       test('should return an instance of Error', () => {
         expect(response).toBeInstanceOf(Error);
