@@ -302,24 +302,32 @@ export class SeederService {
   }
 
   private async cleanupSeededData() {
-    // Delete in reverse order of dependencies
-    await this.giftPaymentRepository.delete({ source: this.SEEDER_TAG });
-    await this.giftRepository.delete({ description: Like(`%${this.SEEDER_TAG}%`) });
-
     const seededUserPattern = { pattern: `%${this.SEEDER_TAG}%` };
     
+    // First delete gift payments
+    await this.giftPaymentRepository.delete({ source: this.SEEDER_TAG });
+
+    // Then delete gifts
+    await this.giftRepository.createQueryBuilder()
+      .delete()
+      .where(`"userId" IN (SELECT id FROM users WHERE "userName" LIKE :pattern)`, seededUserPattern)
+      .execute();
+
+    // Then delete friend relationships
     await this.friendRepository.createQueryBuilder()
       .delete()
       .where(`"userId" IN (SELECT id FROM users WHERE "userName" LIKE :pattern)`, seededUserPattern)
       .orWhere(`"friendId" IN (SELECT id FROM users WHERE "userName" LIKE :pattern)`, seededUserPattern)
       .execute();
 
+    // Then delete friend invitations
     await this.friendInvitationRepository.createQueryBuilder()
       .delete()
       .where(`"senderId" IN (SELECT id FROM users WHERE "userName" LIKE :pattern)`, seededUserPattern)
       .orWhere(`"receiverId" IN (SELECT id FROM users WHERE "userName" LIKE :pattern)`, seededUserPattern)
       .execute();
 
+    // Finally delete users
     await this.userRepository.delete({ userName: Like(`%${this.SEEDER_TAG}%`) });
   }
 
