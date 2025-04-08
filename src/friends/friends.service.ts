@@ -46,9 +46,14 @@ export class FriendsService {
 
     if (!user) throw new NotFoundException('User not found');
 
-    return this.friendsRepository.delete({
-      user: user,
-      friend: friendId,
-    } as FindOptionsWhere<Friend>);
+    return this.friendsRepository
+      .createQueryBuilder()
+      .delete()
+      .from(Friend)
+      .where(
+        '(userId = :userId AND friendId = :friendId) OR (userId = :friendId AND friendId = :userId)',
+        { userId: user.id, friendId: friendId }
+      )
+      .execute();
   }
 }
