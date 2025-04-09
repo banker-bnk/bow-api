@@ -61,22 +61,22 @@ export class GiftsPaymentsService {
     });
 
     if (!existingPayment) {
-      paymentInfo.paymentStatus = payment.status as PAYMENT_STATUS;
+      paymentInfo.status = payment.status as PAYMENT_STATUS;
       this.logger.log(`Payment does not exist. Saving payment status as ${payment.status}`)
       await this.create(paymentInfo);
     } 
     
     if (payment?.status === PAYMENT_STATUS.APPROVED && 
-      existingPayment?.paymentStatus === PAYMENT_STATUS.PENDING) {
-        existingPayment.paymentStatus = PAYMENT_STATUS.APPROVED;
-        this.logger.log(`Updating payment status as ${existingPayment.paymentStatus}`);
+      existingPayment?.status === PAYMENT_STATUS.PENDING) {
+        existingPayment.status = PAYMENT_STATUS.APPROVED;
+        this.logger.log(`Updating payment status as ${existingPayment.status}`);
         await this.giftsPaymentsRepository.save(existingPayment);
     }
 
     if (payment?.status === PAYMENT_STATUS.REJECTED && 
-      existingPayment?.paymentStatus === PAYMENT_STATUS.PENDING) {
-        existingPayment.paymentStatus = PAYMENT_STATUS.APPROVED;
-        this.logger.log(`Deleting payment status with status ${existingPayment.paymentStatus}`);
+      existingPayment?.status === PAYMENT_STATUS.PENDING) {
+        existingPayment.status = PAYMENT_STATUS.APPROVED;
+        this.logger.log(`Deleting payment status with status ${existingPayment.status}`);
         await this.giftsPaymentsRepository.save(existingPayment);
     }
 

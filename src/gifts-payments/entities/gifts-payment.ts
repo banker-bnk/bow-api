@@ -30,7 +30,7 @@ export class GiftsPayment {
   source: string;
 
   @Column({ type: 'enum', enum: PAYMENT_STATUS, nullable: true })
-  paymentStatus: PAYMENT_STATUS;
+  status: PAYMENT_STATUS;
 
   @Column({ nullable: true }) // TODO: delete the { nullable: true } after clean the database
   paymentReferenceId: string;
