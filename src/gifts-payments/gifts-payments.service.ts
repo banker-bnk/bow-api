@@ -27,8 +27,8 @@ export class GiftsPaymentsService {
 
   findAll(userId: string) {
     return this.giftsPaymentsRepository.find({
-      where: { user: { userId } },
-      relations: ['user', 'gift'],
+      where: { gift: { user: { userId } } },
+      relations: ['user', 'gift', 'gift.user'],
     });
   }
 
