@@ -7,6 +7,7 @@ import { User } from '../users/entities/user';
 import { MercadoPagoConfig, Payment, Preference } from 'mercadopago';
 import { getPaymentInfo, preferenceBuilder } from './helpers/payments.helper';
 import { PreferenceDto } from './dto/preference.dto';
+import { PAYMENT_STATUS } from '../constants';
 
 @Injectable()
 export class GiftsPaymentsService {
@@ -41,6 +42,8 @@ export class GiftsPaymentsService {
       preferenceData,
     );
 
+    console.log('preference', JSON.stringify(preference))
+
     return preference;
   }
 
@@ -49,12 +52,32 @@ export class GiftsPaymentsService {
       id: paymentId,
     });
 
-    if (payment?.status === 'approved') {
-      const paymentInfo = getPaymentInfo(payment);
+    const paymentInfo = getPaymentInfo(payment);
 
-      this.logger.log('Saving payment info in database');
+    const existingPayment = await this.giftsPaymentsRepository.findOne({
+      where: {
+        paymentReferenceId: paymentInfo.paymentReferenceId
+      }
+    });
+
+    if (!existingPayment) {
+      paymentInfo.paymentStatus = payment.status as PAYMENT_STATUS;
+      this.logger.log(`Payment does not exist. Saving payment status as ${payment.status}`)
       await this.create(paymentInfo);
-      return undefined;
+    } 
+    
+    if (payment?.status === PAYMENT_STATUS.APPROVED && 
+      existingPayment?.paymentStatus === PAYMENT_STATUS.PENDING) {
+        existingPayment.paymentStatus = PAYMENT_STATUS.APPROVED;
+        this.logger.log(`Updating payment status as ${existingPayment.paymentStatus}`);
+        await this.giftsPaymentsRepository.save(existingPayment);
+    }
+
+    if (payment?.status === PAYMENT_STATUS.REJECTED && 
+      existingPayment?.paymentStatus === PAYMENT_STATUS.PENDING) {
+        existingPayment.paymentStatus = PAYMENT_STATUS.APPROVED;
+        this.logger.log(`Deleting payment status with status ${existingPayment.paymentStatus}`);
+        await this.giftsPaymentsRepository.save(existingPayment);
     }
 
     return undefined;

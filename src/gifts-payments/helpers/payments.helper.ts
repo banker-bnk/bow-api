@@ -1,5 +1,6 @@
-import { APP_SCHEMA, backUrlEnum } from '../../constants';
+import { APP_SCHEMA, DEFAULT_REDIRECT_SCREEN } from '../../constants';
 import { IPreferenceBody } from '../interfaces/preference.interface';
+import { v4 as uuidv4 } from 'uuid';
 
 export const preferenceBuilder = (
   preferenceDraft: IPreferenceBody,
@@ -18,12 +19,13 @@ export const preferenceBuilder = (
       metadata: {
         message: preferenceDraft?.message,
         user_id: preferenceDraft.userId,
+        payment_reference_id: uuidv4()
       },
       operation_type: 'regular_payment',
       back_urls: {
-        success: `${APP_SCHEMA}://${backUrlEnum.SUCCESS}/${preferenceDraft?.id}`,
-        failure: `${APP_SCHEMA}://${backUrlEnum.FAILURE}/${preferenceDraft?.id}`,
-        pending: `${APP_SCHEMA}://${backUrlEnum.PENDING}/${preferenceDraft?.id}`,
+        success: `${APP_SCHEMA}://${DEFAULT_REDIRECT_SCREEN}/${preferenceDraft?.id}`,
+        failure: `${APP_SCHEMA}://${DEFAULT_REDIRECT_SCREEN}/${preferenceDraft?.id}`,
+        pending: `${APP_SCHEMA}://${DEFAULT_REDIRECT_SCREEN}/${preferenceDraft?.id}`,
       },
       auto_return: 'approved',
       notification_url: `${appHostUrl}/gifts-payments/save`,
@@ -42,11 +44,15 @@ export const getGiftInfo = (payment: any) => {
   };
 };
 
-export const getPaymentInfo = (payment: any) => ({
-  gift: getGiftInfo(payment),
-  user: { userId: payment.metadata.user_id },
-  amount: payment.transaction_amount,
-  currency: payment.currency_id,
-  source: 'Mercado Pago',
-  createdAt: new Date(payment.date_created),
-});
+export const getPaymentInfo = (payment: any) => {
+  return {
+    gift: getGiftInfo(payment),
+    user: { userId: payment.metadata.user_id },
+    amount: payment.transaction_amount,
+    currency: payment.currency_id,
+    source: 'Mercado Pago',
+    createdAt: new Date(payment.date_created),
+    paymentStatus: payment.status,
+    paymentReferenceId: payment.metadata.payment_reference_id
+  };
+};
