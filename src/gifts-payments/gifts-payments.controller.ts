@@ -23,8 +23,13 @@ export class GiftsPaymentsController {
   @ApiOperation({
     description: 'Get all payments',
   })
-  findAll() {
-    return this.giftsPaymentsService.findAll();
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('JWT')
+  @ApiOperation({
+    summary: 'Get all payments for the logged-in user. User info will be taken from access token.',
+  })
+  async findAll(@Req() req) {
+    return this.giftsPaymentsService.findAll(req.user.sub);
   }
 
   @Post('create-preference')

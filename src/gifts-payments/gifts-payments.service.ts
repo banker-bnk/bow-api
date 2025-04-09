@@ -24,8 +24,11 @@ export class GiftsPaymentsService {
     });
   }
 
-  findAll() {
-    return this.giftsPaymentsRepository.find({ relations: ['user', 'gift'] });
+  findAll(userId: string) {
+    return this.giftsPaymentsRepository.find({
+      where: { user: { userId } },
+      relations: ['user', 'gift'],
+    });
   }
 
   async createPreference(preferenceDto: PreferenceDto) {
