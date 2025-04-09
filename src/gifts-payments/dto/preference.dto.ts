@@ -43,16 +43,6 @@ export class PreferenceDto {
   userId: string;
 
   @ApiProperty({
-    description: 'Message',
-    type: 'string',
-    minLength: 1,
-    required: false,
-  })
-  @IsString()
-  @IsOptional()
-  message?: string;
-
-  @ApiProperty({
     description: 'user ID from database',
     type: 'number',
     minLength: 1,

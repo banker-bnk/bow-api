@@ -2,6 +2,7 @@ export const DEFAULT_REDIRECT_SCREEN = 'user'
 export const APP_SCHEMA = 'acme';
 
 export enum PAYMENT_STATUS {
+  INIT = 'init',
   APPROVED = 'approved',
   REJECTED = 'rejected',
   PENDING = 'pending',

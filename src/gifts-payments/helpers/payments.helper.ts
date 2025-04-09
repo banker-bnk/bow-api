@@ -19,7 +19,6 @@ export const preferenceBuilder = (
       metadata: {
         message: preferenceDraft?.message,
         user_id: preferenceDraft.userId,
-        payment_reference_id: uuidv4()
       },
       operation_type: 'regular_payment',
       back_urls: {

@@ -32,9 +32,6 @@ export class GiftsPayment {
   @Column({ type: 'enum', enum: PAYMENT_STATUS, nullable: true })
   status: PAYMENT_STATUS;
 
-  @Column({ nullable: true }) // TODO: delete the { nullable: true } after clean the database
-  paymentReferenceId: string;
-
   @CreateDateColumn()
   createdAt: Date;
 }

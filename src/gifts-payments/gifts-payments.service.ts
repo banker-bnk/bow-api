@@ -43,8 +43,6 @@ export class GiftsPaymentsService {
       preferenceData,
     );
 
-    console.log('preference', JSON.stringify(preference))
-
     return preference;
   }
 
@@ -53,32 +51,11 @@ export class GiftsPaymentsService {
       id: paymentId,
     });
 
-    const paymentInfo = getPaymentInfo(payment);
-
-    const existingPayment = await this.giftsPaymentsRepository.findOne({
-      where: {
-        paymentReferenceId: paymentInfo.paymentReferenceId
-      }
-    });
-
-    if (!existingPayment) {
-      paymentInfo.status = payment.status as PAYMENT_STATUS;
-      this.logger.log(`Payment does not exist. Saving payment status as ${payment.status}`)
-      await this.create(paymentInfo);
-    } 
-    
-    if (payment?.status === PAYMENT_STATUS.APPROVED && 
-      existingPayment?.status === PAYMENT_STATUS.PENDING) {
-        existingPayment.status = PAYMENT_STATUS.APPROVED;
-        this.logger.log(`Updating payment status as ${existingPayment.status}`);
-        await this.giftsPaymentsRepository.save(existingPayment);
-    }
-
-    if (payment?.status === PAYMENT_STATUS.REJECTED && 
-      existingPayment?.status === PAYMENT_STATUS.PENDING) {
-        existingPayment.status = PAYMENT_STATUS.APPROVED;
-        this.logger.log(`Deleting payment status with status ${existingPayment.status}`);
-        await this.giftsPaymentsRepository.save(existingPayment);
+    if(payment.status === PAYMENT_STATUS.APPROVED) {
+      const paymentInfo = getPaymentInfo(payment);
+      this.logger.log('Save payment in database')
+      await this.create(paymentInfo)
+      return undefined
     }
 
     return undefined;
