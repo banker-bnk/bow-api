@@ -25,11 +25,12 @@ export class GiftsPaymentsService {
     });
   }
 
-  findAll(userId: string) {
-    return this.giftsPaymentsRepository.find({
-      where: { gift: { user: { userId } } },
+  async findAll(userId: string) {
+    const payments = await this.giftsPaymentsRepository.find({
+      where: { user: { userId } },
       relations: ['user', 'gift', 'gift.user'],
     });
+    return payments;
   }
 
   async createPreference(preferenceDto: PreferenceDto) {
