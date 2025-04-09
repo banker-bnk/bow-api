@@ -52,7 +52,7 @@ export const getPaymentInfo = (payment: any) => {
     currency: payment.currency_id,
     source: 'Mercado Pago',
     createdAt: new Date(payment.date_created),
-    paymentStatus: payment.status,
+    status: payment.status,
     paymentReferenceId: payment.metadata.payment_reference_id
   };
 };
