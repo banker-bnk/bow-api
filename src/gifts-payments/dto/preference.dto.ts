@@ -53,14 +53,13 @@ export class PreferenceDto {
   message?: string;
 
   @ApiProperty({
-    description: 'id from database',
+    description: 'user ID from database',
     type: 'number',
     minLength: 1,
-    required: false,
+    required: true,
   })
   @IsNumber()
-  @IsOptional()
-  id?: number;
+  id: number;
 
   constructor(partial: Partial<PreferenceDto> = {}) {
     Object.assign(this, partial);

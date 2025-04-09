@@ -7,6 +7,7 @@ import {
 } from 'typeorm';
 import { User } from '../../users/entities/user';
 import { Gift } from '../../gifts/entities/gift';
+import { PAYMENT_STATUS } from '../../constants';
 
 @Entity('gifts_payments')
 export class GiftsPayment {
@@ -27,6 +28,12 @@ export class GiftsPayment {
 
   @Column()
   source: string;
+
+  @Column({ type: 'enum', enum: PAYMENT_STATUS, nullable: true })
+  paymentStatus: PAYMENT_STATUS;
+
+  @Column({ nullable: true }) // TODO: delete the { nullable: true } after clean the database
+  paymentReferenceId: string;
 
   @CreateDateColumn()
   createdAt: Date;
