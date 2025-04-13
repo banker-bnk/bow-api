@@ -1,10 +1,10 @@
 import { APP_SCHEMA, DEFAULT_REDIRECT_SCREEN } from '../../constants';
 import { IPreferenceBody } from '../interfaces/preference.interface';
-import { v4 as uuidv4 } from 'uuid';
 
 export const preferenceBuilder = (
   preferenceDraft: IPreferenceBody,
   appHostUrl: string,
+  id: number
 ) => {
   return {
     body: {
@@ -17,8 +17,8 @@ export const preferenceBuilder = (
         },
       ],
       metadata: {
-        message: preferenceDraft?.message,
         user_id: preferenceDraft.userId,
+        id
       },
       operation_type: 'regular_payment',
       back_urls: {
@@ -52,6 +52,5 @@ export const getPaymentInfo = (payment: any) => {
     source: 'Mercado Pago',
     createdAt: new Date(payment.date_created),
     status: payment.status,
-    paymentReferenceId: payment.metadata.payment_reference_id
   };
 };
