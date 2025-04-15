@@ -3,6 +3,5 @@ export interface IPreferenceBody {
   giftId: string;
   productName: string;
   userId: string;
-  message?: string;
   id?: number;
 }

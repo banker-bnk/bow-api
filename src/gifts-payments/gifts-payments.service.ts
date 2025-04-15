@@ -2,7 +2,6 @@ import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { GiftsPayment } from './entities/gifts-payment';
-// import { User } from 'src/users/entities/user';
 import { User } from '../users/entities/user';
 import { MercadoPagoConfig, Payment, Preference } from 'mercadopago';
 import { getPaymentInfo, preferenceBuilder } from './helpers/payments.helper';
@@ -33,31 +32,76 @@ export class GiftsPaymentsService {
     return payments;
   }
 
+  async createInitPayment(preferenceDto: PreferenceDto) {
+    const initPayment = await this.create({
+      gift: preferenceDto.giftId,
+      user:{userId:preferenceDto.userId},
+      amount: preferenceDto.amount,
+      currency: 'ARS',
+      source: 'Mercado Pago',
+      status: PAYMENT_STATUS.INIT
+    }) as unknown as GiftsPayment;
+
+    return initPayment
+  }
+
   async createPreference(preferenceDto: PreferenceDto) {
-    const preferenceData = preferenceBuilder(
-      preferenceDto,
-      process.env.APP_HOST_URL,
-    );
+    try {
+    const { id } = await this.createInitPayment(preferenceDto);
+ 
+     const preferenceData = preferenceBuilder(
+       preferenceDto,
+       process.env.APP_HOST_URL,
+       id
+     );
+ 
+     const preference = await new Preference(this.mercadoPago).create(
+       preferenceData,
+     );
+ 
+     return preference;
+    } catch (error) {
+      this.logger.error('Error creating preference');
+      throw error;
+    }
+  }
 
-    const preference = await new Preference(this.mercadoPago).create(
-      preferenceData,
-    );
+  async updateGiftPayment(id: number, mercadoPagoPayment: any) {
+    try {
+      const giftPayment = await this.giftsPaymentsRepository.findOne({
+        where: { id },
+      });
+  
+      if (!giftPayment) {
+        this.logger.error(`No gift payment found with id: ${id}`);
+        return
+      }
+  
+      const paymentInfo = getPaymentInfo(mercadoPagoPayment);
+  
+      await this.giftsPaymentsRepository.update(
+        {id: giftPayment.id},
+        {
+          status: paymentInfo.status,
+          currency: paymentInfo.currency
+        }
+      )
 
-    return preference;
+      this.logger.log(`Updated giftPayment with id:${id}, status: ${paymentInfo.status}`)
+    } catch (error) {
+      this.logger.error(`Error updating giftPayment with id:${id}`, error);
+    }
+    
   }
 
   async savePaymentData(paymentId: string) {
-    const payment = await new Payment(this.mercadoPago).get({
+    const mercadoPagoPayment = await new Payment(this.mercadoPago).get({
       id: paymentId,
     });
+    const { id } = mercadoPagoPayment.metadata;
 
-    if(payment.status === PAYMENT_STATUS.APPROVED) {
-      const paymentInfo = getPaymentInfo(payment);
-      this.logger.log('Save payment in database')
-      await this.create(paymentInfo)
-      return undefined
-    }
-
+    await this.updateGiftPayment(id, mercadoPagoPayment);
+    
     return undefined;
   }
 
