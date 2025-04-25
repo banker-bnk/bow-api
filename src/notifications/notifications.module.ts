@@ -5,7 +5,6 @@ import { NotificationsController } from './notifications.controller';
 import { NotificationsGatewayModule } from '../gateway/notifications.gateway.module';
 import { Notification } from './entities/notification';
 import { NotificationsGateway } from '../gateway/notifications.gateway';
-
 import { User } from '../users/entities/user';
 
 @Module({

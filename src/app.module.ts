@@ -18,6 +18,7 @@ import { NotificationsGatewayModule } from './gateway/notifications.gateway.modu
 import { User } from './users/entities/user';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { PushNotificationsModule } from './push-notifications/push-notifications.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { join } from 'path';
     UsersModule,
     NotificationsModule,
     NotificationsGatewayModule,
+    PushNotificationsModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DB_HOST,
