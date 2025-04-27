@@ -1,6 +1,7 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { PushNotificationService } from './services/push-notification.service';
 import { PushNotificationDto } from './dto/push-notification.dto';
+import { RegisterDeviceDto } from './dto/register-device.dto';
 
 @Controller()
 export class PushNotificationsController {
@@ -27,6 +28,16 @@ export class PushNotificationsController {
       sent: result.success.length,
       failed: result.failure.length,
       result
+    };
+  }
+
+  @Post('push-notifications/register-device')
+  async registerDevice(@Body() registerDeviceDto: RegisterDeviceDto) {
+    const result = await this.pushNotificationService.registerDevice(registerDeviceDto);
+    return {
+      success: true,
+      message: 'Device registered successfully',
+      deviceId: result.id
     };
   }
 } 

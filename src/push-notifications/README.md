@@ -39,6 +39,34 @@ Sends a push notification to one or more devices.
 }
 ```
 
+### POST `/push-notifications/register-device`
+
+Registers a device to receive push notifications.
+
+#### Request Body
+
+```json
+{
+  "token": "ExponentPushToken[xxxxx]",
+  "userId": "user123", // Optional: Identifier for the user
+  "deviceInfo": {
+    "platform": "ios",
+    "model": "iPhone 12",
+    "osVersion": "15.0"
+  }
+}
+```
+
+#### Response
+
+```json
+{
+  "success": true,
+  "message": "Device registered successfully",
+  "deviceId": "device_1650123456_789"
+}
+```
+
 ## Usage in the client application (React Native with Expo)
 
 To receive notifications in your React Native application, you need to register the device to receive push notifications and then send the Expo token to the backend.
@@ -89,7 +117,8 @@ async function registerForPushNotificationsAsync() {
 // Send the token to the backend
 async function sendTokenToBackend(token) {
   try {
-    await fetch('https://your-api.com/register-device', {
+    const apiUrl = 'https://your-api.com/push-notifications/register-device';
+    await fetch(apiUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -97,6 +126,11 @@ async function sendTokenToBackend(token) {
       body: JSON.stringify({
         token,
         userId: 'USER_ID', // ID of the authenticated user
+        deviceInfo: {
+          platform: Platform.OS,
+          model: Device.modelName,
+          osVersion: Platform.Version.toString()
+        }
       }),
     });
   } catch (error) {
