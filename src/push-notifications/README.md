@@ -1,12 +1,12 @@
 # Push Notifications Module
 
-This module provides functionality to send push notifications to mobile devices using Expo Push Notifications.
+Este módulo proporciona funcionalidad para enviar notificaciones push a dispositivos móviles usando Expo Push Notifications.
 
 ## Endpoints
 
 ### POST `/send-push-notification`
 
-Sends a push notification to one or more devices.
+Envía una notificación push a uno o más dispositivos.
 
 #### Request Body
 
@@ -39,9 +39,9 @@ Sends a push notification to one or more devices.
 }
 ```
 
-### POST `/push-notifications/register-device`
+### POST `/register-device`
 
-Registers a device to receive push notifications.
+Registra un dispositivo para recibir notificaciones push.
 
 #### Request Body
 
@@ -63,22 +63,22 @@ Registers a device to receive push notifications.
 {
   "success": true,
   "message": "Device registered successfully",
-  "deviceId": "device_1650123456_789"
+  "deviceId": "550e8400-e29b-41d4-a716-446655440000" // UUID v4
 }
 ```
 
-## Usage in the client application (React Native with Expo)
+## Uso en la aplicación cliente (React Native con Expo)
 
-To receive notifications in your React Native application, you need to register the device to receive push notifications and then send the Expo token to the backend.
+Para recibir notificaciones en tu aplicación React Native, necesitas registrar el dispositivo para recibir notificaciones push y luego enviar el token de Expo al backend.
 
-### Example code in React Native
+### Ejemplo de código en React Native
 
 ```javascript
 import { Platform } from 'react-native';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 
-// Register the device for push notifications
+// Registrar el dispositivo para notificaciones push
 async function registerForPushNotificationsAsync() {
   let token;
   
@@ -114,10 +114,10 @@ async function registerForPushNotificationsAsync() {
   return token;
 }
 
-// Send the token to the backend
+// Enviar el token al backend
 async function sendTokenToBackend(token) {
   try {
-    const apiUrl = 'https://your-api.com/push-notifications/register-device';
+    const apiUrl = 'http://your-api.com/register-device';
     await fetch(apiUrl, {
       method: 'POST',
       headers: {
@@ -125,7 +125,7 @@ async function sendTokenToBackend(token) {
       },
       body: JSON.stringify({
         token,
-        userId: 'USER_ID', // ID of the authenticated user
+        userId: 'USER_ID', // ID del usuario autenticado
         deviceInfo: {
           platform: Platform.OS,
           model: Device.modelName,

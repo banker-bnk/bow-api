@@ -11,6 +11,7 @@ import { Gift } from '../../gifts/entities/gift';
 import { Notification } from '../../notifications/entities/notification';
 import { GiftsPayment } from '../../gifts-payments/entities/gifts-payment';
 import { ApiProperty } from '@nestjs/swagger';
+import { DeviceToken } from '../../push-notifications/entities/device-token.entity';
 
 @Entity('users')
 export class User {
@@ -84,4 +85,7 @@ export class User {
 
   @OneToMany(() => Notification, (notification) => notification.user)
   notifications: Notification[];
+
+  @OneToMany(() => DeviceToken, (deviceToken) => deviceToken.user, { eager: false, cascade: false })
+  deviceTokens: DeviceToken[];
 }
