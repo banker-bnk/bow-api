@@ -18,6 +18,8 @@ import { NotificationsGatewayModule } from './gateway/notifications.gateway.modu
 import { User } from './users/entities/user';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { PushNotificationsModule } from './push-notifications/push-notifications.module';
+import { DeviceToken } from './push-notifications/entities/device-token.entity';
 
 @Module({
   imports: [
@@ -29,6 +31,7 @@ import { join } from 'path';
     UsersModule,
     NotificationsModule,
     NotificationsGatewayModule,
+    PushNotificationsModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DB_HOST,
@@ -36,7 +39,7 @@ import { join } from 'path';
       username: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
-      entities: [FriendInvitation, Friend, Gift, GiftsPayment, User, Notification],
+      entities: [FriendInvitation, Friend, Gift, GiftsPayment, User, Notification, DeviceToken],
       synchronize: true,
     }),
     TypeOrmModule.forFeature([
@@ -45,7 +48,8 @@ import { join } from 'path';
       Gift,
       GiftsPayment,
       User,
-      Notification
+      Notification,
+      DeviceToken
     ]),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public'), // Path to your static files

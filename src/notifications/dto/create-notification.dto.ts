@@ -1,5 +1,7 @@
-import { IsEnum, IsInt, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsInt, IsObject, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
 import { NotificationType } from '../enums/notification-type.enum';
+import { PushNotificationOptionsDto } from '../../push-notifications/dto/push-notification-options.dto';
 
 export class CreateNotificationDto {
   @IsInt()
@@ -23,4 +25,10 @@ export class CreateNotificationDto {
   @IsOptional()
   @IsString()
   message?: string;
+  
+  @IsOptional()
+  @IsObject()
+  @ValidateNested()
+  @Type(() => PushNotificationOptionsDto)
+  pushNotification?: PushNotificationOptionsDto;
 }
