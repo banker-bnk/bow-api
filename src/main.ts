@@ -18,16 +18,16 @@ async function bootstrap() {
 
   const app = await NestFactory.create(AppModule, { httpsOptions, logger: ['error', 'warn', 'log', 'debug', 'verbose'] });
 
-  // app.enableCors()
+  app.enableCors()
   // development CORS config DELETE THIS after testing
-   app.enableCors({
-     origin: '*',
-     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-     preflightContinue: false,
-     optionsSuccessStatus: 204,
-     credentials: true,
-     allowedHeaders: 'Content-Type, Accept, Authorization',
-   });
+   // app.enableCors({
+   //   origin: '*',
+   //   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+   //   preflightContinue: false,
+   //   optionsSuccessStatus: 204,
+   //   credentials: true,
+   //   allowedHeaders: 'Content-Type, Accept, Authorization',
+   // });
   
   app.useGlobalPipes(
     new ValidationPipe({
@@ -47,8 +47,8 @@ async function bootstrap() {
   const port = process.env.PORT || 3000;
   
   // Configurar la API para escuchar en todas las interfaces de red
-  await app.listen(port, '0.0.0.0');
-  // await app.listen(port);
-  console.log(`Application is running on: http://0.0.0.0:${port}`);
+  //await app.listen(port, '0.0.0.0');
+  await app.listen(port);
+  // console.log(`Application is running on: http://0.0.0.0:${port}`);
 }
 bootstrap();
