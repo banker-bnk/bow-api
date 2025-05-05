@@ -141,13 +141,27 @@ export class SeederService {
         birthday: new Date('1987-07-01'),
         image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1587&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
       },
+      {
+        userId: `google-oauth2|113609738909953733168`,
+        userName: 'imachado',
+        firstName: 'Ignacio',
+        lastName: 'Machado',
+        phone: '+1234567890',
+        address: '789 Test Ave, Test City, USA',
+        email: 'noztalgik666@gmail.com',
+        birthday: new Date('1987-07-01'),
+        image: 'https://images.unsplash.com/photo-1599566150163-29194dcaad36',
+      },
     ],
     friendships: [
       { user: 0, friend: 1 }, // John and Jane are friends (bidirectional)
+      { user: 0, friend: 3 }, // John and Test User are friends (bidirectional)
+      { user: 2, friend: 3 }, // Juan and Test User are friends (bidirectional)
     ],
     friendInvitations: [
       { sender: 0, receiver: 2 }, // John to Juan
       { sender: 2, receiver: 1 }, // Juan to Jane
+      { sender: 3, receiver: 1 }, // Test User to Jane
     ],
     gifts: [
       {
@@ -182,6 +196,28 @@ export class SeederService {
         user: 2,
         contributor: null,
         amount: 0,
+      },
+      {
+        title: "Test User's Birthday Gift",
+        description: "A special birthday gift for Test User",
+        link: 'https://www.mercadolibre.com.ar/nintendo-switch-oled-neon-version-japonesa/p/MLA1422582999',
+        image: 'http://http2.mlstatic.com/D_803086-MLA47920649105_102021-O.jpg',
+        price: 899999,
+        currency: 'ARS',
+        user: 3,
+        contributor: 0,
+        amount: 150000,
+      },
+      {
+        title: "John's Anniversary Gift",
+        description: "A special anniversary gift for John",
+        link: 'https://www.mercadolibre.com.ar/auriculares-sony-wh-1000xm5-bluetooth/p/MLA39962085',
+        image: 'http://http2.mlstatic.com/D_833941-MLU78764933573_082024-O.jpg',
+        price: 699999,
+        currency: 'ARS',
+        user: 0,
+        contributor: 3,
+        amount: 250000,
       },
     ],
   };
@@ -304,8 +340,11 @@ export class SeederService {
   private async cleanupSeededData() {
     const seededUserPattern = { pattern: `%${this.SEEDER_TAG}%` };
     
-    // First delete gift payments
-    await this.giftPaymentRepository.delete({ source: this.SEEDER_TAG });
+    // First delete gift payments for seeded gifts
+    await this.giftPaymentRepository.createQueryBuilder()
+      .delete()
+      .where(`"giftId" IN (SELECT id FROM gifts WHERE "userId" IN (SELECT id FROM users WHERE "userName" LIKE :pattern))`, seededUserPattern)
+      .execute();
 
     // Then delete gifts
     await this.giftRepository.createQueryBuilder()
@@ -328,7 +367,10 @@ export class SeederService {
       .execute();
 
     // Finally delete users
-    await this.userRepository.delete({ userName: Like(`%${this.SEEDER_TAG}%`) });
+    await this.userRepository.createQueryBuilder()
+      .delete()
+      .where(`"userName" LIKE :pattern`, seededUserPattern)
+      .execute();
   }
 
   async cleanup() {
