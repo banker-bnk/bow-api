@@ -83,7 +83,8 @@ export class GiftsPaymentsService {
         {id: giftPayment.id},
         {
           status: paymentInfo.status,
-          currency: paymentInfo.currency
+          currency: paymentInfo.currency,
+          source: paymentInfo.source
         }
       )
 
@@ -98,6 +99,7 @@ export class GiftsPaymentsService {
     const mercadoPagoPayment = await new Payment(this.mercadoPago).get({
       id: paymentId,
     });
+
     const { id } = mercadoPagoPayment.metadata;
 
     await this.updateGiftPayment(id, mercadoPagoPayment);
