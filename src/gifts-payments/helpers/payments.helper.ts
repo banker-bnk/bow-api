@@ -18,7 +18,8 @@ export const preferenceBuilder = (
       ],
       metadata: {
         user_id: preferenceDraft.userId,
-        id
+        id,
+        should_refresh: true,
       },
       operation_type: 'regular_payment',
       back_urls: {
@@ -49,7 +50,7 @@ export const getPaymentInfo = (payment: any) => {
     user: { userId: payment.metadata.user_id },
     amount: payment.transaction_amount,
     currency: payment.currency_id,
-    source: 'Mercado Pago',
+    source: payment.payment_type_id,
     createdAt: new Date(payment.date_created),
     status: payment.status,
   };
