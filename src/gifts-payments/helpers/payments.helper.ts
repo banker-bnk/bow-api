@@ -19,13 +19,12 @@ export const preferenceBuilder = (
       metadata: {
         user_id: preferenceDraft.userId,
         id,
-        should_refresh: true,
       },
       operation_type: 'regular_payment',
       back_urls: {
-        success: `${APP_SCHEMA}://${DEFAULT_REDIRECT_SCREEN}/${preferenceDraft?.id}`,
-        failure: `${APP_SCHEMA}://${DEFAULT_REDIRECT_SCREEN}/${preferenceDraft?.id}`,
-        pending: `${APP_SCHEMA}://${DEFAULT_REDIRECT_SCREEN}/${preferenceDraft?.id}`,
+        success: `${APP_SCHEMA}://${DEFAULT_REDIRECT_SCREEN}/${preferenceDraft?.id}?should_redirect=true`,
+        failure: `${APP_SCHEMA}://${DEFAULT_REDIRECT_SCREEN}/${preferenceDraft?.id}?should_redirect=false`,
+        pending: `${APP_SCHEMA}://${DEFAULT_REDIRECT_SCREEN}/${preferenceDraft?.id}?should_redirect=true`,
       },
       auto_return: 'approved',
       notification_url: `${appHostUrl}/gifts-payments/save`,
