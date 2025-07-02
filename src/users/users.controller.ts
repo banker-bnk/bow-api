@@ -7,6 +7,7 @@ import {
   UseGuards,
   Req,
   Query,
+  Logger,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { User } from './entities/user';
@@ -96,7 +97,12 @@ export class UsersController {
     description: 'User created.',
     type: [User],
   })
-  create(@Body() data: Partial<User>) {
+  async create(@Body() data: Partial<User>) {
+    const existingUser = await this.usersService.findBySub(data.userId);
+    if (existingUser) {
+      Logger.log(`User with userId ${data.userId} already exists`);
+      return existingUser;
+    }
     return this.usersService.create(data);
   }
 
