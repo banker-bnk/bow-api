@@ -54,7 +54,7 @@ export class User {
   @ApiProperty()
   birthday: Date;
 
-  @Column()
+  @Column({ nullable: true })
   @ApiProperty()
   lastSeen: Date;
 
