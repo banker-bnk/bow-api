@@ -9,8 +9,24 @@ exports.onExecutePostLogin = async (event, api) => {
     const userId = event.user.user_id;
     const userName = event.user.username ?? event.user.email ?? null;
     const email = event.user.email ?? null;
+    const firstName = event.user.given_name ?? null;
+    const lastName = event.user.family_name ?? null;
+    const phone = event.user.phone_number ?? event.user.user_metadata?.phone ?? null;
+    const address = event.user.user_metadata?.address ?? null;
+    const image = event.user.picture ?? null;
+    const birthday = event.user.user_metadata?.birthday ?? null;
   
-    console.log("User Info:", JSON.stringify({ userId, userName, email }));
+    console.log("Newly Registered User:", JSON.stringify({
+      userId,
+      userName,
+      email,
+      firstName,
+      lastName,
+      phone,
+      address,
+      image,
+      birthday
+    }));
   
     const url = "https://mpm.ddns.net/users";
   
@@ -23,7 +39,13 @@ exports.onExecutePostLogin = async (event, api) => {
         body: JSON.stringify({
           userId,
           userName,
-          email
+          email,
+          firstName,
+          lastName,
+          phone,
+          address,
+          image,
+          birthday
         })
       });
   
