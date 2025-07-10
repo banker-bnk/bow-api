@@ -11,6 +11,11 @@ BEGIN
 
 		DELETE FROM friend_invitations WHERE id = NEW.id;
     END IF;
+
+    IF NEW.status = 'REJECTED' THEN
+        DELETE FROM friend_invitations WHERE id = NEW.id;
+    END IF;
+
     RETURN NEW;
 END;
 
