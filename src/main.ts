@@ -5,6 +5,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { formatValidationErrors } from './helpers/validation-errors.helper';
 import * as fs from 'fs';
+import './instrument';
 
 dotenv.config();
 

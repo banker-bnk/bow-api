@@ -18,9 +18,12 @@ import { NotificationsGatewayModule } from './gateway/notifications.gateway.modu
 import { User } from './users/entities/user';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { SentryGlobalFilter, SentryModule } from '@sentry/nestjs/setup';
+import { APP_FILTER } from '@nestjs/core';
 
 @Module({
   imports: [
+    SentryModule.forRoot(),
     AuthzModule,
     FriendInvitationsModule,
     FriendsModule,
@@ -52,6 +55,12 @@ import { join } from 'path';
     }),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    {
+      provide: APP_FILTER,
+      useClass: SentryGlobalFilter,
+    },
+    AppService,
+  ],
 })
 export class AppModule {}
