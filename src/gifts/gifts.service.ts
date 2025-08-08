@@ -13,14 +13,20 @@ export class GiftsService {
   ) {}
 
   async findByUserId(userId: number): Promise<Gift> {
-    return this.giftsRepository.findOne({
-      where: { 
+    const gift = await this.giftsRepository.findOne({
+      where: {
         user: { id: userId },
-        active: true 
+        active: true,
       },
       relations: ['user'],
-      order: { id: 'DESC' }
+      order: { id: 'DESC' },
     });
+
+    if (!gift) {
+      throw new NotFoundException('No active gift for this user');
+    }
+
+    return gift;
   }
 
   async create(data: Partial<Gift>): Promise<Gift> {

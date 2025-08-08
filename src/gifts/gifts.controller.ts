@@ -17,8 +17,16 @@ export class GiftsController {
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('JWT')
   @ApiOperation({
-    summary: 'Get all gifts for the authenticated user.',
-    description: 'Get all gifts for the authenticated user.',
+    summary: 'Get the active gift for the authenticated user.',
+    description: 'Returns the most recent active gift for the authenticated user.',
+  })
+  @ApiResponse({
+    status: 200,
+    type: Gift,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'No active gift for this user',
   })
   async findAll(@Req() req): Promise<Gift> {
     const { id } = await this.usersService.findBySub(req.user.sub);
