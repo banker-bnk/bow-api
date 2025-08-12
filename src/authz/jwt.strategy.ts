@@ -5,6 +5,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { passportJwtSecret } from 'jwks-rsa';
 import * as dotenv from 'dotenv';
+import { Request } from 'express';
 
 dotenv.config();
 
@@ -23,11 +24,18 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       audience: process.env.AUTH0_AUDIENCE,
       issuer: `${process.env.AUTH0_ISSUER_URL}`,
       algorithms: ['RS256'],
+      passReqToCallback: true,
     });
   }
 
-  validate(payload: unknown): unknown {
+  validate(req: Request, payload: unknown): unknown {
+    // Extract the raw token from the Authorization header
+    const authHeader = req.headers.authorization;
+    const token = authHeader ? authHeader.replace('Bearer ', '') : 'No token found';
+    
+    Logger.debug(`Raw token: ${token}`);
     Logger.debug(payload, 'JWT payload');
+
     return payload;
   }
 }
