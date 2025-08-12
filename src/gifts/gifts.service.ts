@@ -18,7 +18,7 @@ export class GiftsService {
         user: { id: userId },
         active: true,
       },
-      relations: ['user'],
+      relations: ['user', 'giftsPayments'],
       order: { id: 'DESC' },
     });
 
