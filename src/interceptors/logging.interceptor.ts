@@ -15,15 +15,25 @@ export class LoggingInterceptor implements NestInterceptor {
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const request = context.switchToHttp().getRequest<Request>();
-    const { method, url, ip } = request;
+    const { method, url, ip, body } = request;
     const userAgent = request.headers['user-agent'] || 'unknown';
     const user = (request as any).user; // Extract user from request if available
     const userId = user?.sub || user?.id || 'anonymous';
-    
+
     const startTime = Date.now();
-    
+
+    // Prepare body string for logging, only if present and not empty
+    let bodyString = '';
+    if (body && Object.keys(body).length > 0) {
+      try {
+        bodyString = ` | Body: ${JSON.stringify(body)}`;
+      } catch (e) {
+        bodyString = ' | Body: [unserializable]';
+      }
+    }
+
     this.logger.log(
-      `Incoming ${method} request to ${url} from ${ip} (User: ${userId}, User-Agent: ${userAgent})`
+      `Incoming ${method} request to ${url} from ${ip} (User: ${userId}, User-Agent: ${userAgent})${bodyString}`
     );
 
     return next.handle().pipe(
