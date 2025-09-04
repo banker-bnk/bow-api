@@ -88,22 +88,21 @@ export class UsersController {
 
   
   @Post()
+  @ApiOperation({
+    summary: 'Create or update user (Upsert). If body contains an existing id, the user should be updated. If body does not contain the id, the user should be created',
+    description: 'Create or update user. If body contains an existing id, the user should be updated. If body does not contain the id, the user should be created',
+  })
   @ApiBody({
-    description: 'Dont include id, or createdAt',
+    description: 'User object to create or update.',
     type: [User],
   })
   @ApiResponse({
     status: 200,
-    description: 'User created.',
+    description: 'User created or updated.',
     type: [User],
   })
   async create(@Body() data: Partial<User>) {
-    const existingUser = await this.usersService.findBySub(data.userId);
-    if (existingUser) {
-      Logger.log(`User with userId ${data.userId} already exists`);
-      return existingUser;
-    }
-    return this.usersService.create(data);
+    return this.usersService.upsertUser(data);
   }
 
   @Get('/friends-home')

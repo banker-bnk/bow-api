@@ -47,9 +47,22 @@ export class UsersService {
     };
   }
 
-  create(data: Partial<User>) {
-    const user = this.usersRepository.create(data);
-    return this.usersRepository.save(user);
+  async upsertUser(data: Partial<User>): Promise<User> {
+    let user;
+
+    if (data.id) 
+      user = await this.usersRepository.findOne({ where: { id: data.id } });
+    
+    if (user) {
+      // Update existing user
+      const pastId = user.id;
+      user = { ...user, ...data, id: pastId };
+      
+    } else {
+      user = this.usersRepository.create(data);
+    }
+
+    return await this.usersRepository.save(user);
   }
 
   async findById(userId: string): Promise<User> {
