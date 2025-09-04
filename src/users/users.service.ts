@@ -52,12 +52,14 @@ export class UsersService {
 
     if (data.id) 
       user = await this.usersRepository.findOne({ where: { id: data.id } });
+    else if (data.userId)
+      user = await this.usersRepository.findOne({ where: { userId: data.userId } });
     
     if (user) {
       // Update existing user
       const pastId = user.id;
       user = { ...user, ...data, id: pastId };
-      
+
     } else {
       user = this.usersRepository.create(data);
     }
