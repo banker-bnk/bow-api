@@ -4,6 +4,7 @@ import {
   CreateDateColumn,
   OneToMany,
   PrimaryGeneratedColumn,
+  Unique,
 } from 'typeorm';
 import { FriendInvitation } from '../../friend-invitations/entities/friend-invitation';
 import { Friend } from '../../friends/entities/friend';
@@ -20,10 +21,12 @@ export class User {
 
   @Column()
   @ApiProperty()
+  @Unique(['userId'])
   userId: string; // Storing user.sub attribute from Auth0
 
   @Column()
   @ApiProperty()
+  @Unique(['userName'])
   userName: string;
 
   @Column({ nullable: true })
@@ -36,6 +39,7 @@ export class User {
 
   @Column({ nullable: true })
   @ApiProperty()
+  @Unique(['email'])
   email: string;
 
   @Column({ nullable: true })
