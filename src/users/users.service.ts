@@ -129,7 +129,7 @@ export class UsersService {
         result[monthName] = [];
       }
       
-      const personAge = age(birthday);
+      const personAge = person.birthday ? age(birthday) : null;
       
       result[monthName].push({ ...person, age: personAge, birthdayFormatted });
     });
@@ -165,7 +165,7 @@ export class UsersService {
       }
 
       const birthdayFormatted = person.birthday ? mmdd(birthday) : null;
-      const personAge = age(birthday);
+      const personAge = person.birthday ? age(birthday) : null;
       
       // Categorize based on the difference in days
       if (diffInDays <= 30) {
