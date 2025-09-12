@@ -122,7 +122,7 @@ export class UsersService {
       const birthday = new Date(person.birthday);
       const monthName = monthNames[birthday.getMonth()];
       
-      const birthdayFormatted = mmdd(birthday);
+      const birthdayFormatted = person.birthday ? mmdd(birthday) : null;
       
       // Initialize array for month if it doesn't exist
       if (!result[monthName]) {
@@ -164,7 +164,7 @@ export class UsersService {
         diffInDays += 365; // Account for wrap-around in the calendar
       }
 
-      const birthdayFormatted = mmdd(birthday);
+      const birthdayFormatted = person.birthday ? mmdd(birthday) : null;
       const personAge = age(birthday);
       
       // Categorize based on the difference in days
