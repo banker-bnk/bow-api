@@ -4,4 +4,7 @@ export interface IPreferenceBody {
   productName: string;
   userId: string;
   id?: number;
+  environment?: TMercadoPagoEnvironmentType;
 }
+
+export type TMercadoPagoEnvironmentType = 'dev' | 'prod';

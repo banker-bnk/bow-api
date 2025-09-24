@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { TMercadoPagoEnvironmentType } from '../interfaces/preference.interface';
 
 export class PreferenceDto {
   @ApiProperty({
@@ -50,6 +51,15 @@ export class PreferenceDto {
   })
   @IsNumber()
   id: number;
+
+  @ApiProperty({
+    description: 'environment (temporal variable)',
+    type: 'string',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  environment?: TMercadoPagoEnvironmentType;
 
   constructor(partial: Partial<PreferenceDto> = {}) {
     Object.assign(this, partial);

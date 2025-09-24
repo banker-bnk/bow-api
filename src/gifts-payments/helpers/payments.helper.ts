@@ -4,7 +4,7 @@ import { IPreferenceBody } from '../interfaces/preference.interface';
 export const preferenceBuilder = (
   preferenceDraft: IPreferenceBody,
   appHostUrl: string,
-  id: number
+  id: number,
 ) => {
   return {
     body: {
@@ -19,6 +19,7 @@ export const preferenceBuilder = (
       metadata: {
         user_id: preferenceDraft.userId,
         id,
+        environment: preferenceDraft?.environment || 'dev',
       },
       operation_type: 'regular_payment',
       back_urls: {

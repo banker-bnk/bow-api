@@ -49,12 +49,14 @@ export class GiftsPaymentsController {
   async save(@Body() body: any, @Res() res: Response) {
     try {
       const paymentId = body?.data?.id;
+      const environment = body?.data?.metadata?.environment || body?.data?.environment;
+      console.log('Mercado Pago environment', environment)
 
       if (!paymentId) {
         return res.status(HttpStatus.NOT_FOUND).json({ success: false });
       }
 
-      await this.giftsPaymentsService.savePaymentData(body?.data?.id);
+      await this.giftsPaymentsService.savePaymentData(paymentId, environment);
 
       return res.status(HttpStatus.OK).json({ success: true });
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
