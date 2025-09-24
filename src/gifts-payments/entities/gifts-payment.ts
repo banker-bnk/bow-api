@@ -29,6 +29,9 @@ export class GiftsPayment {
   @Column()
   source: string;
 
+  @Column({ nullable: true })
+  environment: string;
+
   @Column({ type: 'enum', enum: PAYMENT_STATUS, nullable: true })
   status: PAYMENT_STATUS;
 
