@@ -48,6 +48,7 @@ export class GiftsPaymentsController {
   })
   async save(@Body() body: any, @Res() res: Response) {
     try {
+      console.log('response from MP', JSON.stringify(body, null, 2))
       const paymentId = body?.data?.id;
       const environment = body?.data?.metadata?.environment || body?.data?.environment;
       console.log('Mercado Pago environment', environment)
