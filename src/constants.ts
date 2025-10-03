@@ -13,3 +13,14 @@ export enum PAYMENT_STATUS {
   REFUNDED = 'refunded',
   CHARGED_BACK = 'charged_back'
 }
+
+export enum SHIPPING_STATUS {
+  NOT_SHIPPED = 'not_shipped',
+  PREPARING = 'preparing',
+  SHIPPED = 'shipped',
+  IN_TRANSIT = 'in_transit',
+  OUT_FOR_DELIVERY = 'out_for_delivery',
+  DELIVERED = 'delivered',
+  FAILED_DELIVERY = 'failed_delivery',
+  RETURNED = 'returned'
+}
