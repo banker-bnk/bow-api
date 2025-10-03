@@ -5,7 +5,7 @@ export const preferenceBuilder = (
   preferenceDraft: IPreferenceBody,
   appHostUrl: string,
   id: number,
-  externalReference?: string | number,
+  external_reference?: string | number,
   additional_info?: string | number
 ) => {
   return {
@@ -31,7 +31,8 @@ export const preferenceBuilder = (
       },
       auto_return: 'approved',
       notification_url: `${appHostUrl}/gifts-payments/save`,
-      externalReference
+      external_reference,
+      additional_info
     },
   };
 };
