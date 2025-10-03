@@ -13,7 +13,7 @@ export class GiftsController {
     private readonly usersService: UsersService,
   ) {}
 
-  @Get()
+  @Get("own")
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('JWT')
   @ApiOperation({
@@ -28,7 +28,7 @@ export class GiftsController {
     status: 404,
     description: 'No active gift for this user',
   })
-  async findAll(@Req() req): Promise<Gift> {
+  async findByUserId(@Req() req): Promise<Gift> {
     const { id } = await this.usersService.findBySub(req.user.sub);
     return this.giftsService.findByUserId(id);
   }

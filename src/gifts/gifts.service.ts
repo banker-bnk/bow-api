@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable, NotFoundException, HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { MeliService } from "../meli/meli.service"
@@ -18,7 +18,7 @@ export class GiftsService {
         user: { id: userId },
         active: true,
       },
-      relations: ['user', 'giftsPayments'],
+      relations: ['user', 'giftsPayments', 'giftsPayments.user'],
       order: { id: 'DESC' },
     });
 
