@@ -67,6 +67,8 @@ export class GiftsPaymentsService {
        preferenceDto,
        process.env.APP_HOST_URL,
        id,
+       id,
+       id
      );
  
      const preference = await new Preference(mercadoPagoCredentials).create(
