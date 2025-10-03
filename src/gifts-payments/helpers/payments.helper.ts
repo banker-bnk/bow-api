@@ -5,8 +5,8 @@ export const preferenceBuilder = (
   preferenceDraft: IPreferenceBody,
   appHostUrl: string,
   id: number,
-  external_reference?: string | number,
-  additional_info?: string | number
+  external_reference?: any,
+  additional_info?: any
 ) => {
   return {
     body: {
