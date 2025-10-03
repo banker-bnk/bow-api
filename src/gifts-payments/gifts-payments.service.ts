@@ -60,6 +60,7 @@ export class GiftsPaymentsService {
     try {
     const { id } = await this.createInitPayment(preferenceDto);
 
+    console.log('bow-api/ create preference / mercadoPago credentials', preferenceDto?.environment)
     const mercadoPagoCredentials = this.handleMercadoPagoCredentials(preferenceDto?.environment || 'dev');
  
      const preferenceData = preferenceBuilder(
@@ -72,6 +73,7 @@ export class GiftsPaymentsService {
        preferenceData,
      );
 
+     console.log('bow-api/ create preference / mercadoPago preference', preference)
      return preference;
     } catch (error) {
       this.logger.error('Error creating preference');
@@ -91,13 +93,14 @@ export class GiftsPaymentsService {
       }
   
       const paymentInfo = getPaymentInfo(mercadoPagoPayment);
+      console.log('bow-api/ update gift payment / paymentInfo', paymentInfo)
   
       await this.giftsPaymentsRepository.update(
         {id: giftPayment.id},
         {
           status: paymentInfo.status,
           currency: paymentInfo.currency,
-          source: paymentInfo.source
+          source: paymentInfo.source,
         }
       )
 
@@ -113,6 +116,8 @@ export class GiftsPaymentsService {
     const mercadoPagoPayment = await new Payment(mercadoPagoCredentials).get({
       id: paymentId,
     });
+
+    console.log('bow-api/ save payment data / mercadoPagoPayment', mercadoPagoPayment)
 
     const { id } = mercadoPagoPayment.metadata;
 
