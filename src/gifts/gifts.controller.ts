@@ -33,6 +33,26 @@ export class GiftsController {
     return this.giftsService.findByUserId(id);
   }
 
+  @Get()
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('JWT')
+  @ApiOperation({
+    summary: '[DEPRECATED - Use /gifts/own] Get the active gift for the authenticated user.',
+    description: 'Returns the most recent active gift for the authenticated user. This endpoint is deprecated, use /gifts/own instead.',
+  })
+  @ApiResponse({
+    status: 200,
+    type: Gift,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'No active gift for this user',
+  })
+  async findAll(@Req() req): Promise<Gift> {
+    const { id } = await this.usersService.findBySub(req.user.sub);
+    return this.giftsService.findByUserId(id);
+  }
+
   @Get(':id')
   @ApiBearerAuth('JWT')
   @UseGuards(AuthGuard('jwt'))
