@@ -7,7 +7,6 @@ import { MercadoPagoConfig, Payment, Preference } from 'mercadopago';
 import { getPaymentInfo, preferenceBuilder } from './helpers/payments.helper';
 import { PreferenceDto } from './dto/preference.dto';
 import { PAYMENT_STATUS } from '../constants';
-import { TMercadoPagoEnvironmentType } from './interfaces/preference.interface';
 
 @Injectable()
 export class GiftsPaymentsService {
@@ -20,20 +19,10 @@ export class GiftsPaymentsService {
     @InjectRepository(User)
     private usersRepository: Repository<User>,
   ) {
-    // this.mercadoPago = new MercadoPagoConfig({
-    //   accessToken: process.env.MP_ACCESS_TOKEN,
-    // });
+    this.mercadoPago = new MercadoPagoConfig({
+      accessToken: process.env.MP_ACCESS_TOKEN_PROD,
+    });
   }
-
-  private handleMercadoPagoCredentials(environment: 'dev' | 'prod' = 'dev'): MercadoPagoConfig {
-    const accessToken = environment === 'prod'
-      ? process.env.MP_ACCESS_TOKEN_PROD
-      : process.env.MP_ACCESS_TOKEN
-
-    accessToken === process.env.MP_ACCESS_TOKEN_PROD ? this.logger.log('Using Mercado Pago prod credentials') : this.logger.log('Using Mercado Pago dev credentials');
-
-    return new MercadoPagoConfig({ accessToken })
-  };
 
   async findAll(userId: string) {
     const payments = await this.giftsPaymentsRepository.find({
@@ -58,21 +47,19 @@ export class GiftsPaymentsService {
 
   async createPreference(preferenceDto: PreferenceDto) {
     try {
-    const { id } = await this.createInitPayment(preferenceDto);
-
-    const mercadoPagoCredentials = this.handleMercadoPagoCredentials(preferenceDto?.environment || 'dev');
- 
-     const preferenceData = preferenceBuilder(
+      const { id } = await this.createInitPayment(preferenceDto);
+      
+      const preferenceData = preferenceBuilder(
        preferenceDto,
        process.env.APP_HOST_URL,
-       id,
-     );
+       id
+      );
  
-     const preference = await new Preference(mercadoPagoCredentials).create(
-       preferenceData,
-     );
+      const preference = await new Preference(this.mercadoPago).create(
+        preferenceData,
+      );
 
-     return preference;
+      return preference;
     } catch (error) {
       this.logger.error('Error creating preference');
       throw error;
@@ -108,9 +95,8 @@ export class GiftsPaymentsService {
     
   }
 
-  async savePaymentData(paymentId: string, environment?: TMercadoPagoEnvironmentType) {
-    const mercadoPagoCredentials = this.handleMercadoPagoCredentials(environment);
-    const mercadoPagoPayment = await new Payment(mercadoPagoCredentials).get({
+  async savePaymentData(paymentId: string) {
+    const mercadoPagoPayment = await new Payment(this.mercadoPago).get({
       id: paymentId,
     });
 
