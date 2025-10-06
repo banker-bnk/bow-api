@@ -13,6 +13,42 @@ export class GiftsController {
     private readonly usersService: UsersService,
   ) {}
 
+  @Get()
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('JWT')
+  @ApiOperation({
+    summary: 'Get all gifts for the authenticated user.',
+    description: 'Returns all gifts for the authenticated user ordered by creation date (desc).',
+  })
+  @ApiResponse({
+    status: 200,
+    type: [Gift],
+  })
+  async findAllByUser(@Req() req): Promise<Gift[]> {
+    const { id } = await this.usersService.findBySub(req.user.sub);
+    return this.giftsService.findAllByUserId(id);
+  }
+
+  @Get("last-successful")
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('JWT')
+  @ApiOperation({
+    summary: 'Get the last successful gift for the authenticated user.',
+    description: 'Returns the most recently created successful gift for the authenticated user.',
+  })
+  @ApiResponse({
+    status: 200,
+    type: Gift,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'No successful gifts for this user',
+  })
+  async findLastSuccessfulByUser(@Req() req): Promise<Gift> {
+    const { id } = await this.usersService.findBySub(req.user.sub);
+    return this.giftsService.findLastSuccessfulByUserId(id);
+  }
+
   @Get("own")
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('JWT')
@@ -29,26 +65,6 @@ export class GiftsController {
     description: 'No active gift for this user',
   })
   async findByUserId(@Req() req): Promise<Gift> {
-    const { id } = await this.usersService.findBySub(req.user.sub);
-    return this.giftsService.findByUserId(id);
-  }
-
-  @Get()
-  @UseGuards(AuthGuard('jwt'))
-  @ApiBearerAuth('JWT')
-  @ApiOperation({
-    summary: '[DEPRECATED - Use /gifts/own] Get the active gift for the authenticated user.',
-    description: 'Returns the most recent active gift for the authenticated user. This endpoint is deprecated, use /gifts/own instead.',
-  })
-  @ApiResponse({
-    status: 200,
-    type: Gift,
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'No active gift for this user',
-  })
-  async findAll(@Req() req): Promise<Gift> {
     const { id } = await this.usersService.findBySub(req.user.sub);
     return this.giftsService.findByUserId(id);
   }

@@ -12,6 +12,33 @@ export class GiftsService {
     private readonly meliService: MeliService,
   ) {}
 
+  async findAllByUserId(userId: number): Promise<Gift[]> {
+    return this.giftsRepository.find({
+      where: {
+        user: { id: userId },
+      },
+      relations: ['user', 'giftsPayments', 'giftsPayments.user'],
+      order: { createdAt: 'DESC' },
+    });
+  }
+
+  async findLastSuccessfulByUserId(userId: number): Promise<Gift> {
+    const gift = await this.giftsRepository.findOne({
+      where: {
+        user: { id: userId },
+        successful: true,
+      },
+      relations: ['user', 'giftsPayments', 'giftsPayments.user'],
+      order: { createdAt: 'DESC' },
+    });
+
+    if (!gift) {
+      throw new NotFoundException('No successful gifts for this user');
+    }
+
+    return gift;
+  }
+
   async findByUserId(userId: number): Promise<Gift> {
     const gift = await this.giftsRepository.findOne({
       where: {
