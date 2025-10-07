@@ -140,9 +140,26 @@ export class UsersService {
 
     return result;
   }
+  async getFriendsWithActiveGift(userId: string) {
+    // This query returns friends of the user, each with their associated active gift (if any)
+    // A friend is any user who is in a friendship relation with the given userId
+    // The gift is included only if it is active (g.active = true)
+    const friendsWithGifts = await this.usersRepository
+      .createQueryBuilder('u')
+      .leftJoinAndSelect('u.gifts', 'g', 'g.active = true')
+      .innerJoin(
+        'friends',
+        'f',
+        '(f.friendId = u.id AND f.userId = (SELECT id FROM users WHERE "userId" = :userId)) OR (f.userId = u.id AND f.friendId = (SELECT id FROM users WHERE "userId" = :userId))',
+        { userId }
+      )
+      .getMany();
+
+    return friendsWithGifts;
+  }
 
   async friendsBirthdayUpcoming(userId: string) {
-    const data = await this.getFriendsBirthdays(userId);
+    const data = await this.getFriendsWithActiveGift(userId);
     const now = new Date();
     const currentMonthDay = new Date(0, now.getMonth(), now.getDate()); // Ignore year in the given date
 
