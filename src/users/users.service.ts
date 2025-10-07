@@ -118,18 +118,22 @@ export class UsersService {
     ];
 
     data.forEach(person => {
-      
+      if (!person.birthday) {
+        // Skip friends with null birthday
+        return;
+      }
+
       const birthday = new Date(person.birthday);
       const monthName = monthNames[birthday.getMonth()];
       
-      const birthdayFormatted = person.birthday ? mmdd(birthday) : null;
+      const birthdayFormatted = mmdd(birthday);
       
       // Initialize array for month if it doesn't exist
       if (!result[monthName]) {
         result[monthName] = [];
       }
       
-      const personAge = person.birthday ? age(birthday) : null;
+      const personAge = age(birthday);
       
       result[monthName].push({ ...person, age: personAge, birthdayFormatted });
     });
