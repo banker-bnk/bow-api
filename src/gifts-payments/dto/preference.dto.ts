@@ -51,6 +51,15 @@ export class PreferenceDto {
   @IsNumber()
   id: number;
 
+  @ApiProperty({
+    description: 'Message to the gift receiver',
+    type: 'string',
+    minLength: 1,
+    required: false,
+  })
+  @IsString()
+  message?: string;
+
   constructor(partial: Partial<PreferenceDto> = {}) {
     Object.assign(this, partial);
   }
