@@ -146,6 +146,52 @@ export class UsersService {
     const now = new Date();
     const currentMonthDay = new Date(0, now.getMonth(), now.getDate()); // Ignore year in the given date
 
+    const result = [];
+
+    data.forEach((person) => {
+      if (!person.birthday) {
+        return;
+      }
+      const birthday = new Date(person.birthday); // Convert birthday to a Date object
+      const birthdayMonthDay = new Date(
+        0,
+        birthday.getMonth(),
+        birthday.getDate(),
+      ); // Ignore year in the birthday
+
+      // Calculate the difference in days
+      let diffInDays = Math.ceil(
+        (birthdayMonthDay.getTime() - currentMonthDay.getTime()) /
+          (1000 * 60 * 60 * 24),
+      );
+
+      // Adjust for dates in the next calendar year
+      if (diffInDays < 0) {
+        diffInDays += 365; // Account for wrap-around in the calendar
+      }
+
+      const birthdayFormatted = person.birthday ? mmdd(birthday) : null;
+      const personAge = person.birthday ? age(birthday) : null;
+
+      result.push({ 
+        ...person, 
+        age: personAge, 
+        birthdayFormatted, 
+        daysUntilBirthday: diffInDays 
+      });
+    });
+
+    // Optionally, sort by daysUntilBirthday ascending
+    result.sort((a, b) => a.daysUntilBirthday - b.daysUntilBirthday);
+
+    return result;
+  }
+
+  async friendsBirthdayUpcomingGrouped(userId: string) {
+    const data = await this.getFriendsBirthdays(userId);
+    const now = new Date();
+    const currentMonthDay = new Date(0, now.getMonth(), now.getDate()); // Ignore year in the given date
+
     const in30 = [];
     const in60 = [];
     const soon = [];
