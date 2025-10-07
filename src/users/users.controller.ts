@@ -110,7 +110,7 @@ export class UsersController {
   @ApiBearerAuth('JWT')
   @ApiOperation({
     summary:
-      'Get friends birthdays grouped by upcoming birthdays. UserId is retrieved from the JWT.',
+      'Get friends birthdays sorted by upcoming birthdays. UserId is retrieved from the JWT.',
     description: 'This endpoint retrieves friends birthdays for a given user retrieved from the JWT.',
   })
   friendsHome(
