@@ -98,7 +98,7 @@ export class UsersService {
       '(f.friendId = u.id AND f.userId = (SELECT id FROM users WHERE "userId" = :userId)) OR (f.userId = u.id AND f.friendId = (SELECT id FROM users WHERE "userId" = :userId))',
       { userId: userId }
     )
-    .where('g.active = true')
+    //.where('g.active = true')   Esta linea hace que no se tiren friends que no tienen un gift activo. No se para que lo habia puesto.
     .orderBy('EXTRACT(MONTH FROM u.birthday)')
     .addOrderBy('EXTRACT(DAY FROM u.birthday)')
     .getManyAndCount();
