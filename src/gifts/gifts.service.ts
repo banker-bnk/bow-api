@@ -39,7 +39,7 @@ export class GiftsService {
     return gift;
   }
 
-  async findByUserId(userId: number): Promise<Gift> {
+  async findByUserId(userId: number): Promise<Gift & { totalAmount: string }> {
     const gift = await this.giftsRepository.findOne({
       where: {
         user: { id: userId },
@@ -53,7 +53,14 @@ export class GiftsService {
       throw new NotFoundException('No active gift for this user');
     }
 
-    return gift;
+    const totalAmount = gift.giftsPayments
+      ? gift.giftsPayments.reduce((sum, payment) => sum + Number(payment.amount), 0).toFixed(2)
+      : "0.00";
+
+    return {
+      ...gift,
+      totalAmount,
+    };
   }
 
   async create(data: Partial<Gift>): Promise<Gift> {
@@ -74,35 +81,29 @@ export class GiftsService {
     return this.giftsRepository.delete({ id, user: { id: userId } });
   }
 
-  async findById(id: number) {
-    const gift = await this.giftsRepository
-      .createQueryBuilder('gift')
-      .leftJoinAndSelect('gift.giftsPayments', 'giftsPayments')
-      .leftJoinAndSelect('giftsPayments.user', 'user')
-      .select([
-        'gift',
-        'giftsPayments.amount',
-        'user.id',
-        'user.userName',
-        'user.lastName',
-        'user.image',
-      ])
-      .where('gift.id = :id', { id })
-      .getOne();
+  async findById(id: number): Promise<Gift & { totalAmount: string }> {
+    const gift = await this.giftsRepository.findOne({
+      where: {
+        id,
+        active: true,
+      },
+      relations: ['user', 'giftsPayments', 'giftsPayments.user'],
+      order: { id: 'DESC' },
+    });
 
     if (!gift) {
-      throw new NotFoundException(`Gift with ID ${id} not found`);
+      throw new NotFoundException('No active gift for this user');
     }
 
     const totalAmount = gift.giftsPayments
-      .reduce((sum, payment) => {
-        return sum + Number(payment.amount);
-      }, 0)
-      .toFixed(2);
+      ? gift.giftsPayments.reduce((sum, payment) => sum + Number(payment.amount), 0).toFixed(2)
+      : "0.00";
 
     return {
       ...gift,
       totalAmount,
     };
   }
+
+  
 }
