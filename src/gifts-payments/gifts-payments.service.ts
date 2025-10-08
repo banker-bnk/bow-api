@@ -40,7 +40,7 @@ export class GiftsPaymentsService {
       currency: 'ARS',
       source: 'Mercado Pago',
       status: PAYMENT_STATUS.INIT,
-      message: preferenceDto?.message
+      ...(preferenceDto?.message && {message: preferenceDto?.message})
     }) as unknown as GiftsPayment;
 
     return initPayment
