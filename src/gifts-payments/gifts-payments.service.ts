@@ -7,6 +7,7 @@ import { MercadoPagoConfig, Payment, Preference } from 'mercadopago';
 import { getPaymentInfo, preferenceBuilder } from './helpers/payments.helper';
 import { PreferenceDto } from './dto/preference.dto';
 import { PAYMENT_STATUS } from '../constants';
+import { EmailService } from '../helpers/email.service';
 
 @Injectable()
 export class GiftsPaymentsService {
@@ -18,6 +19,7 @@ export class GiftsPaymentsService {
     private giftsPaymentsRepository: Repository<GiftsPayment>,
     @InjectRepository(User)
     private usersRepository: Repository<User>,
+    private emailService: EmailService,
   ) {
     this.mercadoPago = new MercadoPagoConfig({
       accessToken: process.env.MP_ACCESS_TOKEN_PROD,
@@ -71,6 +73,7 @@ export class GiftsPaymentsService {
     try {
       const giftPayment = await this.giftsPaymentsRepository.findOne({
         where: { id },
+        relations: ['user'],
       });
   
       if (!giftPayment) {
@@ -90,6 +93,19 @@ export class GiftsPaymentsService {
       )
 
       this.logger.log(`Updated giftPayment with id:${id}, status: ${paymentInfo.status}`)
+
+      // Send confirmation email if payment is approved
+      if (paymentInfo.status === PAYMENT_STATUS.APPROVED && giftPayment.user?.email) {
+        try {
+          await this.emailService.sendPaymentConfirmation(
+            giftPayment.user.email,
+            giftPayment.amount,
+            paymentInfo.currency,
+          );
+        } catch (emailError) {
+          this.logger.error('Failed to send confirmation email', emailError);
+        }
+      }
     } catch (error) {
       this.logger.error(`Error updating giftPayment with id:${id}`, error);
     }
