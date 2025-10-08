@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class PreferenceDto {
   @ApiProperty({
@@ -57,6 +57,7 @@ export class PreferenceDto {
     minLength: 1,
     required: false,
   })
+  @IsOptional()
   @IsString()
   message?: string;
 
