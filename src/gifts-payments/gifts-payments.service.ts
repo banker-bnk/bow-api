@@ -98,6 +98,7 @@ export class GiftsPaymentsService {
       if (paymentInfo.status === PAYMENT_STATUS.APPROVED && giftPayment.user?.email) {
         try {
           const userName = giftPayment.user.firstName || giftPayment.user.userName;
+          this.logger.log(`GiftPayment data - id: ${giftPayment.id}, amount: ${giftPayment.amount}, type: ${typeof giftPayment.amount}`);
           await this.emailService.sendPaymentConfirmation(
             giftPayment.user.email,
             userName,

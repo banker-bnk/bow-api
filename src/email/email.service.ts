@@ -47,15 +47,13 @@ export class EmailService {
       return;
     }
 
-    this.logger.log(`Preparing email - amount: ${amount}, type: ${typeof amount}, currency: ${currency}, user: ${userName}`);
-
     const email = {
       subject: 'Payment Confirmation',
       template: {
         id: '49200',
         variables: {
           user: userName,
-          amount: String(amount),
+          payment_amount: amount,
           currency: currency,
         },
       },
