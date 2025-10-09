@@ -7,7 +7,7 @@ import { MercadoPagoConfig, Payment, Preference } from 'mercadopago';
 import { getPaymentInfo, preferenceBuilder } from './helpers/payments.helper';
 import { PreferenceDto } from './dto/preference.dto';
 import { PAYMENT_STATUS } from '../constants';
-import { EmailService } from '../helpers/email.service';
+import { EmailService } from '../email/email.service';
 
 @Injectable()
 export class GiftsPaymentsService {
@@ -97,8 +97,10 @@ export class GiftsPaymentsService {
       // Send confirmation email if payment is approved
       if (paymentInfo.status === PAYMENT_STATUS.APPROVED && giftPayment.user?.email) {
         try {
+          const userName = giftPayment.user.firstName || giftPayment.user.userName;
           await this.emailService.sendPaymentConfirmation(
             giftPayment.user.email,
+            userName,
             giftPayment.amount,
             paymentInfo.currency,
           );

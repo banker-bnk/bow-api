@@ -30,6 +30,7 @@ export class EmailService {
 
   async sendPaymentConfirmation(
     toEmail: string,
+    userName: string,
     amount: number,
     currency: string,
   ): Promise<void> {
@@ -47,9 +48,15 @@ export class EmailService {
     }
 
     const email = {
-      html: `<p>Hello World</p><p>Your payment of ${amount} ${currency} has been received!</p>`,
-      text: `Hello World. Your payment of ${amount} ${currency} has been received!`,
       subject: 'Payment Confirmation',
+      template: {
+        id: '49200',
+        variables: {
+          user: userName,
+          amount: amount.toString(),
+          currency: currency,
+        },
+      },
       from: {
         name: fromName,
         email: fromEmail,
