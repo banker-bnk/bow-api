@@ -50,10 +50,10 @@ export class EmailService {
     const email = {
       subject: 'Payment Confirmation',
       template: {
-        id: '49200',
+        id: 49200,
         variables: {
           user: userName,
-          paymentAmount: amount,
+          amount: amount,
           currency: currency,
         },
       },
@@ -68,7 +68,7 @@ export class EmailService {
       ],
     };
 
-    this.logger.log(`Email variables: ${JSON.stringify(email.template.variables)}`);
+    this.logger.log(`Full email payload: ${JSON.stringify(email, null, 2)}`);
 
     return new Promise((resolve, reject) => {
       sendpulse.smtpSendMail(
