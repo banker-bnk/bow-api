@@ -53,7 +53,7 @@ export class EmailService {
         id: '49200',
         variables: {
           user: userName,
-          amount: amount,
+          paymentAmount: amount,
           currency: currency,
         },
       },
