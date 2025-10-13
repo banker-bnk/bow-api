@@ -67,6 +67,21 @@ export class GiftsPaymentsService {
     }
   }
 
+  async findByExternalIdForUser(userSub: string, externalId: string) {
+    // Return payments with the given external_id where the current user either made the payment
+    // or is the owner of the gift that received the payment
+    return this.giftsPaymentsRepository
+      .createQueryBuilder('gp')
+      .leftJoinAndSelect('gp.user', 'user')
+      .leftJoinAndSelect('gp.gift', 'gift')
+      .leftJoinAndSelect('gift.user', 'giftOwner')
+      .where('gp.external_id = :externalId', { externalId })
+      .andWhere('(user.userId = :userSub OR giftOwner.userId = :userSub)', {
+        userSub,
+      })
+      .getMany();
+  }
+
   async updateGiftPayment(id: number, mercadoPagoPayment: any) {
     try {
       const giftPayment = await this.giftsPaymentsRepository.findOne({

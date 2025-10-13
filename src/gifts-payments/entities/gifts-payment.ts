@@ -35,6 +35,9 @@ export class GiftsPayment {
   @Column({ type: 'enum', enum: PAYMENT_STATUS, nullable: true })
   status: PAYMENT_STATUS;
 
+  @Column({ nullable: true })
+  external_id: string
+
   @CreateDateColumn()
   createdAt: Date;
 }

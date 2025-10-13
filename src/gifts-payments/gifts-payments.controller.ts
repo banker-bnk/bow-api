@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { GiftsPaymentsService } from './gifts-payments.service';
 import { GiftsPayment } from './entities/gifts-payment';
-import { ApiBearerAuth, ApiBody, ApiOperation } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiQuery } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { Response } from 'express';
 import { PreferenceDto } from './dto/preference.dto';
@@ -84,5 +84,29 @@ export class GiftsPaymentsController {
   create(@Req() req, @Body() data: Partial<GiftsPayment>) {
     data.user = req.user.sub;
     return this.giftsPaymentsService.create(data);
+  }
+
+  @Get('by-external-id')
+  @ApiOperation({
+    summary:
+      'Get payments by external_id where current user is payer or gift owner.',
+  })
+  @ApiQuery({ name: 'external_id', required: true, type: String })
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('JWT')
+  async findByExternalId(@Req() req, @Req() _req, @Res() res: Response) {
+    const externalId = (req.query as any)?.external_id as string;
+
+    if (!externalId) {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        message: 'external_id query param is required',
+      });
+    }
+
+    const data = await this.giftsPaymentsService.findByExternalIdForUser(
+      req.user.sub,
+      externalId,
+    );
+    return res.status(HttpStatus.OK).json(data);
   }
 }
