@@ -57,6 +57,52 @@ export class MessagesController {
     return await this.messagesService.create(data);
   }
 
+  @Post("/system")
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('JWT')
+  @ApiOperation({
+    summary: 'Create a message from System.',
+    description: 'Create a message from System. Sender will be hardcoded with System info. Only pass receiver, subject and message. All others are auto filled.',
+  })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        receiver: { type: 'object' },
+        subject: { type: 'string' },
+        message: { type: 'string' },
+      },
+      required: ['receiver', 'subject', 'message'],
+    },
+  })
+  @ApiResponse({ status: 201, type: Message })
+  async createSystem(@Body() data: Partial<Message>): Promise<Message> {
+    data.sender = null;
+    var message = await this.messagesService.create(data);
+    message.sender = {
+      id: -1,
+      userId: "Bow",
+      userName: "Bow",
+      email: "",
+      phone: "",
+      firstName: "Bow",
+      lastName: "Bow",
+      image: "https://res.cloudinary.com/dqpicciui/image/upload/v1760443941/icon_fczjxb.png",
+      address: "",
+      birthday: null,
+      lastSeen: null,
+      createdAt: null,
+      sentInvitations: [],
+      receivedInvitations: [],
+      friends: [],
+      gifts: [],
+      giftPayments: [],
+      notifications: []
+    };
+
+    return message;
+  }
+
   @Patch(':id/read')
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('JWT')
