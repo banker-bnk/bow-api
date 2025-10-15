@@ -82,7 +82,10 @@ export class GiftsPaymentsService {
       .getMany();
   }
 
-  async updateGiftPayment(id: number, mercadoPagoPayment: any) {
+  async updateGiftPayment(
+    id: number, 
+    paymentId: string, 
+    mercadoPagoPayment: any) {
     try {
       const giftPayment = await this.giftsPaymentsRepository.findOne({
         where: { id },
@@ -100,7 +103,8 @@ export class GiftsPaymentsService {
         {
           status: paymentInfo.status,
           currency: paymentInfo.currency,
-          source: paymentInfo.source
+          source: paymentInfo.source,
+          external_id: paymentId,
         }
       )
 
@@ -118,7 +122,7 @@ export class GiftsPaymentsService {
 
     const { id } = mercadoPagoPayment.metadata;
 
-    await this.updateGiftPayment(id, mercadoPagoPayment);
+    await this.updateGiftPayment(id, paymentId, mercadoPagoPayment);
     
     return undefined;
   }
