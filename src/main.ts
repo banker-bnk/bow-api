@@ -4,6 +4,7 @@ import * as dotenv from 'dotenv';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { formatValidationErrors } from './helpers/validation-errors.helper';
+import { configureServerTimeouts, configureServerErrorHandlers } from './helpers/server.helper';
 import * as fs from 'fs';
 import './instrument';
 
@@ -37,5 +38,8 @@ async function bootstrap() {
 
   const port = process.env.PORT || 3000;
   await app.listen(port);
+
+  configureServerTimeouts(app);
+  configureServerErrorHandlers(app);
 }
 bootstrap();
