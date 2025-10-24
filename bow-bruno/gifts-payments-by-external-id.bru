@@ -5,9 +5,13 @@ meta {
 }
 
 get {
-  url: {{URL}}/messages
+  url: {{URL}}/gifts-payments/by-external-id?external_id=222
   body: json
   auth: bearer
+}
+
+params:query {
+  external_id: 222
 }
 
 auth:bearer {
