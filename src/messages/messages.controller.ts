@@ -23,6 +23,18 @@ export class MessagesController {
     return await this.messagesService.findAllForUser(authUser.id);
   }
 
+  @Get('/unread/count')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('JWT')
+  @ApiOperation({ summary: 'Get the count of unread messages for the authenticated user' })
+  @ApiResponse({ status: 200, description: 'Number of unread messages', schema: { type: 'object', properties: { count: { type: 'number' } } } })
+  async countUnreadMessages(@Req() req): Promise<{ count: number }> {
+    const authUser: User = await this.usersService.findBySub(req.user.sub);
+    const count = await this.messagesService.countUnreadForUser(authUser.id);
+    return { count };
+  }
+
+
   @Get(':id')
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('JWT')

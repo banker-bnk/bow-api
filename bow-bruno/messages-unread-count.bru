@@ -1,0 +1,20 @@
+meta {
+  name: messages/unread/count
+  type: http
+  seq: 12
+}
+
+get {
+  url: {{URL}}/users/friends-calendar
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IktGcnF1NHVneDZxV0F4cXhmUGdCVyJ9.eyJpc3MiOiJodHRwczovL2Rldi13Yndjb2VqcnowemR3NHJwLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJnb29nbGUtb2F1dGgyfDExMDIxNTEwNTkzNzk2Mjc1MTY5OSIsImF1ZCI6WyJodHRwczovL2Jvdy1hcGkuY29tIiwiaHR0cHM6Ly9kZXYtd2J3Y29lanJ6MHpkdzRycC51cy5hdXRoMC5jb20vdXNlcmluZm8iXSwiaWF0IjoxNzYxNDA2ODIyLCJleHAiOjE3NjE0OTMyMjIsInNjb3BlIjoib3BlbmlkIHByb2ZpbGUgZW1haWwiLCJhenAiOiJCOE05a0dUd0RKU1VuQVlDd2g3dE9WbGZEaHg5NnlhdSJ9.DaALrrbL99CaR-ReK0pOtIhAd9Y16Ixx10r_vgjifKx53Ag7lxqWF3fB7fMedq3QLFMcqTPSi6bebwwkihCxP_dVtk_LZibPJfUYgLDpvXqCjpgWZ2PN9P7b6PKp9Kj_kIyDuq1EZgdOnXo3Q3X9R_RfFhtzt0HW0-dXQ6ZsU9WfajSLGK0nZmLhigHWquiQLfTEN9C1TwgwIRGZ9DV_e9VKV8ocekcGdcW8OPSc3Mpv_lA2JfSWtD70mI4Az9VHTkqhZtRnZZpITPRpRAoPDZ2cYdTUbXObzUVWqZTklxcX4o_xBNyYfizJEVPqQzPD9bdVmUoAVooDwrJjFT0JCg
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

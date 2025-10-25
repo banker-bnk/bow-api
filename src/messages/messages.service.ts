@@ -37,6 +37,12 @@ export class MessagesService {
     });
   }
 
+  async countUnreadForUser(userId: number): Promise<number> {
+    return await this.messagesRepository.count({
+      where: { receiver: { id: userId }, status: 'unread' },
+    });
+  }
+
   async markAsRead(id: number): Promise<Message> {
     await this.messagesRepository.update(id, { status: 'read' });
     return await this.findById(id);
