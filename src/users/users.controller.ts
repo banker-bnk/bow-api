@@ -128,7 +128,7 @@ export class UsersController {
     description: 'This endpoint retrieves friends birthdays for a given user.',
   })
   fiendsCalendarSecured(@Req() req) {
-    return this.usersService.friendsBirthdayByMonth(req.user.sub);
+    return this.usersService.friendsCalendar(req.user.sub);
   }
 
   @Get('/friends-calendar/:userId')

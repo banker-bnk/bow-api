@@ -105,8 +105,61 @@ export class UsersService {
 
     return friends;
   }
+  async friendsCalendar(userId: string) {
+    const friends = await this.getFriendsBirthdays(userId);
+
+    // Get current month (0-indexed: 0 = Jan)
+    const now = new Date();
+    const currentMonth = now.getMonth() + 1; // 1-12
+    Logger.log("currentMonth", currentMonth);
+
+    // Build a map of month numbers (1-12) to friends
+    const result: { [key: number]: any[] } = {};
+
+    friends.forEach((person) => {
+      if (!person.birthday) {
+        return;
+      }
+      const birthday = new Date(person.birthday);
+      const month = birthday.getMonth() + 1; // 1-12
+
+      if (!result[month]) result[month] = [];
+      result[month].push({
+        ...person,
+        age: age(birthday),
+        birthdayFormatted: mmdd(birthday),
+      });
+    });
+
+    // Arrays for months upcoming (including current), then previous in year
+    const monthsUpcoming: number[] = [];
+    const monthsPast: number[] = [];
+    for (let m = 1; m <= 12; m++) {
+      if (result[m] && result[m].length > 0) {
+        if (m >= currentMonth) {
+          monthsUpcoming.push(m);
+        } else {
+          monthsPast.push(m);
+        }
+      }
+    }
+    // Merge the two arrays to get required order
+    const orderedMonths = [...monthsUpcoming, ...monthsPast];
+    const orderedResult = new Map<number, any[]>();
+    
+    orderedMonths.forEach((month) => {
+      orderedResult.set(month, result[month]);
+    });
+
+    const orderedArray = Array.from(orderedResult, ([month, values]) => ({
+      [month]: values,
+    }));
+
+    return orderedArray;
+  }
 
   async friendsBirthdayByMonth(userId: string) {
+
     const data = await this.getFriendsBirthdays(userId);
 
     const result = {};
