@@ -17,10 +17,12 @@ export class FriendsService {
 
     const [friends, total] = await this.usersRepository
       .createQueryBuilder('u')
-      .innerJoin('friends', 'f',          
+      .innerJoin('friends', 'f',
         '(f.friendId = u.id AND f.userId = (SELECT id FROM users WHERE "userId" = :userId)) OR (f.userId = u.id AND f.friendId = (SELECT id FROM users WHERE "userId" = :userId))',
         { userId: userId }
       )
+      .orderBy('u.lastName', 'ASC')
+      .addOrderBy('u.firstName', 'ASC')
       .skip((page - 1) * limit)
       .take(limit)
       .getManyAndCount();
