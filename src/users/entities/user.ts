@@ -88,4 +88,8 @@ export class User {
 
   @OneToMany(() => Notification, (notification) => notification.user)
   notifications: Notification[];
+
+  @Column({ nullable: true, default: false })
+  @ApiProperty()
+  onboardingCompleted: boolean;
 }

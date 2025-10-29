@@ -109,7 +109,8 @@ export class MessagesController {
       friends: [],
       gifts: [],
       giftPayments: [],
-      notifications: []
+      notifications: [],
+      onboardingCompleted: false
     };
 
     return message;
