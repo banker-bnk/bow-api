@@ -103,7 +103,7 @@ export class GiftsPaymentsService {
         {
           status: paymentInfo.status,
           currency: paymentInfo.currency,
-          source: paymentInfo.source,
+          // source: paymentInfo.source, TODO: improve this to select the current payment method.
           external_id: paymentId,
         }
       )
