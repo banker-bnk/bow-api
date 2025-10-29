@@ -79,9 +79,17 @@ export class MeliService {
     }
   }
 
+  private extractUrlFromText(input: string): string {
+    // Extract URL from pasted text (handles cases where users paste text like "I've found this product in Mercado Libre! https://...")
+    const urlPattern = /https?:\/\/[^\s<>"']+/i;
+    const match = input.match(urlPattern);
+    return match ? match[0] : input;
+  }
+
   async getProductDetailsFromUrl(url: string): Promise<{ title: string; price: number; imageUrl: string }> {
+    const cleanUrl = this.extractUrlFromText(url);
     try {
-      const productId = this.extractIdFromURL(url);
+      const productId = this.extractIdFromURL(cleanUrl);
       console.log(`[MELI] Attempting to fetch product with ID: ${productId}`);
       
       if (!productId) {
@@ -94,19 +102,19 @@ export class MeliService {
         if (error.response?.status === 404) {
           try {
             console.log(`[MELI] Product not found, falling back to search`);
-            const newProductId = await this.searchProduct(url);
+            const newProductId = await this.searchProduct(cleanUrl);
             console.log(`[MELI] Found new product ID from search: ${newProductId}`);
             return await this.fetchProductById(newProductId);
           } catch (searchError) {
             console.log(`[MELI] Search failed, falling back to scraping`);
-            return await this.scrapePriceFromUrl(url);
+            return await this.scrapePriceFromUrl(cleanUrl);
           }
         }
         throw error;
       }
     } catch (error) {
       console.log(`[MELI] All methods failed, falling back to scraping`);
-      return await this.scrapePriceFromUrl(url);
+      return await this.scrapePriceFromUrl(cleanUrl);
     }
   }
 
