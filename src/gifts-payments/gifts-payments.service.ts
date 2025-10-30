@@ -127,15 +127,12 @@ export class GiftsPaymentsService {
         //const message = `${paymentUser.firstName || paymentUser.email || 'A friend'} has made a payment toward your gift.`
         const message = `{messages.payment_approved}`;
 
-        // Call messagesService.create with sender as system (null) or appropriate value, and receiver as the gift owner
-        if (this.messagesService && typeof this.messagesService.create === "function") {
-          await this.messagesService.create({
-            sender: null, // sender null or some SYSTEM_USER, depending on implementation
-            receiver: giftOwner,
-            subject,
-            message
-          });
-        }
+        await this.messagesService.create({
+          sender: null, // sender null or some SYSTEM_USER, depending on implementation
+          receiver: giftOwner,
+          subject,
+          message
+        });
       }
 
       this.logger.log(`Updated giftPayment with id:${id}, status: ${paymentInfo.status}`)

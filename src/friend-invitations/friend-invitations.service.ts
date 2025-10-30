@@ -3,12 +3,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { FriendInvitation } from './entities/friend-invitation';
 import { User } from '../users/entities/user';
+import { MessagesService } from '../messages/messages.service';
 
 @Injectable()
 export class FriendInvitationsService {
   constructor(
     @InjectRepository(FriendInvitation)
     private friendInvitationRepository: Repository<FriendInvitation>,
+    private messagesService: MessagesService,
   ) {}
 
   async findAll(user: User) {
@@ -48,16 +50,38 @@ export class FriendInvitationsService {
     });
   }
   
-  create(data: Partial<FriendInvitation>) {
+  async create(data: Partial<FriendInvitation>) {
     const invitation = this.friendInvitationRepository.create(data);
-    return this.friendInvitationRepository.save(invitation);
+    const savedInvitation = await this.friendInvitationRepository.save(invitation);
+    await this.messagesService.create({
+      sender: null,
+      receiver: data.receiver,
+      subject: `You have received an invitation from ${data.sender.firstName} ${data.sender.lastName}!`,
+      message: `{messages.friend_request_sent}`
+    });
+    return savedInvitation;
   }
 
-  approve(sender: User, receiver: User) {
+  async approve(sender: User, receiver: User) {
     const invitation = this.friendInvitationRepository.update(
       { sender: sender, receiver: receiver },
       { status: 'APPROVED' },
     );
+
+    await this.messagesService.create({
+      sender: null,
+      receiver: receiver,
+      subject: `You are now friends with ${sender.firstName} ${sender.lastName}!`,
+      message: `{messages.friend_approved}`
+    });
+
+    await this.messagesService.create({
+      sender: null,
+      receiver: sender,
+      subject: `You are now friends with ${receiver.firstName} ${receiver.lastName}!`,
+      message: `{messages.friend_approved}`
+    });
+    
     return invitation;
   }
 
