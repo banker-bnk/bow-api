@@ -111,7 +111,6 @@ export class UsersService {
     // Get current month (0-indexed: 0 = Jan)
     const now = new Date();
     const currentMonth = now.getMonth() + 1; // 1-12
-    Logger.log("currentMonth", currentMonth);
 
     // Build a map of month numbers (1-12) to friends
     const result: { [key: number]: any[] } = {};
