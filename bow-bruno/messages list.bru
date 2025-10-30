@@ -1,0 +1,20 @@
+meta {
+  name: messages list
+  type: http
+  seq: 13
+}
+
+get {
+  url: {{URL}}/messages
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IktGcnF1NHVneDZxV0F4cXhmUGdCVyJ9.eyJpc3MiOiJodHRwczovL2Rldi13Yndjb2VqcnowemR3NHJwLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJnb29nbGUtb2F1dGgyfDEwNTMwNTc0ODU4Nzk0NzE3MDg1NCIsImF1ZCI6WyJodHRwczovL2Jvdy1hcGkuY29tIiwiaHR0cHM6Ly9kZXYtd2J3Y29lanJ6MHpkdzRycC51cy5hdXRoMC5jb20vdXNlcmluZm8iXSwiaWF0IjoxNzYxNzg4ODIyLCJleHAiOjE3NjE4NzUyMjIsInNjb3BlIjoib3BlbmlkIHByb2ZpbGUgZW1haWwgb2ZmbGluZV9hY2Nlc3MiLCJhenAiOiJCOE05a0dUd0RKU1VuQVlDd2g3dE9WbGZEaHg5NnlhdSJ9.YT6OskVLhkUr-MoDNWKLsXYo8gqzeCl8ojP_BNuM_yD_SSUee_Ivz_C5v5qeKMdnT8xDSHfpyqS4zSoszXpR16qPOvtcG58z9-xFw5pLf17bL158xyNq4TI8WxjljyLUwghdzrHjaCYO4n_xDRviUwwBrxHByWFRZdB_KfGZZx6yO0bO1bYy91tS-5iH41Q4822hUPfuOd08IdEz4z7oOsUB9fRB1aD7KG_qEOEcCWHB6hIsMyYUwdoCkapmWSLo1MvPAopaSufnmip3OG0EjkolTYZ73pA7K2HJDKXPzhpYo0ffFvFWfSCQcwbDw_OYmN5IsI1mrpxKpRErB-f3tg
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

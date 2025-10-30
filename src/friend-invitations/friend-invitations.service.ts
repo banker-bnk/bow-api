@@ -5,8 +5,10 @@ import { FriendInvitation } from './entities/friend-invitation';
 import { User } from '../users/entities/user';
 import { MessagesService } from '../messages/messages.service';
 
+
 @Injectable()
 export class FriendInvitationsService {
+  usersService: any;
   constructor(
     @InjectRepository(FriendInvitation)
     private friendInvitationRepository: Repository<FriendInvitation>,
@@ -75,10 +77,12 @@ export class FriendInvitationsService {
       message: `{messages.friend_approved}`
     });
 
+    const receiverUser: User = await this.usersService.findBySub(receiver);
+
     await this.messagesService.create({
       sender: null,
       receiver: sender,
-      subject: `You are now friends with ${receiver.firstName} ${receiver.lastName}!`,
+      subject: `You are now friends with ${receiverUser.firstName} ${receiverUser.lastName}!`,
       message: `{messages.friend_approved}`
     });
     
