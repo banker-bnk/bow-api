@@ -22,6 +22,25 @@ export class MessagesController {
     const authUser: User = await this.usersService.findBySub(req.user.sub);
     return await this.messagesService.findAllForUser(authUser.id);
   }
+  @Get('/sent')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('JWT')
+  @ApiOperation({ summary: 'Get all sent messages for the authenticated user' })
+  @ApiResponse({ status: 200, type: [Message] })
+  async findAllSent(@Req() req): Promise<Message[]> {
+    const authUser: User = await this.usersService.findBySub(req.user.sub);
+    return await this.messagesService.findSent(authUser.id);
+  }
+  
+  @Get('/received')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('JWT')
+  @ApiOperation({ summary: 'Get all received messages for the authenticated user' })
+  @ApiResponse({ status: 200, type: [Message] })
+  async findAllReceived(@Req() req): Promise<Message[]> {
+    const authUser: User = await this.usersService.findBySub(req.user.sub);
+    return await this.messagesService.findReceived(authUser.id);
+  }
 
   @Get('/unread/count')
   @UseGuards(AuthGuard('jwt'))

@@ -37,6 +37,27 @@ export class MessagesService {
     });
   }
 
+  async findSent (userId: number): Promise<Message[]> {
+    return await this.messagesRepository.find({
+      where: [
+        { sender: { id: userId } },
+      ],
+      relations: ['sender', 'receiver'],
+      order: { createdAt: 'DESC' },
+    });
+  }
+
+  async findReceived (userId: number): Promise<Message[]> {
+    return await this.messagesRepository.find({
+      where: [
+        { receiver: { id: userId } },
+      ],
+      relations: ['sender', 'receiver'],
+      order: { createdAt: 'DESC' },
+    });
+  }
+
+
   async countUnreadForUser(userId: number): Promise<number> {
     return await this.messagesRepository.count({
       where: { receiver: { id: userId }, status: 'unread' },
