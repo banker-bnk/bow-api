@@ -4,13 +4,14 @@ import { GiftsPaymentsController } from './gifts-payments.controller';
 import { GiftsPayment } from './entities/gifts-payment';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../users/entities/user';
+import { MessagesService } from '../messages/messages.service';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([GiftsPayment]),
     TypeOrmModule.forFeature([User]),
   ],
-  providers: [GiftsPaymentsService],
+  providers: [GiftsPaymentsService, MessagesService],
   controllers: [GiftsPaymentsController],
 })
 export class GiftsPaymentsModule {}
