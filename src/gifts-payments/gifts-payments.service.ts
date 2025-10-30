@@ -123,7 +123,7 @@ export class GiftsPaymentsService {
         const paymentUser = updatedGiftPayment.user;
 
         // Compose message
-        const subject = "You received a gift payment from ${paymentUser.firstName} ${paymentUser.lastName}!";
+        const subject = `You received a gift payment from ${paymentUser.firstName} ${paymentUser.lastName}!`;
         //const message = `${paymentUser.firstName || paymentUser.email || 'A friend'} has made a payment toward your gift.`
         const message = `{messages.payment_approved}`;
 
