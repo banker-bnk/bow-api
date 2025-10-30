@@ -1,17 +1,23 @@
 meta {
-  name: messages list
+  name: /friend-invitations/approve
   type: http
-  seq: 13
+  seq: 15
 }
 
-get {
-  url: {{URL}}/messages/received
+post {
+  url: {{URL}}/friend-invitations/approve
   body: json
   auth: bearer
 }
 
 auth:bearer {
   token: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IktGcnF1NHVneDZxV0F4cXhmUGdCVyJ9.eyJpc3MiOiJodHRwczovL2Rldi13Yndjb2VqcnowemR3NHJwLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJnb29nbGUtb2F1dGgyfDExMDIxNTEwNTkzNzk2Mjc1MTY5OSIsImF1ZCI6WyJodHRwczovL2Jvdy1hcGkuY29tIiwiaHR0cHM6Ly9kZXYtd2J3Y29lanJ6MHpkdzRycC51cy5hdXRoMC5jb20vdXNlcmluZm8iXSwiaWF0IjoxNzYxNzg4ODI1LCJleHAiOjE3NjE4NzUyMjUsInNjb3BlIjoib3BlbmlkIHByb2ZpbGUgZW1haWwgb2ZmbGluZV9hY2Nlc3MiLCJhenAiOiJCOE05a0dUd0RKU1VuQVlDd2g3dE9WbGZEaHg5NnlhdSJ9.IWJUQOv7pP0E9V3lUziv0nFgPhbdiCo21TqY8C9--va3VekHnEgBMy90uoHcNWw9k5E1iFtBavUKUmARaR-xSoBuJ7hJDCY_l8GvWx5HC8xMJYbhcplKhoSPSjOT7c6qZMpZrRYKQbC8iGlc47EuPh79X23CA_iyU9VkJzunK-5Iwif6ufxP6Hndz2Pc7AzWcHUE5sgsYFjl0K9UbnC4GOyv4SLixXvtzVnRT-in6tXKNguK2fm9YkQdvWYVR8o39J_lkNDX-43SFnwRN_s0-lw8nApVrjV_SL5J-nN5T2jM3K_SiNA-E5KsU_7JAYqdoBXixhSWW0rm_UwRXOkxoA
+}
+
+body:json {
+  {
+    "sender": 1
+  }
 }
 
 settings {

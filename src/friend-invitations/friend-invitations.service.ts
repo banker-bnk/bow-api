@@ -4,15 +4,16 @@ import { Repository } from 'typeorm';
 import { FriendInvitation } from './entities/friend-invitation';
 import { User } from '../users/entities/user';
 import { MessagesService } from '../messages/messages.service';
+import { UsersService } from '../users/users.service';
 
 
 @Injectable()
 export class FriendInvitationsService {
-  usersService: any;
   constructor(
     @InjectRepository(FriendInvitation)
     private friendInvitationRepository: Repository<FriendInvitation>,
     private messagesService: MessagesService,
+    private usersService: UsersService,
   ) {}
 
   async findAll(user: User) {
@@ -77,7 +78,8 @@ export class FriendInvitationsService {
       message: `{messages.friend_approved}`
     });
 
-    const receiverUser: User = await this.usersService.findBySub(receiver);
+    console.log("receiver: " + JSON.stringify(receiver));
+    const receiverUser: User = await this.usersService.findBySub(receiver.userId);
 
     await this.messagesService.create({
       sender: null,
