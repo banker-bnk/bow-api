@@ -7,6 +7,7 @@ import { MercadoPagoConfig, Payment, Preference } from 'mercadopago';
 import { getPaymentInfo, preferenceBuilder } from './helpers/payments.helper';
 import { PreferenceDto } from './dto/preference.dto';
 import { PAYMENT_STATUS } from '../constants';
+import { MessagesService } from '../messages/messages.service';
 
 @Injectable()
 export class GiftsPaymentsService {
@@ -18,6 +19,7 @@ export class GiftsPaymentsService {
     private giftsPaymentsRepository: Repository<GiftsPayment>,
     @InjectRepository(User)
     private usersRepository: Repository<User>,
+    private messagesService: MessagesService,
   ) {
     this.mercadoPago = new MercadoPagoConfig({
       accessToken: process.env.MP_ACCESS_TOKEN_PROD,
@@ -107,6 +109,34 @@ export class GiftsPaymentsService {
           external_id: paymentId,
         }
       )
+
+      // Send a System Message to the gift owner of the payment being made referencing the user that did the payment
+
+      // Get fresh gift payment with all needed relations (user and gift with owner)
+      const updatedGiftPayment = await this.giftsPaymentsRepository.findOne({
+        where: { id: giftPayment.id },
+        relations: ["user", "gift", "gift.user"]
+      });
+
+      if (updatedGiftPayment && updatedGiftPayment.gift && updatedGiftPayment.gift.user && updatedGiftPayment.user) {
+        const giftOwner = updatedGiftPayment.gift.user;
+        const paymentUser = updatedGiftPayment.user;
+
+        // Compose message
+        const subject = "You received a gift payment from ${paymentUser.firstName} ${paymentUser.lastName}!";
+        //const message = `${paymentUser.firstName || paymentUser.email || 'A friend'} has made a payment toward your gift.`
+        const message = `{messages.payment_approved}`;
+
+        // Call messagesService.create with sender as system (null) or appropriate value, and receiver as the gift owner
+        if (this.messagesService && typeof this.messagesService.create === "function") {
+          await this.messagesService.create({
+            sender: null, // sender null or some SYSTEM_USER, depending on implementation
+            receiver: giftOwner,
+            subject,
+            message
+          });
+        }
+      }
 
       this.logger.log(`Updated giftPayment with id:${id}, status: ${paymentInfo.status}`)
     } catch (error) {
