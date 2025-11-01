@@ -71,6 +71,8 @@ export class FriendInvitationsService {
       { status: 'APPROVED' },
     );
 
+    console.log("sender: " + JSON.stringify(sender));
+
     await this.messagesService.create({
       sender: null,
       receiver: receiver,
@@ -78,8 +80,9 @@ export class FriendInvitationsService {
       message: `{messages.friend_approved}`
     });
 
-    console.log("receiver: " + JSON.stringify(receiver));
+    console.log("111 receiver: " + JSON.stringify(receiver));
     const receiverUser: User = await this.usersService.findBySub(receiver.userId);
+    console.log("222 receiverUser: " + JSON.stringify(receiverUser));
 
     await this.messagesService.create({
       sender: null,
