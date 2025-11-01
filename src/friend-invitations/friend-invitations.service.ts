@@ -71,9 +71,9 @@ export class FriendInvitationsService {
       { status: 'APPROVED' },
     );
 
-    console.log("sender: " + JSON.stringify(sender));
-    const senderUser = await this.usersService.findById(sender.id.toString());
-    console.log("333 senderUser: " + JSON.stringify(senderUser));
+    console.log("111 sender: " + JSON.stringify(sender));
+    const senderUser = await this.usersService.findById(String(sender.id));
+    console.log("222 senderUser: " + JSON.stringify(senderUser));
 
 
     await this.messagesService.create({
@@ -83,7 +83,7 @@ export class FriendInvitationsService {
       message: `{messages.friend_approved}`
     });
 
-    console.log("111 receiver: " + JSON.stringify(receiver));
+    console.log("333 receiver: " + JSON.stringify(receiver));
     const receiverUser: User = await this.usersService.findBySub(receiver.userId);
     console.log("222 receiverUser: " + JSON.stringify(receiverUser));
 
