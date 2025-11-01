@@ -67,10 +67,10 @@ export class UsersService {
     return await this.usersRepository.save(user);
   }
 
-  async findById(userId: any): Promise<User> {
+  async findById(id: number): Promise<User> {
     const user = await this.usersRepository.findOne({
       relations: ['friends', 'gifts'],
-      where: { id: parseInt(userId) },
+      where: { id: id },
     });
     
     if (user) {
