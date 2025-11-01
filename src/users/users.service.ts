@@ -67,7 +67,7 @@ export class UsersService {
     return await this.usersRepository.save(user);
   }
 
-  async findById(userId: string): Promise<User> {
+  async findById(userId: any): Promise<User> {
     const user = await this.usersRepository.findOne({
       relations: ['friends', 'gifts'],
       where: { id: parseInt(userId) },
