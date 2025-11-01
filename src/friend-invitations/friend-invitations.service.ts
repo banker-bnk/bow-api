@@ -72,11 +72,14 @@ export class FriendInvitationsService {
     );
 
     console.log("sender: " + JSON.stringify(sender));
+    const senderUser = await this.usersService.findById(sender.id.toString());
+    console.log("333 senderUser: " + JSON.stringify(senderUser));
+
 
     await this.messagesService.create({
       sender: null,
       receiver: receiver,
-      subject: `You are now friends with ${sender.firstName} ${sender.lastName}!`,
+      subject: `You are now friends with ${senderUser.firstName} ${senderUser.lastName}!`,
       message: `{messages.friend_approved}`
     });
 
