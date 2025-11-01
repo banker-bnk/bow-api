@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, ILike } from 'typeorm';
 import { User } from './entities/user';
@@ -85,6 +85,10 @@ export class UsersService {
       relations: ['friends', 'gifts'],
       where: { userId },
     });
+
+  if (!user) {
+    throw new NotFoundException('User not found with sub: ' + userId);
+  }
 
     return user;
   }

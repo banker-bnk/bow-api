@@ -105,6 +105,38 @@ export class UsersController {
     return this.usersService.upsertUser(data);
   }
 
+  @Post('/if-not-exists')
+  @ApiOperation({
+    summary: 'Create user if user does not exist by userId',
+    description: 'Checks if a user exists with the given userId. If not, creates a new user with the provided body.',
+  })
+  @ApiParam({
+    name: 'userId',
+    type: 'string',
+    required: true,
+    description: 'The userId param to check for existing user.',
+  })
+  @ApiBody({
+    description: 'User data to use for creation if not exists',
+    type: User,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'User found or created.',
+    type: User,
+  })
+  async createIfNotExists(
+    @Param('userId') userId: string,
+    @Body() userData: Partial<User>
+  ) {
+    let user = await this.usersService.findBySub(userData.userId).catch(() => null);
+    if (user) {
+      return user;
+    }
+    // Use userId from param to ensure creation
+    return this.usersService.upsertUser({ ...userData });
+  }
+
   @Get('/friends-home')
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('JWT')
@@ -253,8 +285,14 @@ export class UsersController {
     return this.usersService.findBySub(req.user.sub);
   }
 
-  @Get(':userId')
-  findById(@Param('userId') userId: string) {
-    return this.usersService.findById(userId);
+  @Get(':id')
+  findById(@Param('id') id: string) {
+    return this.usersService.findById(id);
   }
+
+  @Get('/sub/:userId')
+  findByUserId(@Param('userId') userId: string) {
+    return this.usersService.findBySub(userId);
+  }
+
 }

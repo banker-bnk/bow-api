@@ -5,12 +5,7 @@
  * @param {Event} event - Details about the user and the context in which they are logging in.
  * @param {PostLoginAPI} api - Interface whose methods can be used to change the behavior of the login.
  */
-exports.onExecutePostLogin = async (event, api) => {
-  const isFirstLogin = event.stats?.logins_count === 1;
-  if (!isFirstLogin) {
-      console.log("PostLogin: not first login, skipping user POST");
-      return;
-  }
+exports.onExecutePostUserRegistration = async (event, api) => {
   const userId = event.user.user_id;
   const userName = event.user.username ?? event.user.email ?? null;
   const email = event.user.email ?? null;
@@ -33,7 +28,7 @@ exports.onExecutePostLogin = async (event, api) => {
     birthday
   }));
 
-  const url = "https://mpm.ddns.net/users";
+  const url = "https://mpm.ddns.net/users/if-not-exists";
 
   try {
     const res = await fetch(url, {

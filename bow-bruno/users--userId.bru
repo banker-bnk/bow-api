@@ -1,0 +1,24 @@
+meta {
+  name: users/:userId
+  type: http
+  seq: 16
+}
+
+post {
+  url: {{URL}}/users/if-not-exists
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "userId": "google-oauth2|1102151059379627513232699",
+    "userName": "a",
+    "onboardingCompleted": true
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
