@@ -72,6 +72,7 @@ export class FriendInvitationsService {
     );
 
     console.log("111 sender: " + JSON.stringify(sender));
+    console.log("111 sender.id: " + sender.id);
     const senderUser = await this.usersService.findById(sender.id);
     console.log("222 senderUser: " + JSON.stringify(senderUser));
 
