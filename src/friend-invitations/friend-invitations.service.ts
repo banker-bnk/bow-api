@@ -71,9 +71,14 @@ export class FriendInvitationsService {
       { status: 'APPROVED' },
     );
 
-    console.log("111 sender: " + JSON.stringify(sender));
+    console.log("111 sender stringify: " + JSON.stringify(sender));
     console.log("111 sender.id: " + sender.id);
-    const senderUser = await this.usersService.findById(sender.id);
+    console.log("111 sender " + sender);
+    console.log("111 sender parse int " + parseInt(sender.id.toString()));
+    console.log("111 sender parse int to number " + Number(sender.id));
+    console.log("111 sender stringify: " + parseInt(JSON.stringify(sender)));
+    const senderUser = await this.usersService.findById(parseInt(JSON.stringify(sender)));
+    
     console.log("222 senderUser: " + JSON.stringify(senderUser));
 
 
