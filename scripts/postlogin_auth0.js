@@ -5,7 +5,7 @@
  * @param {Event} event - Details about the user and the context in which they are logging in.
  * @param {PostLoginAPI} api - Interface whose methods can be used to change the behavior of the login.
  */
-exports.onExecutePostUserRegistration = async (event, api) => {
+exports.onExecutePostLogin = async (event, api) => {
   const userId = event.user.user_id;
   const userName = event.user.username ?? event.user.email ?? null;
   const email = event.user.email ?? null;
@@ -16,7 +16,7 @@ exports.onExecutePostUserRegistration = async (event, api) => {
   const image = event.user.picture ?? null;
   const birthday = event.user.user_metadata?.birthday ?? null;
 
-  console.log("Newly Registered User:", JSON.stringify({
+  console.log("User to be created if not exists:", JSON.stringify({
     userId,
     userName,
     email,
