@@ -4,18 +4,10 @@ meta {
   seq: 16
 }
 
-post {
-  url: {{URL}}/users/if-not-exists
+get {
+  url: {{URL}}/users/3
   body: json
   auth: none
-}
-
-body:json {
-  {
-    "userId": "google-oauth2|1102151059379627513232699",
-    "userName": "a",
-    "onboardingCompleted": true
-  }
 }
 
 settings {

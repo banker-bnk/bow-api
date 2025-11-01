@@ -54,9 +54,9 @@ export class User {
   @ApiProperty()
   image: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'date', nullable: true })
   @ApiProperty()
-  birthday: Date;
+  birthday: string; // Stores only the date part (YYYY-MM-DD)
 
   @Column({ nullable: true })
   @ApiProperty()
