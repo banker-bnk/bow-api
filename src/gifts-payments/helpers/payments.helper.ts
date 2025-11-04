@@ -1,5 +1,6 @@
 import { APP_SCHEMA, DEFAULT_REDIRECT_SCREEN } from '../../constants';
 import { IPreferenceBody } from '../interfaces/preference.interface';
+import type { PaymentResponse } from '../types/mercado-pago.types';
 
 export const preferenceBuilder = (
   preferenceDraft: IPreferenceBody,
@@ -32,7 +33,7 @@ export const preferenceBuilder = (
   };
 };
 
-export const getGiftInfo = (payment: any) => {
+export const getGiftInfo = (payment: PaymentResponse) => {
   const { id, title, unit_price } = payment.additional_info.items[0];
   return {
     id,
@@ -43,7 +44,13 @@ export const getGiftInfo = (payment: any) => {
   };
 };
 
-export const getPaymentInfo = (payment: any) => {
+export const getFeeDetails = (payment: PaymentResponse) => ({
+  paymentFee: payment.fee_details[0].amount,
+  netPayment: payment.transaction_details.net_received_amount
+})
+
+export const getPaymentInfo = (payment: PaymentResponse) => {
+  const feeDetails = getFeeDetails(payment)
   return {
     gift: getGiftInfo(payment),
     user: { userId: payment.metadata.user_id },
@@ -52,5 +59,7 @@ export const getPaymentInfo = (payment: any) => {
     source: payment.payment_type_id,
     createdAt: new Date(payment.date_created),
     status: payment.status,
+    paymentFee: feeDetails.paymentFee,
+    netPayment: feeDetails.netPayment
   };
 };

@@ -8,6 +8,7 @@ import { getPaymentInfo, preferenceBuilder } from './helpers/payments.helper';
 import { PreferenceDto } from './dto/preference.dto';
 import { PAYMENT_STATUS } from '../constants';
 import { MessagesService } from '../messages/messages.service';
+import type { PaymentResponse } from './types/mercado-pago.types';
 
 @Injectable()
 export class GiftsPaymentsService {
@@ -87,7 +88,7 @@ export class GiftsPaymentsService {
   async updateGiftPayment(
     id: number, 
     paymentId: string, 
-    mercadoPagoPayment: any) {
+    mercadoPagoPayment: PaymentResponse) {
     try {
       const giftPayment = await this.giftsPaymentsRepository.findOne({
         where: { id },
@@ -107,6 +108,8 @@ export class GiftsPaymentsService {
           currency: paymentInfo.currency,
           source: paymentInfo.source,
           external_id: paymentId,
+          payment_fee: paymentInfo.paymentFee,
+          net_payment: paymentInfo.netPayment
         }
       )
 
