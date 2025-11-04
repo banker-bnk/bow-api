@@ -41,9 +41,9 @@ export class GiftsPayment {
   @CreateDateColumn()
   createdAt: Date;
 
-  @Column({ nullable: true })
+  @Column({ type: 'decimal', nullable: true })
   payment_fee: number;
 
-  @Column({ nullable: true })
+  @Column({ type: 'decimal', nullable: true })
   net_payment: number;
 }
