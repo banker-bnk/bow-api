@@ -33,11 +33,17 @@ export class GiftsPayment {
   message: string;
 
   @Column({ type: 'enum', enum: PAYMENT_STATUS, nullable: true })
-  status: PAYMENT_STATUS;
+  status: () => PAYMENT_STATUS;
 
   @Column({ nullable: true })
   external_id: string
 
   @CreateDateColumn()
   createdAt: Date;
+
+  @Column({ nullable: true })
+  payment_fee: number;
+
+  @Column({ nullable: true })
+  net_payment: number;
 }
