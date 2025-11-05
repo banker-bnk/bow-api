@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { MeliService } from "../meli/meli.service"
 import { Gift } from './entities/gift';
+import { PAYMENT_STATUS } from 'src/constants';
 
 @Injectable()
 export class GiftsService {
@@ -84,27 +85,29 @@ export class GiftsService {
   }
 
   async findById(id: number): Promise<Gift & { totalAmount: string }> {
-    const gift = await this.giftsRepository.findOne({
-      where: {
-        id,
-        active: true,
-      },
-      relations: ['user', 'giftsPayments', 'giftsPayments.user'],
-      order: { id: 'DESC' },
-    });
-
+    const gift = await this.giftsRepository
+      .createQueryBuilder('gift')
+      .leftJoinAndSelect('gift.user', 'user')
+      .leftJoinAndSelect('gift.giftsPayments', 'giftsPayments', 'giftsPayments.status = :status', { status: PAYMENT_STATUS.APPROVED })
+      .leftJoinAndSelect('giftsPayments.user', 'paymentUser')
+      .where('gift.id = :id', { id })
+      .andWhere('gift.active = true')
+      .orderBy('gift.id', 'DESC')
+      .getOne();
+  
     if (!gift) {
-      throw new NotFoundException('No active gift for this user');
+      throw new NotFoundException('No active gift found with this id');
     }
-
-    const totalAmount = gift.giftsPayments
+  
+    const totalAmount = gift.giftsPayments?.length
       ? gift.giftsPayments.reduce((sum, payment) => sum + Number(payment.amount), 0).toFixed(2)
-      : "0.00";
-
+      : '0.00';
+  
     return {
       ...gift,
       totalAmount,
     };
+  
   }
 
   
