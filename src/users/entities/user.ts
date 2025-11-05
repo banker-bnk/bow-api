@@ -92,4 +92,12 @@ export class User {
   @Column({ nullable: true, default: false })
   @ApiProperty()
   onboardingCompleted: boolean;
+
+  @Column({ nullable: true, default: true })
+  @ApiProperty()
+  allowAgeDisplay: boolean;
+
+  @Column({ nullable: true, default: false })
+  @ApiProperty()
+  birthdayUpdatesLocked: boolean;
 }
