@@ -64,6 +64,8 @@ export class GiftsService {
   }
 
   async create(data: Partial<Gift>): Promise<Gift> {
+    // Trim the URL to remove any non-URL text from Mercado Libre share feature
+    data.link = this.meliService.extractUrlFromText(data.link);
     const { title, price, imageUrl } = await this.meliService.getProductDetailsFromUrl(data.link);
     data.title = title;
     data.price = price;
