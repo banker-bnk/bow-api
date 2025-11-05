@@ -79,7 +79,7 @@ export class MeliService {
     }
   }
 
-  private extractUrlFromText(input: string): string {
+  extractUrlFromText(input: string): string {
     // Extract URL from pasted text (handles cases where users paste text like "I've found this product in Mercado Libre! https://...")
     const urlPattern = /https?:\/\/[^\s<>"']+/i;
     const match = input.match(urlPattern);
