@@ -129,7 +129,9 @@ export class MessagesController {
       gifts: [],
       giftPayments: [],
       notifications: [],
-      onboardingCompleted: false
+      onboardingCompleted: false,
+      allowAgeDisplay: true,
+      birthdayUpdatesLocked: false,
     };
 
     return message;
