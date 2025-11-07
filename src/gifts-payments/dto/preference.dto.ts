@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
-
+import { BOW_CONTRIBUTE_TO_MYSELF_PAYMENT_TYPE, BOW_GIFT_PAYMENT_TYPE, TBowPaymentType } from '../../constants';
 export class PreferenceDto {
   @ApiProperty({
     description: 'Amount',
@@ -60,6 +60,18 @@ export class PreferenceDto {
   @IsOptional()
   @IsString()
   message?: string;
+
+  @ApiProperty({
+    description: 'Bow payment type, can be gift or contribute to myself',
+    type: 'string',
+    required: false,
+    enum: [
+      BOW_GIFT_PAYMENT_TYPE,
+      BOW_CONTRIBUTE_TO_MYSELF_PAYMENT_TYPE
+    ]
+  })
+  @IsString()
+  bowPaymentType?: TBowPaymentType;
 
   constructor(partial: Partial<PreferenceDto> = {}) {
     Object.assign(this, partial);

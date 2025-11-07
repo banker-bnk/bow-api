@@ -24,3 +24,10 @@ export enum SHIPPING_STATUS {
   FAILED_DELIVERY = 'failed_delivery',
   RETURNED = 'returned'
 }
+
+export const BOW_GIFT_PAYMENT_TYPE = 'BOW_GIFT_PAYMENT_TYPE';
+export const BOW_CONTRIBUTE_TO_MYSELF_PAYMENT_TYPE = 'BOW_CONTRIBUTE_TO_MYSELF_PAYMENT_TYPE';
+
+export type TBowPaymentType =
+  | typeof BOW_GIFT_PAYMENT_TYPE
+  | typeof BOW_CONTRIBUTE_TO_MYSELF_PAYMENT_TYPE;

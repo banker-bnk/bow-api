@@ -20,6 +20,7 @@ export const preferenceBuilder = (
       metadata: {
         user_id: preferenceDraft.userId,
         id,
+        bow_payment_type: preferenceDraft.bowPaymentType
       },
       operation_type: 'regular_payment',
       back_urls: {
@@ -60,6 +61,7 @@ export const getPaymentInfo = (payment: PaymentResponse) => {
     createdAt: new Date(payment.date_created),
     status: payment.status,
     paymentFee: feeDetails.paymentFee,
-    netPayment: feeDetails.netPayment
+    netPayment: feeDetails.netPayment,
+    bowPaymentType: payment.metadata.bow_payment_type
   };
 };
