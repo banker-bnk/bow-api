@@ -58,4 +58,56 @@ export class FriendsService {
       )
       .execute();
   }
+
+  /**
+   * Returns a paginated, randomly ordered list of users who are NOT friends
+   * with the given user (including not the user themself), where friendship is bidirectional.
+   *
+   * @param userId The user's userId field (not PK id)
+   * @param page page number, default 1
+   * @param limit results per page, default 10
+   */
+  async findNonFriendsRandomly(userId: string, { page = 1, limit = 10 }: { page?: number; limit?: number }) {
+    // Get the user's id (primary key) from the supplied userId
+    const user = await this.usersRepository.findOne({
+      where: { userId: userId }
+    });
+    if (!user) throw new NotFoundException('User not found');
+
+    // Subquery: all user PKs that are friends with this user. (bidirectional)
+    // Also include the user's own PK (so we don't suggest themself)
+    const friendsSubquery = this.friendsRepository
+      .createQueryBuilder('friend')
+      .select('CASE WHEN friend.userId = :myId THEN friend.friendId ELSE friend.userId END', 'friendUserId')
+      .where('friend.userId = :myId OR friend.friendId = :myId', { myId: user.id });
+
+    // Get total count
+    const totalQuery = this.usersRepository
+      .createQueryBuilder('u')
+      .where('u.id != :myId', { myId: user.id }) // not self
+      .andWhere(`u.id NOT IN (${friendsSubquery.getQuery()})`)
+      .setParameters(friendsSubquery.getParameters());
+
+    const total = await totalQuery.getCount();
+
+    // Main query, randomly order results and paginate
+    const query = this.usersRepository
+      .createQueryBuilder('u')
+      .where('u.id != :myId', { myId: user.id }) // not self
+      .andWhere(`u.id NOT IN (${friendsSubquery.getQuery()})`)
+      .setParameters(friendsSubquery.getParameters())
+      .orderBy('RANDOM()') // Randomize order; use RAND() if MySQL
+      .skip((page - 1) * limit)
+      .take(limit);
+
+    const users = await query.getMany();
+
+    return {
+      total,
+      page,
+      limit,
+      data: users
+    };
+  }
+
 }

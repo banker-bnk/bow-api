@@ -78,4 +78,14 @@ export class FriendsController {
     data.user = req.user.sub;
     return await this.friendsService.delete(data, data.friendId);
   }
+
+  @Get('suggestions')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('JWT')
+  @ApiOperation({
+    summary: 'Get friend suggestions for the logged-in user. User info will be taken from access token.',
+  })
+  async findNonFriendsRandomly(@Req() req, @Query('page') page = 1, @Query('limit') limit = 10) {
+    return this.friendsService.findNonFriendsRandomly(req.user.sub, { page, limit });
+  }
 }
