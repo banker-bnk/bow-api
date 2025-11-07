@@ -7,7 +7,7 @@ import {
 } from 'typeorm';
 import { User } from '../../users/entities/user';
 import { Gift } from '../../gifts/entities/gift';
-import { PAYMENT_STATUS } from '../../constants';
+import { TBowPaymentType, PAYMENT_STATUS } from '../../constants';
 
 @Entity('gifts_payments')
 export class GiftsPayment {
@@ -46,4 +46,7 @@ export class GiftsPayment {
 
   @Column({ type: 'decimal', nullable: true })
   net_payment: number;
+
+  @Column({ nullable: true })
+  bow_payment_type: TBowPaymentType;
 }
