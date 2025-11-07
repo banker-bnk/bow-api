@@ -71,7 +71,7 @@ export class PreferenceDto {
     ]
   })
   @IsString()
-  bowPaymentType?: TBowPaymentType;
+  bowPaymentType?: TBowPaymentType = BOW_GIFT_PAYMENT_TYPE;
 
   constructor(partial: Partial<PreferenceDto> = {}) {
     Object.assign(this, partial);
