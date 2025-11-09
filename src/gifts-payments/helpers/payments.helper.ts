@@ -1,12 +1,25 @@
-import { APP_SCHEMA, DEFAULT_REDIRECT_SCREEN } from '../../constants';
+import { APP_SCHEMA, BOW_CONTRIBUTE_TO_MYSELF_PAYMENT_TYPE, DEFAULT_REDIRECT_SCREEN, TBowPaymentType } from '../../constants';
 import { IPreferenceBody } from '../interfaces/preference.interface';
 import type { PaymentResponse } from '../types/mercado-pago.types';
+
+export const buildRedirectPath = (
+  id: number,
+  bowPaymentType: TBowPaymentType
+) => {
+  if (bowPaymentType === BOW_CONTRIBUTE_TO_MYSELF_PAYMENT_TYPE) {
+    return `gift/contribute/${id}`;
+  }
+
+  return `user/${id}`
+};
 
 export const preferenceBuilder = (
   preferenceDraft: IPreferenceBody,
   appHostUrl: string,
   id: number,
 ) => {
+  const redirectPath = buildRedirectPath(preferenceDraft.id, preferenceDraft.bowPaymentType)
+
   return {
     body: {
       items: [
@@ -24,9 +37,9 @@ export const preferenceBuilder = (
       },
       operation_type: 'regular_payment',
       back_urls: {
-        success: `${APP_SCHEMA}://${DEFAULT_REDIRECT_SCREEN}/${preferenceDraft?.id}?should_redirect=true`,
-        failure: `${APP_SCHEMA}://${DEFAULT_REDIRECT_SCREEN}/${preferenceDraft?.id}?should_redirect=false`,
-        pending: `${APP_SCHEMA}://${DEFAULT_REDIRECT_SCREEN}/${preferenceDraft?.id}?should_redirect=true`,
+        success: `${APP_SCHEMA}://${redirectPath}?should_redirect=true`,
+        failure: `${APP_SCHEMA}://${redirectPath}?should_redirect=false`,
+        pending: `${APP_SCHEMA}://${redirectPath}?should_redirect=true`,
       },
       auto_return: 'approved',
       notification_url: `${appHostUrl}/gifts-payments/save`,
