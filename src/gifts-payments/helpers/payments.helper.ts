@@ -3,7 +3,7 @@ import { IPreferenceBody } from '../interfaces/preference.interface';
 import type { PaymentResponse } from '../types/mercado-pago.types';
 
 export const buildRedirectPath = (
-  id: number,
+  id: number | string,
   bowPaymentType: TBowPaymentType
 ) => {
   if (bowPaymentType === BOW_CONTRIBUTE_TO_MYSELF_PAYMENT_TYPE) {
@@ -18,7 +18,8 @@ export const preferenceBuilder = (
   appHostUrl: string,
   id: number,
 ) => {
-  const redirectPath = buildRedirectPath(preferenceDraft.id, preferenceDraft.bowPaymentType)
+  const idToRedirect = preferenceDraft.bowPaymentType === BOW_CONTRIBUTE_TO_MYSELF_PAYMENT_TYPE ? preferenceDraft.giftId : preferenceDraft.id;
+  const redirectPath = buildRedirectPath(idToRedirect, preferenceDraft.bowPaymentType)
 
   return {
     body: {
