@@ -59,8 +59,8 @@ export class FriendInvitationsService {
     await this.messagesService.create({
       sender: null,
       receiver: data.receiver,
-      subject: `You have received an invitation from ${data.sender.firstName} ${data.sender.lastName}!`,
-      message: `{messages.friend_request_sent}`,
+      subject: '{messages.friend_request_sent_subject}',
+      message: '{messages.friend_request_sent_message}',
       actor: data.sender,
     });
     return savedInvitation;
@@ -77,8 +77,8 @@ export class FriendInvitationsService {
     await this.messagesService.create({
       sender: null,
       receiver: receiver,
-      subject: `You are now friends with ${senderUser.firstName} ${senderUser.lastName}!`,
-      message: `{messages.friend_approved}`,
+      subject: '{messages.friend_approved_subject}',
+      message: '{messages.friend_approved_message}',
       actor: senderUser,
     });
 
@@ -87,8 +87,8 @@ export class FriendInvitationsService {
     await this.messagesService.create({
       sender: null,
       receiver: sender,
-      subject: `You are now friends with ${receiverUser.firstName} ${receiverUser.lastName}!`,
-      message: `{messages.friend_approved}`,
+      subject: '{messages.friend_approved_subject}',
+      message: '{messages.friend_approved_message}',
       actor: receiverUser,
     });
     

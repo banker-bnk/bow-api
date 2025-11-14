@@ -32,7 +32,7 @@ export class MessagesService {
         { sender: { id: userId } },
         { receiver: { id: userId } },
       ],
-      relations: ['sender', 'receiver'],
+      relations: ['sender', 'receiver', 'actor'],
       order: { createdAt: 'DESC' },
     });
   }
@@ -42,7 +42,7 @@ export class MessagesService {
       where: [
         { sender: { id: userId } },
       ],
-      relations: ['sender', 'receiver'],
+      relations: ['sender', 'receiver', 'actor'],
       order: { createdAt: 'DESC' },
     });
   }
@@ -52,7 +52,7 @@ export class MessagesService {
       where: [
         { receiver: { id: userId } },
       ],
-      relations: ['sender', 'receiver'],
+      relations: ['sender', 'receiver', 'actor'],
       order: { createdAt: 'DESC' },
     });
   }
