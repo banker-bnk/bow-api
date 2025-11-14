@@ -133,7 +133,7 @@ export class GiftsPaymentsService {
 
         await this.messagesService.create({
           sender: null,
-          actor: paymentUser as User,
+          actor: paymentUser,
           receiver: giftOwner,
           subject,
           message

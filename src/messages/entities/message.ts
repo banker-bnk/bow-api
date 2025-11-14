@@ -28,7 +28,7 @@ export class Message {
   status: 'unread' | 'read' | 'archived';
 
   @ManyToOne(() => User, { nullable: true, onDelete: 'SET NULL' })
-  actor: User; // The user who triggered the message
+  actor: Partial<User>; // The user who triggered the message, can be null for system messages
 
   @CreateDateColumn()
   createdAt: Date;
