@@ -27,6 +27,9 @@ export class Message {
   @Column({ default: 'unread' })
   status: 'unread' | 'read' | 'archived';
 
+  @ManyToOne(() => User, { nullable: true, onDelete: 'SET NULL' })
+  actor: User; // The user who triggered the message
+
   @CreateDateColumn()
   createdAt: Date;
 

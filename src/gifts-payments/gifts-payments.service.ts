@@ -132,7 +132,8 @@ export class GiftsPaymentsService {
         const message = `{messages.payment_approved}`;
 
         await this.messagesService.create({
-          sender: null, // sender null or some SYSTEM_USER, depending on implementation
+          sender: null,
+          actor: paymentUser as User,
           receiver: giftOwner,
           subject,
           message
