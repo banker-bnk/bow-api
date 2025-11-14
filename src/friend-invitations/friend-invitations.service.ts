@@ -60,7 +60,8 @@ export class FriendInvitationsService {
       sender: null,
       receiver: data.receiver,
       subject: `You have received an invitation from ${data.sender.firstName} ${data.sender.lastName}!`,
-      message: `{messages.friend_request_sent}`
+      message: `{messages.friend_request_sent}`,
+      actor: data.sender as User,
     });
     return savedInvitation;
   }
@@ -77,7 +78,8 @@ export class FriendInvitationsService {
       sender: null,
       receiver: receiver,
       subject: `You are now friends with ${senderUser.firstName} ${senderUser.lastName}!`,
-      message: `{messages.friend_approved}`
+      message: `{messages.friend_approved}`,
+      actor: senderUser as User,
     });
 
     const receiverUser: User = await this.usersService.findBySub(receiver.userId);
@@ -86,7 +88,8 @@ export class FriendInvitationsService {
       sender: null,
       receiver: sender,
       subject: `You are now friends with ${receiverUser.firstName} ${receiverUser.lastName}!`,
-      message: `{messages.friend_approved}`
+      message: `{messages.friend_approved}`,
+      actor: receiverUser as User,
     });
     
     return invitation;
