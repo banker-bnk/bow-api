@@ -127,8 +127,8 @@ export class GiftsPaymentsService {
         const paymentUser = updatedGiftPayment.user;
 
         // Compose message
-        const subject = '{messages.payment_approved_subject}';
-        const message = '{messages.payment_approved_message}';
+        const subject = '{messages.payment_received_subject}';
+        const message = '{messages.payment_received_message}';
 
         await this.messagesService.create({
           sender: null,
