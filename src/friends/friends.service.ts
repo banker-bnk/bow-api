@@ -110,4 +110,28 @@ export class FriendsService {
     };
   }
 
+  async findNonFriendsRandomlyWithNoInvitations(userId: string, { page = 1, limit = 10 }: { page?: number; limit?: number }) {
+    return await this.usersRepository.query(`
+      WITH me AS (
+        SELECT id FROM public.users WHERE "userId" = $1
+      )
+      SELECT u.*
+      FROM public.users u, me
+      WHERE u."userId" <> $1
+        AND NOT EXISTS (
+          SELECT 1 FROM public.friends f
+          WHERE (f."userId" = me.id AND f."friendId" = u.id)
+            OR (f."friendId" = me.id AND f."userId" = u.id)
+        )
+        AND NOT EXISTS (
+          SELECT 1 FROM public.friend_invitations fi
+          WHERE (fi."senderId" = me.id AND fi."receiverId" = u.id)
+            OR (fi."receiverId" = me.id AND fi."senderId" = u.id)
+        )
+      ORDER BY RANDOM()
+      LIMIT $2
+      OFFSET $3
+    `, [userId, limit, ((page - 1) * limit)]);
+  }
+
 }

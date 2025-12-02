@@ -86,6 +86,6 @@ export class FriendsController {
     summary: 'Get friend suggestions for the logged-in user. User info will be taken from access token.',
   })
   async findNonFriendsRandomly(@Req() req, @Query('page') page = 1, @Query('limit') limit = 10) {
-    return this.friendsService.findNonFriendsRandomly(req.user.sub, { page, limit });
+    return this.friendsService.findNonFriendsRandomlyWithNoInvitations(req.user.sub, { page, limit });
   }
 }
