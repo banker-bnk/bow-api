@@ -18,7 +18,7 @@ export class MessagesService {
   async findById(id: number): Promise<Message> {
     const message = await this.messagesRepository.findOne({
       where: { id },
-      relations: ['sender', 'receiver'],
+      relations: ['sender', 'receiver', 'actor'],
     });
     if (!message) {
       throw new NotFoundException('Message not found');
