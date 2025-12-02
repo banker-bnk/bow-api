@@ -114,36 +114,46 @@ export class GiftsPaymentsService {
         }
       )
 
-      // Send a System Message to the gift owner of the payment being made referencing the user that did the payment
-
-      // Get fresh gift payment with all needed relations (user and gift with owner)
-      const updatedGiftPayment = await this.giftsPaymentsRepository.findOne({
-        where: { id: giftPayment.id },
-        relations: ["user", "gift", "gift.user"]
-      });
-
-      if (updatedGiftPayment && updatedGiftPayment.gift && updatedGiftPayment.gift.user && updatedGiftPayment.user) {
-        const giftOwner = updatedGiftPayment.gift.user;
-        const paymentUser = updatedGiftPayment.user;
-
-        // Compose message
-        const subject = '{messages.payment_received_subject}';
-        const message = '{messages.payment_received_message}';
-
-        await this.messagesService.create({
-          sender: null,
-          actor: paymentUser,
-          receiver: giftOwner,
-          subject,
-          message
-        });
-      }
+      await this.sendPaymentNotificationMessage(giftPayment.id);
 
       this.logger.log(`Updated giftPayment with id:${id}, status: ${paymentInfo.status}`)
     } catch (error) {
       this.logger.error(`Error updating giftPayment with id:${id}`, error);
     }
     
+  }
+
+  private async sendPaymentNotificationMessage(giftPaymentId: number) {
+    const updatedGiftPayment = await this.giftsPaymentsRepository.findOne({
+      where: { id: giftPaymentId },
+      relations: ["user", "gift", "gift.user"]
+    });
+
+    if (updatedGiftPayment && updatedGiftPayment.gift && updatedGiftPayment.gift.user && updatedGiftPayment.user) {
+      const giftOwner = updatedGiftPayment.gift.user;
+      const paymentUser = updatedGiftPayment.user;
+
+      const subjectReceived = '{messages.payment_received_subject}';
+      const messageReceived = '{messages.payment_received_message}';
+      const subjectSent = '{messages.payment_sent_subject}';
+      const messageSent = '{messages.payment_sent_message}';
+
+      await this.messagesService.create({
+        sender: null,
+        actor: paymentUser,
+        receiver: giftOwner,
+        subject: subjectReceived,
+        message: messageReceived,
+      });
+
+      await this.messagesService.create({
+        sender: null,
+        actor: giftOwner,
+        receiver: paymentUser as User,
+        subject: subjectSent,
+        message: messageSent,
+      });
+    }
   }
 
   async savePaymentData(paymentId: string) {
