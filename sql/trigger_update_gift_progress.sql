@@ -13,7 +13,7 @@ BEGIN
 
         UPDATE Gifts
         SET 
-            active = FALSE, successful = TRUE
+            successful = TRUE
         WHERE 
             id = NEW."giftId" AND
             progress >= (SELECT price FROM gifts WHERE id = NEW."giftId");
