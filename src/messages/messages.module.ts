@@ -5,13 +5,14 @@ import { MessagesController } from './messages.controller';
 import { Message } from './entities/message';
 import { UsersService } from '../users/users.service';
 import { User } from '../users/entities/user';
+import { NotificationsGateway } from 'src/gateway/notifications.gateway';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Message]),
     TypeOrmModule.forFeature([User]),
   ],
-  providers: [MessagesService, UsersService],
+  providers: [MessagesService, UsersService, NotificationsGateway],
   controllers: [MessagesController],
 })
 export class MessagesModule {}

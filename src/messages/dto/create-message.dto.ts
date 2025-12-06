@@ -1,7 +1,7 @@
 import { IsEnum, IsInt, IsOptional, IsString } from 'class-validator';
-import { NotificationType } from '../enums/notification-type.enum';
+import { MessageType } from '../enums/message-type.enum';
 
-export class CreateNotificationDto {
+export class CreateMessageDto {
   @IsInt()
   userId: number;
 
@@ -9,8 +9,8 @@ export class CreateNotificationDto {
   @IsInt()
   actorId?: number;
 
-  @IsEnum(NotificationType)
-  type: NotificationType;
+  @IsEnum(MessageType)
+  type: MessageType;
 
   @IsOptional()
   @IsInt()

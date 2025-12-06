@@ -6,6 +6,7 @@ import {
   CreateDateColumn,
 } from 'typeorm';
 import { User } from '../../users/entities/user';
+import { MessageType } from '../enums/message-type.enum';
 
 @Entity('messages')
 export class Message {
@@ -32,6 +33,16 @@ export class Message {
 
   @CreateDateColumn()
   createdAt: Date;
+
+  @Column({ type: 'enum', enum: MessageType, default: MessageType.SYSTEM })
+  type: MessageType;
+
+  @Column({ nullable: true })
+  entityId: number; // ID of the related entity (e.g., friend request, gift, etc.)
+
+  @Column({ nullable: true })
+  entityType: string; // The type of entity (friend_request, gift, payment)
+
 
 }
 

@@ -11,13 +11,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { FriendInvitation } from './friend-invitations/entities/friend-invitation';
 import { Friend } from './friends/entities/friend';
 import { Gift } from './gifts/entities/gift';
-import { NotificationsModule } from './notifications/notifications.module';
-import { Notification } from './notifications/entities/notification';
+import { Message } from './messages/entities/message';
 import { GiftsPayment } from './gifts-payments/entities/gifts-payment';
-import { NotificationsGatewayModule } from './gateway/notifications.gateway.module';
 import { User } from './users/entities/user';
 import { MessagesModule } from './messages/messages.module';
-import { Message } from './messages/entities/message';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { SentryGlobalFilter, SentryModule } from '@sentry/nestjs/setup';
@@ -33,9 +30,7 @@ import { LoggingInterceptor } from './interceptors/logging.interceptor';
     GiftsModule,
     GiftsPaymentsModule,
     UsersModule,
-    NotificationsModule,
     MessagesModule,
-    NotificationsGatewayModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DB_HOST,
@@ -43,7 +38,7 @@ import { LoggingInterceptor } from './interceptors/logging.interceptor';
       username: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
-      entities: [FriendInvitation, Friend, Gift, GiftsPayment, User, Notification, Message],
+      entities: [FriendInvitation, Friend, Gift, GiftsPayment, User, Message],
       synchronize: true,
     }),
     TypeOrmModule.forFeature([
@@ -52,7 +47,6 @@ import { LoggingInterceptor } from './interceptors/logging.interceptor';
       Gift,
       GiftsPayment,
       User,
-      Notification,
       Message
     ]),
     ServeStaticModule.forRoot({

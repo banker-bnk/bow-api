@@ -1,13 +1,18 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Inject, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { MessagesService } from './messages.service';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 import { Message } from './entities/message';
 import { UsersService } from '../users/users.service';
 import { User } from '../users/entities/user';
+import { MessageType } from './enums/message-type.enum';
+import { NotificationsGateway } from 'src/gateway/notifications.gateway';
 
 @Controller('messages')
 export class MessagesController {
+  @Inject(NotificationsGateway)
+  private readonly notificationsGateway: NotificationsGateway;
+  
   constructor(
     private readonly messagesService: MessagesService,
     private readonly usersService: UsersService,
@@ -128,11 +133,20 @@ export class MessagesController {
       friends: [],
       gifts: [],
       giftPayments: [],
-      notifications: [],
+      messages: [],
       onboardingCompleted: false,
       allowAgeDisplay: true,
       birthdayUpdatesLocked: false,
     };
+
+    console.log('Sending notification to ', data.receiver);
+    await this.notificationsGateway.sendNotification({
+      userId: Number(data.receiver),
+      type: MessageType.SYSTEM,
+      message: data.message,
+      entityId: data.receiver.id,
+      entityType: "user",
+    });
 
     return message;
   }

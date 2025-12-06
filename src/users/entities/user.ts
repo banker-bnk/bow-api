@@ -9,7 +9,7 @@ import {
 import { FriendInvitation } from '../../friend-invitations/entities/friend-invitation';
 import { Friend } from '../../friends/entities/friend';
 import { Gift } from '../../gifts/entities/gift';
-import { Notification } from '../../notifications/entities/notification';
+import { Message } from '../../messages/entities/message';
 import { GiftsPayment } from '../../gifts-payments/entities/gifts-payment';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -86,8 +86,8 @@ export class User {
   @ApiProperty()
   giftPayments: GiftsPayment[];
 
-  @OneToMany(() => Notification, (notification) => notification.user)
-  notifications: Notification[];
+  @OneToMany(() => Message, (message) => message.receiver)
+  messages: Message[];
 
   @Column({ nullable: true, default: false })
   @ApiProperty()
