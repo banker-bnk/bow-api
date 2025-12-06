@@ -90,7 +90,19 @@ export class MessagesController {
   async create(@Req() req, @Body() data: Partial<Message>): Promise<Message> {
     const authUser: User = await this.usersService.findBySub(req.user.sub);
     data.sender = authUser;
-    return await this.messagesService.create(data);
+    var message = await this.messagesService.create(data);
+
+    console.log('Sending notification to ', data.receiver);
+    
+    await this.notificationsGateway.sendNotification({
+      userId: Number(data.receiver),
+      type: MessageType.MESSAGE,
+      message: data.message,
+      entityId: data.sender.id,
+      entityType: "user",
+    });
+
+    return message;
   }
 
   @Post("/system")

@@ -2,7 +2,7 @@ const io = require('socket.io-client');
 
 class WebSocketService {
   constructor(serverUrl = null) {
-    this.serverUrl = serverUrl || process.env.SERVER_URL || 'http://localhost:3000';
+    this.serverUrl = serverUrl || process.env.SERVER_URL || 'https://mpm.ddns.net';
     this.socket = null;
     this.isConnected = false;
   }

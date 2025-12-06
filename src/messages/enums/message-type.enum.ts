@@ -8,4 +8,5 @@ export enum MessageType {
     FRIEND_REQUEST_REJECTED = 'friend_request_rejected',
     FRIEND_REQUEST_CANCELLED = 'friend_request_cancelled',
     FRIEND_REQUEST_EXPIRED = 'friend_request_expired',
+    MESSAGE = 'message'
   }
