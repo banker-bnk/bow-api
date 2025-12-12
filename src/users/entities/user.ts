@@ -100,4 +100,9 @@ export class User {
   @Column({ nullable: true, default: false })
   @ApiProperty()
   birthdayUpdatesLocked: boolean;
+
+  @Column({ nullable: true })
+  @ApiProperty()
+  pushToken: string;
+
 }

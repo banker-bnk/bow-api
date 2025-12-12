@@ -149,6 +149,7 @@ export class MessagesController {
       onboardingCompleted: false,
       allowAgeDisplay: true,
       birthdayUpdatesLocked: false,
+      pushToken: ""
     };
 
     console.log('Sending notification to ', data.receiver);
