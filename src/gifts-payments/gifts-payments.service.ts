@@ -130,12 +130,17 @@ export class GiftsPaymentsService {
   }
 
   private async sendPaymentNotificationMessage(giftPayment: GiftsPayment) {
+    this.logger.log(`Attempting to send notification for payment id:${giftPayment.id}`);
+    
     if (!giftPayment.gift?.user || !giftPayment.user) {
+      this.logger.warn(`Missing relations for payment id:${giftPayment.id} - gift.user: ${!!giftPayment.gift?.user}, user: ${!!giftPayment.user}`);
       return;
     }
 
     const giftOwner = giftPayment.gift.user;
     const paymentUser = giftPayment.user;
+
+    this.logger.log(`Gift owner: ${giftOwner.id}, Payment user: ${paymentUser.id}, Push token exists: ${!!giftOwner.pushToken}`);
 
     const subjectReceived = '{messages.payment_received_subject}';
     const messageReceived = '{messages.payment_received_message}';
@@ -160,6 +165,7 @@ export class GiftsPaymentsService {
 
     // Send push notification to gift owner
     if (giftOwner.pushToken) {
+      this.logger.log(`Sending push notification to gift owner id:${giftOwner.id}`);
       await this.notificationsService.sendPushNotification(
         giftOwner.pushToken,
         subjectReceived,
@@ -170,6 +176,8 @@ export class GiftsPaymentsService {
           paymentId: giftPayment.id.toString(),
         }
       );
+    } else {
+      this.logger.warn(`No push token for gift owner id:${giftOwner.id}`);
     }
   }
 
