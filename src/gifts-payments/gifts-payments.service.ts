@@ -8,6 +8,7 @@ import { getPaymentInfo, preferenceBuilder } from './helpers/payments.helper';
 import { PreferenceDto } from './dto/preference.dto';
 import { PAYMENT_STATUS } from '../constants';
 import { MessagesService } from '../messages/messages.service';
+import { NotificationsService } from '../notifications/notifications.service';
 import type { PaymentResponse } from './types/mercado-pago.types';
 
 @Injectable()
@@ -21,6 +22,7 @@ export class GiftsPaymentsService {
     @InjectRepository(User)
     private usersRepository: Repository<User>,
     private messagesService: MessagesService,
+    private notificationsService: NotificationsService,
   ) {
     this.mercadoPago = new MercadoPagoConfig({
       accessToken: process.env.MP_ACCESS_TOKEN_PROD,
@@ -93,11 +95,12 @@ export class GiftsPaymentsService {
     try {
       const giftPayment = await this.giftsPaymentsRepository.findOne({
         where: { id },
+        relations: ["user", "gift", "gift.user"],
       });
   
       if (!giftPayment) {
         this.logger.error(`No gift payment found with id: ${id}`);
-        return
+        return;
       }
   
       const paymentInfo = getPaymentInfo(mercadoPagoPayment);
@@ -112,47 +115,61 @@ export class GiftsPaymentsService {
           payment_fee: paymentInfo.paymentFee,
           net_payment: paymentInfo.netPayment
         }
-      )
+      );
 
-      await this.sendPaymentNotificationMessage(giftPayment.id);
+      // Only send notifications if approved
+      if (paymentInfo.status === PAYMENT_STATUS.APPROVED) {
+        await this.sendPaymentNotificationMessage(giftPayment);
+      }
 
-      this.logger.log(`Updated giftPayment with id:${id}, status: ${paymentInfo.status}`)
+      this.logger.log(`Updated giftPayment with id:${id}, status: ${paymentInfo.status}`);
     } catch (error) {
       this.logger.error(`Error updating giftPayment with id:${id}`, error);
     }
     
   }
 
-  private async sendPaymentNotificationMessage(giftPaymentId: number) {
-    const updatedGiftPayment = await this.giftsPaymentsRepository.findOne({
-      where: { id: giftPaymentId },
-      relations: ["user", "gift", "gift.user"]
+  private async sendPaymentNotificationMessage(giftPayment: GiftsPayment) {
+    if (!giftPayment.gift?.user || !giftPayment.user) {
+      return;
+    }
+
+    const giftOwner = giftPayment.gift.user;
+    const paymentUser = giftPayment.user;
+
+    const subjectReceived = '{messages.payment_received_subject}';
+    const messageReceived = '{messages.payment_received_message}';
+    const subjectSent = '{messages.payment_sent_subject}';
+    const messageSent = '{messages.payment_sent_message}';
+
+    await this.messagesService.create({
+      sender: null,
+      actor: paymentUser,
+      receiver: giftOwner,
+      subject: subjectReceived,
+      message: messageReceived,
     });
 
-    if (updatedGiftPayment && updatedGiftPayment.gift && updatedGiftPayment.gift.user && updatedGiftPayment.user) {
-      const giftOwner = updatedGiftPayment.gift.user;
-      const paymentUser = updatedGiftPayment.user;
+    await this.messagesService.create({
+      sender: null,
+      actor: giftOwner,
+      receiver: paymentUser as User,
+      subject: subjectSent,
+      message: messageSent,
+    });
 
-      const subjectReceived = '{messages.payment_received_subject}';
-      const messageReceived = '{messages.payment_received_message}';
-      const subjectSent = '{messages.payment_sent_subject}';
-      const messageSent = '{messages.payment_sent_message}';
-
-      await this.messagesService.create({
-        sender: null,
-        actor: paymentUser,
-        receiver: giftOwner,
-        subject: subjectReceived,
-        message: messageReceived,
-      });
-
-      await this.messagesService.create({
-        sender: null,
-        actor: giftOwner,
-        receiver: paymentUser as User,
-        subject: subjectSent,
-        message: messageSent,
-      });
+    // Send push notification to gift owner
+    if (giftOwner.pushToken) {
+      await this.notificationsService.sendPushNotification(
+        giftOwner.pushToken,
+        subjectReceived,
+        messageReceived,
+        {
+          type: 'payment_received',
+          giftId: giftPayment.gift.id.toString(),
+          paymentId: giftPayment.id.toString(),
+        }
+      );
     }
   }
 
