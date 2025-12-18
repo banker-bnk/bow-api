@@ -166,10 +166,14 @@ export class GiftsPaymentsService {
     // Send push notification to gift owner
     if (giftOwner.pushToken) {
       this.logger.log(`Sending push notification to gift owner id:${giftOwner.id}`);
+      
+      const payerName = paymentUser.firstName || paymentUser.userName;
+      const amount = Number(giftPayment.amount).toFixed(2);
+      
       await this.notificationsService.sendPushNotification(
         giftOwner.pushToken,
-        subjectReceived,
-        messageReceived,
+        'Bow',
+        `${payerName} sent you $${amount}`,
         {
           type: 'payment_received',
           giftId: giftPayment.gift.id.toString(),
