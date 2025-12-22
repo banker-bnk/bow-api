@@ -91,11 +91,12 @@ export class MessagesController {
     const authUser: User = await this.usersService.findBySub(req.user.sub);
     
     // Load receiver with pushToken for notifications
-    const receiverId = typeof data.receiver === 'number' ? data.receiver : (data.receiver as any)?.id;
+    const receiverId = parseInt(data.receiver as any, 10);
     const receiver = await this.usersService.findById(receiverId);
     
     data.sender = authUser;
     data.receiver = receiver;
+    data.actor = authUser;
     
     var message = await this.messagesService.create({
       ...data,
@@ -138,7 +139,7 @@ export class MessagesController {
   @ApiResponse({ status: 201, type: Message })
   async createSystem(@Body() data: Partial<Message>): Promise<Message> {
     // Load receiver with pushToken for notifications
-    const receiverId = typeof data.receiver === 'number' ? data.receiver : (data.receiver as any)?.id;
+    const receiverId = parseInt(data.receiver as any, 10);
     const receiver = await this.usersService.findById(receiverId);
     
     data.sender = null;
