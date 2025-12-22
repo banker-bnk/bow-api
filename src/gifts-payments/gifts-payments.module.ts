@@ -4,18 +4,15 @@ import { GiftsPaymentsController } from './gifts-payments.controller';
 import { GiftsPayment } from './entities/gifts-payment';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../users/entities/user';
-import { MessagesService } from '../messages/messages.service';
-import { Message } from 'src/messages/entities/message';
-import { NotificationsModule } from '../notifications/notifications.module';
+import { MessagesModule } from '../messages/messages.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([GiftsPayment]),
     TypeOrmModule.forFeature([User]),
-    TypeOrmModule.forFeature([Message]),
-    NotificationsModule,
+    MessagesModule,
   ],
-  providers: [GiftsPaymentsService, MessagesService],
+  providers: [GiftsPaymentsService],
   controllers: [GiftsPaymentsController],
 })
 export class GiftsPaymentsModule {}

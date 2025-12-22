@@ -90,7 +90,12 @@ export class MessagesController {
   async create(@Req() req, @Body() data: Partial<Message>): Promise<Message> {
     const authUser: User = await this.usersService.findBySub(req.user.sub);
     data.sender = authUser;
-    var message = await this.messagesService.create(data);
+    var message = await this.messagesService.create({
+      ...data,
+      notificationData: {
+        screen: 'messages',
+      },
+    });
 
     console.log('Sending notification to ', data.receiver);
     
@@ -126,7 +131,12 @@ export class MessagesController {
   @ApiResponse({ status: 201, type: Message })
   async createSystem(@Body() data: Partial<Message>): Promise<Message> {
     data.sender = null;
-    var message = await this.messagesService.create(data);
+    var message = await this.messagesService.create({
+      ...data,
+      notificationData: {
+        screen: 'messages',
+      },
+    });
     message.sender = {
       id: -1,
       userId: "Bow",

@@ -5,17 +5,16 @@ import { FriendInvitationsService } from './friend-invitations.service';
 import { FriendInvitationsController } from './friend-invitations.controller';
 import { UsersService } from '../users/users.service';
 import { User } from '../users/entities/user';
-import { MessagesService } from 'src/messages/messages.service';
-import { Message } from 'src/messages/entities/message';
+import { MessagesModule } from '../messages/messages.module';
 
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([FriendInvitation]),
     TypeOrmModule.forFeature([User]),
-    TypeOrmModule.forFeature([Message]),
-  ], // Register the entity here
-  providers: [FriendInvitationsService, UsersService, MessagesService],
+    MessagesModule,
+  ],
+  providers: [FriendInvitationsService, UsersService],
   controllers: [FriendInvitationsController],
 })
 export class FriendInvitationsModule {}

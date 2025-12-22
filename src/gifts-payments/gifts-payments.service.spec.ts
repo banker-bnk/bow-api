@@ -15,6 +15,10 @@ const mockUsersRepository = {
   findOne: jest.fn(),
 };
 
+const mockMessagesService = {
+  create: jest.fn(),
+};
+
 const mockPreference = {
   create: jest.fn(),
 };
@@ -33,6 +37,7 @@ import { GiftsPaymentsService } from './gifts-payments.service';
 import { GiftsPayment } from './entities/gifts-payment';
 import { User } from '../users/entities/user';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { MessagesService } from '../messages/messages.service';
 
 describe('GiftsPaymentsService', () => {
   let service: GiftsPaymentsService;
@@ -48,6 +53,10 @@ describe('GiftsPaymentsService', () => {
         {
           provide: getRepositoryToken(User),
           useValue: mockUsersRepository,
+        },
+        {
+          provide: MessagesService,
+          useValue: mockMessagesService,
         },
       ],
     }).compile();
@@ -76,7 +85,7 @@ describe('GiftsPaymentsService', () => {
     describe('when GiftsPaymentsRepository.find success', () => {
       beforeEach(async () => {
         mockGiftsPaymentsRepository.find.mockResolvedValueOnce(mockData);
-        response = await service.findAll();
+        response = await service.findAll('user123');
       });
 
       test('should call GiftsPaymentsRepository.find', () => {
@@ -92,7 +101,7 @@ describe('GiftsPaymentsService', () => {
       beforeEach(async () => {
         mockGiftsPaymentsRepository.find.mockRejectedValueOnce(new Error());
         try {
-          response = await service.findAll();
+          response = await service.findAll('user123');
         } catch (error) {
           response = error;
         }

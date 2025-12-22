@@ -6,7 +6,7 @@ interface PushNotificationPayload {
   body: string;
   sound?: string;
   priority?: string;
-  data?: Record<string, string>;
+  data?: Record<string, any>;
 }
 
 @Injectable()
@@ -18,7 +18,7 @@ export class NotificationsService {
     pushToken: string,
     title: string,
     body: string,
-    data?: Record<string, string>,
+    data?: Record<string, any>,
   ): Promise<void> {
     if (!pushToken || !pushToken.startsWith('ExponentPushToken[')) {
       this.logger.warn(`Invalid push token: ${pushToken}`);

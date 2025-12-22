@@ -8,7 +8,6 @@ import { getPaymentInfo, preferenceBuilder } from './helpers/payments.helper';
 import { PreferenceDto } from './dto/preference.dto';
 import { PAYMENT_STATUS } from '../constants';
 import { MessagesService } from '../messages/messages.service';
-import { NotificationsService } from '../notifications/notifications.service';
 import type { PaymentResponse } from './types/mercado-pago.types';
 
 @Injectable()
@@ -22,7 +21,6 @@ export class GiftsPaymentsService {
     @InjectRepository(User)
     private usersRepository: Repository<User>,
     private messagesService: MessagesService,
-    private notificationsService: NotificationsService,
   ) {
     this.mercadoPago = new MercadoPagoConfig({
       accessToken: process.env.MP_ACCESS_TOKEN_PROD,
@@ -130,7 +128,7 @@ export class GiftsPaymentsService {
   }
 
   private async sendPaymentNotificationMessage(giftPayment: GiftsPayment) {
-    this.logger.log(`Attempting to send notification for payment id:${giftPayment.id}`);
+    this.logger.log(`Creating messages for payment id:${giftPayment.id}`);
     
     if (!giftPayment.gift?.user || !giftPayment.user) {
       this.logger.warn(`Missing relations for payment id:${giftPayment.id} - gift.user: ${!!giftPayment.gift?.user}, user: ${!!giftPayment.user}`);
@@ -140,49 +138,38 @@ export class GiftsPaymentsService {
     const giftOwner = giftPayment.gift.user;
     const paymentUser = giftPayment.user;
 
-    this.logger.log(`Gift owner: ${giftOwner.id}, Payment user: ${paymentUser.id}, Push token exists: ${!!giftOwner.pushToken}`);
+    this.logger.log(`Creating messages - Gift owner: ${giftOwner.id}, Payment user: ${paymentUser.id}`);
 
     const subjectReceived = '{messages.payment_received_subject}';
     const messageReceived = '{messages.payment_received_message}';
     const subjectSent = '{messages.payment_sent_subject}';
     const messageSent = '{messages.payment_sent_message}';
 
+    // Message to gift owner with deep link to gift
     await this.messagesService.create({
       sender: null,
       actor: paymentUser,
       receiver: giftOwner,
       subject: subjectReceived,
       message: messageReceived,
+      notificationData: {
+        screen: 'gift',
+        id: giftPayment.gift.id.toString(),
+      },
     });
 
+    // Message to payer with deep link to gift
     await this.messagesService.create({
       sender: null,
       actor: giftOwner,
       receiver: paymentUser as User,
       subject: subjectSent,
       message: messageSent,
+      notificationData: {
+        screen: 'gift',
+        id: giftPayment.gift.id.toString(),
+      },
     });
-
-    // Send push notification to gift owner
-    if (giftOwner.pushToken) {
-      this.logger.log(`Sending push notification to gift owner id:${giftOwner.id}`);
-      
-      const payerName = paymentUser.firstName || paymentUser.userName;
-      const amount = Number(giftPayment.amount).toFixed(2);
-      
-      await this.notificationsService.sendPushNotification(
-        giftOwner.pushToken,
-        'Bow',
-        `${payerName} sent you $${amount}`,
-        {
-          type: 'payment_received',
-          giftId: giftPayment.gift.id.toString(),
-          paymentId: giftPayment.id.toString(),
-        }
-      );
-    } else {
-      this.logger.warn(`No push token for gift owner id:${giftOwner.id}`);
-    }
   }
 
   async savePaymentData(paymentId: string) {

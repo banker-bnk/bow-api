@@ -1,18 +1,52 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Message } from './entities/message';
+import { NotificationsService } from '../notifications/notifications.service';
+import { CreateMessageWithNotification } from './interfaces/create-message-with-notification.interface';
 
 @Injectable()
 export class MessagesService {
+  private readonly logger = new Logger(MessagesService.name);
+
   constructor(
     @InjectRepository(Message)
     private readonly messagesRepository: Repository<Message>,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
-  async create(data: Partial<Message>): Promise<Message> {
-    const entity = this.messagesRepository.create(data);
-    return await this.messagesRepository.save(entity);
+  async create(data: CreateMessageWithNotification): Promise<Message> {
+    const { notificationData, ...messageData } = data;
+    const entity = this.messagesRepository.create(messageData);
+    const savedMessage = await this.messagesRepository.save(entity);
+
+    // Send push notification 1:1 with message
+    // Use data.receiver (not savedMessage.receiver) to ensure pushToken is available
+    const receiver = data.receiver;
+    
+    if (receiver?.pushToken) {
+      this.logger.log(`Sending push notification for message id:${savedMessage.id} to user id:${receiver.id}`);
+      
+      // Isolate notification send in try-catch to prevent message creation failure
+      try {
+        await this.notificationsService.sendPushNotification(
+          receiver.pushToken,
+          savedMessage.subject,
+          savedMessage.message,
+          notificationData || undefined,
+        );
+      } catch (error) {
+        this.logger.error(
+          `Failed to send push notification for message id:${savedMessage.id}`,
+          error.stack,
+        );
+        // Don't throw - message was created successfully
+      }
+    } else {
+      this.logger.log(`No push token for receiver of message id:${savedMessage.id}`);
+    }
+
+    return savedMessage;
   }
 
   async findById(id: number): Promise<Message> {
