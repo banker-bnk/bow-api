@@ -101,7 +101,7 @@ export class MessagesController {
     var message = await this.messagesService.create({
       ...data,
       notificationData: {
-        screen: 'messages',
+        screen: 'settings/message-details',
       },
     });
 
@@ -148,7 +148,7 @@ export class MessagesController {
     var message = await this.messagesService.create({
       ...data,
       notificationData: {
-        screen: 'messages',
+        screen: 'settings/message-details',
       },
     });
     

@@ -80,14 +80,18 @@ export class MessagesService {
           notificationData?.context,
         );
         
-        // Extract deep link data (exclude context)
+        // Extract deep link data (exclude context) and add message ID
         const { context, ...deepLinkData } = notificationData || {};
+        const finalDeepLinkData = {
+          ...deepLinkData,
+          id: savedMessage.id.toString(),
+        };
         
         await this.notificationsService.sendPushNotification(
           receiver.pushToken,
           title,
           body,
-          Object.keys(deepLinkData).length > 0 ? deepLinkData : undefined,
+          Object.keys(finalDeepLinkData).length > 0 ? finalDeepLinkData : undefined,
         );
       } catch (error) {
         this.logger.error(
