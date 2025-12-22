@@ -89,7 +89,14 @@ export class MessagesController {
   @ApiResponse({ status: 201, type: Message })
   async create(@Req() req, @Body() data: Partial<Message>): Promise<Message> {
     const authUser: User = await this.usersService.findBySub(req.user.sub);
+    
+    // Load receiver with pushToken for notifications
+    const receiverId = typeof data.receiver === 'number' ? data.receiver : (data.receiver as any)?.id;
+    const receiver = await this.usersService.findById(receiverId);
+    
     data.sender = authUser;
+    data.receiver = receiver;
+    
     var message = await this.messagesService.create({
       ...data,
       notificationData: {
@@ -97,10 +104,10 @@ export class MessagesController {
       },
     });
 
-    console.log('Sending notification to ', data.receiver);
+    console.log('Sending notification to ', receiver.id);
     
     await this.notificationsGateway.sendNotification({
-      userId: Number(data.receiver),
+      userId: receiver.id,
       type: MessageType.MESSAGE,
       message: data.message,
       entityId: data.sender.id,
@@ -130,13 +137,20 @@ export class MessagesController {
   })
   @ApiResponse({ status: 201, type: Message })
   async createSystem(@Body() data: Partial<Message>): Promise<Message> {
+    // Load receiver with pushToken for notifications
+    const receiverId = typeof data.receiver === 'number' ? data.receiver : (data.receiver as any)?.id;
+    const receiver = await this.usersService.findById(receiverId);
+    
     data.sender = null;
+    data.receiver = receiver;
+    
     var message = await this.messagesService.create({
       ...data,
       notificationData: {
         screen: 'messages',
       },
     });
+    
     message.sender = {
       id: -1,
       userId: "Bow",
@@ -162,12 +176,12 @@ export class MessagesController {
       pushToken: ""
     };
 
-    console.log('Sending notification to ', data.receiver);
+    console.log('Sending notification to ', receiver.id);
     await this.notificationsGateway.sendNotification({
-      userId: Number(data.receiver),
+      userId: receiver.id,
       type: MessageType.SYSTEM,
       message: data.message,
-      entityId: data.receiver.id,
+      entityId: receiver.id,
       entityType: "user",
     });
 
