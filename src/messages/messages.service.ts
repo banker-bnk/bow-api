@@ -4,6 +4,12 @@ import { Repository } from 'typeorm';
 import { Message } from './entities/message';
 import { NotificationsService } from '../notifications/notifications.service';
 import { CreateMessageWithNotification } from './interfaces/create-message-with-notification.interface';
+import { User } from '../users/entities/user';
+
+interface NotificationText {
+  title: string;
+  body: string;
+}
 
 @Injectable()
 export class MessagesService {
@@ -14,6 +20,43 @@ export class MessagesService {
     private readonly messagesRepository: Repository<Message>,
     private readonly notificationsService: NotificationsService,
   ) {}
+
+  /**
+   * Generate notification text from message placeholders
+   * TODO: Add i18n support using receiver.locale when available
+   * TODO: Add detailed context (amounts, names) when i18n is implemented
+   */
+  private generateNotificationText(
+    subject: string,
+    message: string,
+    actor?: Partial<User>,
+    context?: Record<string, any>,
+  ): NotificationText {
+    const actorName = actor?.firstName || actor?.userName || 'Someone';
+    
+    // Map placeholder keys to notification text (English, generic for now)
+    const notificationMap: Record<string, NotificationText> = {
+      '{messages.payment_sent_subject}': {
+        title: 'Payment sent!',
+        body: 'Your payment was sent successfully',
+      },
+      '{messages.payment_received_subject}': {
+        title: 'Payment received!',
+        body: `${actorName} sent you a payment`,
+      },
+      '{messages.friend_request_sent_subject}': {
+        title: 'Friend request',
+        body: `${actorName} sent you a friend request`,
+      },
+      '{messages.friend_approved_subject}': {
+        title: 'Friend request accepted',
+        body: `${actorName} accepted your friend request`,
+      },
+    };
+
+    // Return mapped notification or fall back to subject/message
+    return notificationMap[subject] || { title: subject, body: message };
+  }
 
   async create(data: CreateMessageWithNotification): Promise<Message> {
     const { notificationData, ...messageData } = data;
@@ -29,11 +72,22 @@ export class MessagesService {
       
       // Isolate notification send in try-catch to prevent message creation failure
       try {
-        await this.notificationsService.sendPushNotification(
-          receiver.pushToken,
+        // Generate notification text from message placeholders
+        const { title, body } = this.generateNotificationText(
           savedMessage.subject,
           savedMessage.message,
-          notificationData || undefined,
+          data.actor,
+          notificationData?.context,
+        );
+        
+        // Extract deep link data (exclude context)
+        const { context, ...deepLinkData } = notificationData || {};
+        
+        await this.notificationsService.sendPushNotification(
+          receiver.pushToken,
+          title,
+          body,
+          Object.keys(deepLinkData).length > 0 ? deepLinkData : undefined,
         );
       } catch (error) {
         this.logger.error(

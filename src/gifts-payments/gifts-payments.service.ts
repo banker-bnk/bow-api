@@ -140,18 +140,13 @@ export class GiftsPaymentsService {
 
     this.logger.log(`Creating messages - Gift owner: ${giftOwner.id}, Payment user: ${paymentUser.id}`);
 
-    const subjectReceived = '{messages.payment_received_subject}';
-    const messageReceived = '{messages.payment_received_message}';
-    const subjectSent = '{messages.payment_sent_subject}';
-    const messageSent = '{messages.payment_sent_message}';
-
     // Message to gift owner with deep link to gift
     await this.messagesService.create({
       sender: null,
       actor: paymentUser,
       receiver: giftOwner,
-      subject: subjectReceived,
-      message: messageReceived,
+      subject: '{messages.payment_received_subject}',
+      message: '{messages.payment_received_message}',
       notificationData: {
         screen: 'gift',
         id: giftPayment.gift.id.toString(),
@@ -163,8 +158,8 @@ export class GiftsPaymentsService {
       sender: null,
       actor: giftOwner,
       receiver: paymentUser as User,
-      subject: subjectSent,
-      message: messageSent,
+      subject: '{messages.payment_sent_subject}',
+      message: '{messages.payment_sent_message}',
       notificationData: {
         screen: 'gift',
         id: giftPayment.gift.id.toString(),

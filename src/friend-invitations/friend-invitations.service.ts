@@ -56,6 +56,7 @@ export class FriendInvitationsService {
   async create(data: Partial<FriendInvitation>) {
     const invitation = this.friendInvitationRepository.create(data);
     const savedInvitation = await this.friendInvitationRepository.save(invitation);
+    
     await this.messagesService.create({
       sender: null,
       receiver: data.receiver,
@@ -76,6 +77,7 @@ export class FriendInvitationsService {
     );
 
     const senderUser = await this.usersService.findById(parseInt(JSON.stringify(sender)));
+    const receiverUser: User = await this.usersService.findBySub(receiver.userId);
 
     await this.messagesService.create({
       sender: null,
@@ -87,8 +89,6 @@ export class FriendInvitationsService {
         screen: 'friends',
       },
     });
-
-    const receiverUser: User = await this.usersService.findBySub(receiver.userId);
 
     await this.messagesService.create({
       sender: null,

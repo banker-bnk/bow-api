@@ -3,7 +3,11 @@ import { Message } from '../entities/message';
 export interface NotificationData {
   screen?: string;
   id?: string;
-  [key: string]: any; // Allow additional custom data
+  // Context data for generating notification text
+  context?: {
+    amount?: string;
+    [key: string]: any;
+  };
 }
 
 export interface CreateMessageWithNotification extends Partial<Message> {
