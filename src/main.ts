@@ -5,20 +5,12 @@ import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { formatValidationErrors } from './helpers/validation-errors.helper';
 import { configureServerTimeouts, configureServerErrorHandlers } from './helpers/server.helper';
-import * as fs from 'fs';
 import './instrument';
 
 dotenv.config();
 
 async function bootstrap() {
-  const isProduction = process.env.NODE_ENV === 'production'
-  
-  const httpsOptions = isProduction ? {
-    key: fs.readFileSync('/etc/letsencrypt/live/mpm.ddns.net/privkey.pem'),
-    cert: fs.readFileSync('/etc/letsencrypt/live/mpm.ddns.net/fullchain.pem'),
-  } : null;
-
-  const app = await NestFactory.create(AppModule, { httpsOptions, logger: ['error', 'warn', 'log', 'debug', 'verbose'] });
+  const app = await NestFactory.create(AppModule, { logger: ['error', 'warn', 'log', 'debug', 'verbose'] });
 
   app.enableCors();
   app.useGlobalPipes(
